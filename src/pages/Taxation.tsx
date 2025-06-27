@@ -300,7 +300,7 @@ const Taxation = () => {
                     </li>
                     <li className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="dark:text-gray-300">Audit (if turnover > threshold)</span>
+                      <span className="dark:text-gray-300">Audit (if turnover {">"} threshold)</span>
                     </li>
                     <li className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
