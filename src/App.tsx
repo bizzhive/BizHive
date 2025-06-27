@@ -12,6 +12,10 @@ import Manage from "./pages/Manage";
 import Legal from "./pages/Legal";
 import Incubators from "./pages/Incubators";
 import Community from "./pages/Community";
+import Documents from "./pages/Documents";
+import Tools from "./pages/Tools";
+import Login from "./pages/Login";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import MarketResearch from "./pages/plan/MarketResearch";
 import BusinessPlan from "./pages/plan/BusinessPlan";
@@ -35,6 +39,14 @@ const App = () => (
             <Route path="/legal" element={<Legal />} />
             <Route path="/incubators" element={<Incubators />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/documents" element={<Documents />} />
+            <Route path="/tools" element={<Tools />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Login />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/subscribe" element={<Contact />} />
+            {/* Tool routes - these can be expanded later */}
+            <Route path="/tools/*" element={<Tools />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
