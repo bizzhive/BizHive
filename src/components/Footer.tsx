@@ -10,17 +10,16 @@ const Footer = () => {
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle newsletter subscription
     console.log("Subscribing email:", email);
     setEmail("");
   };
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gray-900 dark:bg-gray-950 text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="relative w-8 h-8">
                 <svg viewBox="0 0 32 32" className="w-8 h-8">
@@ -60,6 +59,7 @@ const Footer = () => {
               <li><Link to="/launch" className="hover:text-white transition-colors">Launch Your Business</Link></li>
               <li><Link to="/manage" className="hover:text-white transition-colors">Manage & Scale</Link></li>
               <li><Link to="/tools" className="hover:text-white transition-colors">Business Tools</Link></li>
+              <li><Link to="/taxation" className="hover:text-white transition-colors">Taxation Guide</Link></li>
             </ul>
           </div>
 
@@ -99,7 +99,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-            <p>© 2024 BizHive - Business Growth Platform. All rights reserved.</p>
+            <p>© 2024 Entrepreneurship Support Platform. All rights reserved.</p>
             <p>Designed by <span className="text-blue-400">Tushar Gehlot</span></p>
           </div>
           <div className="mt-4 flex flex-wrap justify-center space-x-4 text-xs">
