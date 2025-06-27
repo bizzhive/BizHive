@@ -17,7 +17,8 @@ import {
   Lightbulb,
   BarChart3,
   Zap,
-  Star
+  Star,
+  Building2
 } from "lucide-react";
 
 const Tools = () => {
@@ -122,7 +123,7 @@ const Tools = () => {
         {
           name: "Business Structure Advisor",
           description: "Find the right business structure for your needs",
-          icon: Building,
+          icon: Building2,
           href: "/tools/structure-advisor",
           premium: false,
           rating: 4.7,

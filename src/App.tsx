@@ -19,6 +19,9 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import MarketResearch from "./pages/plan/MarketResearch";
 import BusinessPlan from "./pages/plan/BusinessPlan";
+import BusinessCanvas from "./pages/tools/BusinessCanvas";
+import SwotAnalysis from "./pages/tools/SwotAnalysis";
+import StartupCalculator from "./pages/tools/StartupCalculator";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +44,9 @@ const App = () => (
             <Route path="/community" element={<Community />} />
             <Route path="/documents" element={<Documents />} />
             <Route path="/tools" element={<Tools />} />
+            <Route path="/tools/business-canvas" element={<BusinessCanvas />} />
+            <Route path="/tools/swot-analysis" element={<SwotAnalysis />} />
+            <Route path="/tools/startup-calculator" element={<StartupCalculator />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Login />} />
             <Route path="/contact" element={<Contact />} />
