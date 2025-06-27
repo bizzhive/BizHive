@@ -13,6 +13,8 @@ import Legal from "./pages/Legal";
 import Incubators from "./pages/Incubators";
 import Community from "./pages/Community";
 import NotFound from "./pages/NotFound";
+import MarketResearch from "./pages/plan/MarketResearch";
+import BusinessPlan from "./pages/plan/BusinessPlan";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/plan" element={<Plan />} />
+            <Route path="/plan/market-research" element={<MarketResearch />} />
+            <Route path="/plan/business-plan" element={<BusinessPlan />} />
             <Route path="/launch" element={<Launch />} />
             <Route path="/manage" element={<Manage />} />
             <Route path="/legal" element={<Legal />} />

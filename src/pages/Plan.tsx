@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Target, TrendingUp, DollarSign, FileCheck } from "lucide-react";
+import { Search, Target, TrendingUp, DollarSign, FileCheck, Users, Building, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Plan = () => {
@@ -17,6 +17,7 @@ const Plan = () => {
           </p>
         </div>
 
+        {/* Main Planning Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
@@ -82,8 +83,8 @@ const Plan = () => {
           </Card>
         </div>
 
-        {/* Planning Steps */}
-        <div className="bg-white rounded-lg p-8">
+        {/* Planning Process */}
+        <div className="bg-white rounded-lg p-8 mb-12">
           <h2 className="text-2xl font-bold mb-6 text-gray-900">Planning Process</h2>
           <div className="grid md:grid-cols-5 gap-6">
             <div className="text-center">
@@ -121,6 +122,37 @@ const Plan = () => {
               <h3 className="font-semibold text-sm mb-2">Prepare</h3>
               <p className="text-xs text-gray-600">Launch Preparation</p>
             </div>
+          </div>
+        </div>
+
+        {/* Quick Tools Section */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8">
+          <h2 className="text-2xl font-bold mb-6 text-gray-900">Quick Planning Tools</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2">
+              <Link to="/plan/tools/business-canvas">
+                <Target className="h-6 w-6" />
+                <span>Business Canvas</span>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2">
+              <Link to="/plan/tools/swot-analysis">
+                <TrendingUp className="h-6 w-6" />
+                <span>SWOT Analysis</span>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2">
+              <Link to="/plan/tools/financial-calculator">
+                <DollarSign className="h-6 w-6" />
+                <span>Financial Calculator</span>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2">
+              <Link to="/plan/tools/checklist">
+                <CheckCircle className="h-6 w-6" />
+                <span>Planning Checklist</span>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
