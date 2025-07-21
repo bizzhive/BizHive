@@ -32,9 +32,9 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="relative w-10 h-10">
-              <svg viewBox="0 0 40 40" className="w-10 h-10">
+          <Link to="/" className="flex items-center space-x-3 min-w-0">
+            <div className="relative w-12 h-12 flex-shrink-0">
+              <svg viewBox="0 0 40 40" className="w-12 h-12">
                 <defs>
                   <pattern id="honeycombNav" x="0" y="0" width="8" height="7" patternUnits="userSpaceOnUse">
                     <polygon points="4,0 8,2.3 8,4.7 4,7 0,4.7 0,2.3" fill="#3B82F6" stroke="#60A5FA" strokeWidth="0.3"/>
@@ -43,9 +43,9 @@ const Navigation = () => {
                 <circle cx="20" cy="20" r="18" fill="url(#honeycombNav)"/>
               </svg>
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-xl text-gray-900 dark:text-white">BizHive</span>
-              <span className="text-xs text-blue-600 dark:text-blue-400 -mt-1">Business Growth Platform</span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-xl text-gray-900 dark:text-white whitespace-nowrap">BizHive</span>
+              <span className="text-xs text-blue-600 dark:text-blue-400 -mt-1 whitespace-nowrap hidden sm:block">Business Growth Platform</span>
             </div>
           </Link>
 
@@ -95,12 +95,15 @@ const Navigation = () => {
 
             {/* AI Assistant (Desktop) */}
             <Button
+              asChild
               variant="outline"
               size="sm"
               className="hidden md:flex items-center space-x-2 dark:bg-gray-800 dark:text-white dark:border-gray-700"
             >
-              <MessageCircle className="h-4 w-4" />
-              <span>AI Assistant</span>
+              <Link to="/ai-assistant">
+                <MessageCircle className="h-4 w-4" />
+                <span>AI Assistant</span>
+              </Link>
             </Button>
 
             {/* Auth Buttons (Desktop) */}
@@ -157,11 +160,14 @@ const Navigation = () => {
 
                   <div className="space-y-4 pt-6 border-t dark:border-gray-700">
                     <Button
+                      asChild
                       variant="outline"
                       className="w-full justify-start dark:bg-gray-800 dark:text-white"
                     >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      AI Assistant
+                      <Link to="/ai-assistant" onClick={() => setIsOpen(false)}>
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        AI Assistant
+                      </Link>
                     </Button>
                     
                     <div className="space-y-2">

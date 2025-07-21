@@ -20,6 +20,7 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Taxation from "./pages/Taxation";
 import Blog from "./pages/Blog";
+import AIAssistant from "./pages/AIAssistant";
 import MarketResearch from "./pages/plan/MarketResearch";
 import BusinessPlan from "./pages/plan/BusinessPlan";
 import BusinessCanvas from "./pages/tools/BusinessCanvas";
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="/tools/financial-calculator" element={<FinancialCalculator />} />
               <Route path="/taxation" element={<Taxation />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/ai-assistant" element={<AIAssistant />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Login />} />
               <Route path="/contact" element={<Contact />} />

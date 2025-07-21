@@ -1,51 +1,276 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building, DollarSign, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Building, DollarSign, FileText, Rocket, Users, Star, MapPin, Calendar, ArrowRight, TrendingUp, Target } from "lucide-react";
 
 const Incubators = () => {
+  const fundingTypes = [
+    {
+      icon: Building,
+      title: "Government Incubators",
+      description: "Find government-backed incubators and accelerators",
+      color: "text-blue-600 dark:text-blue-400",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+      programs: ["Startup India", "MSME Schemes", "State Incubators", "Industry Specific"]
+    },
+    {
+      icon: DollarSign,
+      title: "Funding Opportunities", 
+      description: "Explore government schemes and investor networks",
+      color: "text-green-600 dark:text-green-400",
+      bgColor: "bg-green-50 dark:bg-green-900/20",
+      programs: ["Seed Funding", "Series A/B", "Government Grants", "Angel Networks"]
+    },
+    {
+      icon: FileText,
+      title: "Pitch Preparation",
+      description: "Tools and guides for investor presentations",
+      color: "text-purple-600 dark:text-purple-400", 
+      bgColor: "bg-purple-50 dark:bg-purple-900/20",
+      programs: ["Pitch Decks", "Financial Models", "Demo Videos", "Business Plans"]
+    }
+  ];
+
+  const topIncubators = [
+    {
+      name: "T-Hub",
+      location: "Hyderabad",
+      focus: "Technology & Innovation",
+      funding: "₹50L - ₹2Cr",
+      rating: 4.8,
+      description: "India's largest innovation campus supporting tech startups"
+    },
+    {
+      name: "NASSCOM 10,000 Startups",
+      location: "Pan India",
+      focus: "Technology Products",
+      funding: "₹25L - ₹1Cr", 
+      rating: 4.7,
+      description: "Scale-up program for product startups"
+    },
+    {
+      name: "Indian Angel Network",
+      location: "Delhi NCR",
+      focus: "Early Stage",
+      funding: "₹1Cr - ₹5Cr",
+      rating: 4.6,
+      description: "One of India's largest angel investor networks"
+    },
+    {
+      name: "Atal Incubation Centers",
+      location: "Multiple Cities",
+      focus: "Innovation & Entrepreneurship",
+      funding: "₹10L - ₹1Cr",
+      rating: 4.5,
+      description: "Government-backed incubation centers across India"
+    }
+  ];
+
+  const fundingStages = [
+    { stage: "Pre-Seed", range: "₹5L - ₹25L", focus: "Idea to MVP", investors: "Friends, Family, Angels" },
+    { stage: "Seed", range: "₹25L - ₹2Cr", focus: "Product-Market Fit", investors: "Angel Networks, Micro VCs" },
+    { stage: "Series A", range: "₹2Cr - ₹10Cr", focus: "Scale & Growth", investors: "VCs, Corporate VCs" },
+    { stage: "Series B+", range: "₹10Cr+", focus: "Market Leadership", investors: "Large VCs, PE Firms" }
+  ];
+
+  const pitchTips = [
+    "Start with a compelling problem statement",
+    "Show market size and opportunity clearly", 
+    "Demonstrate traction with real metrics",
+    "Present a clear business model",
+    "Showcase your team's expertise",
+    "Include realistic financial projections"
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-600 to-blue-600 rounded-full mb-6 animate-bounce-in">
+            <Rocket className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 animate-fade-in">
             Incubators & Funding
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Connect with government incubators, explore funding opportunities, and prepare for investor meetings
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto animate-slide-up">
+            Connect with top incubators, explore funding opportunities, and prepare winning pitches
           </p>
+          <div className="mt-6">
+            <Badge variant="outline" className="mr-2 dark:border-gray-600">
+              <Building className="h-3 w-3 mr-1" />
+              500+ Incubators
+            </Badge>
+            <Badge variant="outline" className="mr-2 dark:border-gray-600">
+              <DollarSign className="h-3 w-3 mr-1" />
+              ₹100Cr+ Funding
+            </Badge>
+            <Badge variant="outline" className="dark:border-gray-600">
+              <Users className="h-3 w-3 mr-1" />
+              1000+ Startups
+            </Badge>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <Building className="h-10 w-10 text-blue-600 mb-2" />
-              <CardTitle>Incubator Directory</CardTitle>
-              <CardDescription>
-                Find government-backed incubators and accelerators
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <DollarSign className="h-10 w-10 text-green-600 mb-2" />
-              <CardTitle>Funding Opportunities</CardTitle>
-              <CardDescription>
-                Explore government schemes and investor networks
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <FileText className="h-10 w-10 text-purple-600 mb-2" />
-              <CardTitle>Pitch Preparation</CardTitle>
-              <CardDescription>
-                Tools and guides for investor presentations
-              </CardDescription>
-            </CardHeader>
-          </Card>
+        {/* Main Services */}
+        <div className="grid lg:grid-cols-3 gap-8 mb-16 stagger-animation">
+          {fundingTypes.map((type, index) => (
+            <Card key={index} className="group hover:shadow-xl transition-all duration-300 dark:bg-gray-800 dark:border-gray-700 relative overflow-hidden">
+              <div className={`absolute inset-0 ${type.bgColor} opacity-0 group-hover:opacity-10 transition-opacity`} />
+              <CardHeader className="pb-4">
+                <div className={`w-14 h-14 ${type.bgColor} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                  <type.icon className={`h-7 w-7 ${type.color}`} />
+                </div>
+                <CardTitle className="text-xl dark:text-white">{type.title}</CardTitle>
+                <CardDescription className="dark:text-gray-300">
+                  {type.description}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 mb-6">
+                  {type.programs.map((program, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                      <span className="text-sm text-gray-600 dark:text-gray-300">{program}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button className="w-full group/btn" variant="outline">
+                  Explore Options
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
         </div>
+
+        {/* Tabs for different sections */}
+        <Tabs defaultValue="incubators" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 dark:bg-gray-800">
+            <TabsTrigger value="incubators" className="dark:data-[state=active]:bg-gray-700">Top Incubators</TabsTrigger>
+            <TabsTrigger value="funding" className="dark:data-[state=active]:bg-gray-700">Funding Stages</TabsTrigger>
+            <TabsTrigger value="pitch" className="dark:data-[state=active]:bg-gray-700">Pitch Guide</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="incubators" className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6 stagger-animation">
+              {topIncubators.map((incubator, index) => (
+                <Card key={index} className="group hover:shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-xl dark:text-white mb-2">{incubator.name}</CardTitle>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                          <MapPin className="h-4 w-4" />
+                          {incubator.location}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                        <span className="text-sm font-medium dark:text-white">{incubator.rating}</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">{incubator.description}</p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">Focus:</span>
+                        <Badge variant="secondary" className="dark:bg-gray-700 dark:text-gray-300">{incubator.focus}</Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">Funding:</span>
+                        <span className="text-sm font-medium text-green-600 dark:text-green-400">{incubator.funding}</span>
+                      </div>
+                    </div>
+                    <Button className="w-full mt-4" variant="outline">
+                      Apply Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="funding" className="space-y-6">
+            <div className="grid gap-4">
+              {fundingStages.map((stage, index) => (
+                <Card key={index} className="dark:bg-gray-800 dark:border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="grid md:grid-cols-4 gap-4 items-center">
+                      <div>
+                        <h3 className="font-bold text-lg dark:text-white">{stage.stage}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{stage.focus}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">{stage.range}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Typical Range</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm font-medium dark:text-white">{stage.investors}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Investor Types</p>
+                      </div>
+                      <div className="text-center">
+                        <Button variant="outline" size="sm">
+                          Find Investors
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="pitch" className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
+                <CardHeader>
+                  <CardTitle className="dark:text-white">Pitch Deck Essentials</CardTitle>
+                  <CardDescription className="dark:text-gray-300">
+                    Key elements every successful pitch deck should include
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {pitchTips.map((tip, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{index + 1}</span>
+                        </div>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
+                <CardHeader>
+                  <CardTitle className="dark:text-white">Success Metrics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">78%</div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Success Rate with Proper Preparation</p>
+                    </div>
+                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">₹2.5Cr</div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Average Funding Amount</p>
+                    </div>
+                    <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                      <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">45 Days</div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Average Time to Close</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
