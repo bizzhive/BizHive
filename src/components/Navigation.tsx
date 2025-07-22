@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -32,9 +33,9 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 min-w-0">
-            <div className="relative w-12 h-12 flex-shrink-0">
-              <svg viewBox="0 0 40 40" className="w-12 h-12">
+          <Link to="/" className="flex items-center space-x-2 min-w-0 flex-shrink-0">
+            <div className="relative w-10 h-10 flex-shrink-0">
+              <svg viewBox="0 0 40 40" className="w-10 h-10">
                 <defs>
                   <pattern id="honeycombNav" x="0" y="0" width="8" height="7" patternUnits="userSpaceOnUse">
                     <polygon points="4,0 8,2.3 8,4.7 4,7 0,4.7 0,2.3" fill="#3B82F6" stroke="#60A5FA" strokeWidth="0.3"/>
@@ -44,18 +45,18 @@ const Navigation = () => {
               </svg>
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="font-bold text-xl text-gray-900 dark:text-white whitespace-nowrap">BizHive</span>
-              <span className="text-xs text-blue-600 dark:text-blue-400 -mt-1 whitespace-nowrap hidden sm:block">Business Growth Platform</span>
+              <span className="font-bold text-lg text-gray-900 dark:text-white whitespace-nowrap">BizHive</span>
+              <span className="text-xs text-blue-600 dark:text-blue-400 -mt-1 whitespace-nowrap hidden md:block">Business Growth Platform</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden xl:flex items-center space-x-1 flex-1 justify-center">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-2 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive(item.href)
                     ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
                     : "text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
@@ -67,7 +68,7 @@ const Navigation = () => {
           </div>
 
           {/* Controls */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 flex-shrink-0">
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -80,8 +81,8 @@ const Navigation = () => {
 
             {/* Language Selector */}
             <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-[120px] h-9 dark:bg-gray-800 dark:text-white">
-                <Globe className="h-4 w-4 mr-2" />
+              <SelectTrigger className="w-[100px] h-9 dark:bg-gray-800 dark:text-white">
+                <Globe className="h-4 w-4 mr-1" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
@@ -98,16 +99,16 @@ const Navigation = () => {
               asChild
               variant="outline"
               size="sm"
-              className="hidden md:flex items-center space-x-2 dark:bg-gray-800 dark:text-white dark:border-gray-700"
+              className="hidden lg:flex items-center space-x-1 dark:bg-gray-800 dark:text-white dark:border-gray-700"
             >
               <Link to="/ai-assistant">
                 <MessageCircle className="h-4 w-4" />
-                <span>AI Assistant</span>
+                <span className="hidden xl:inline">AI Assistant</span>
               </Link>
             </Button>
 
             {/* Auth Buttons (Desktop) */}
-            <div className="hidden md:flex items-center space-x-2">
+            <div className="hidden lg:flex items-center space-x-1">
               <Button asChild variant="ghost" size="sm">
                 <Link to="/login">Login</Link>
               </Button>
@@ -119,7 +120,7 @@ const Navigation = () => {
             {/* Mobile Menu Toggle */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
+                <Button variant="ghost" size="icon" className="xl:hidden">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>

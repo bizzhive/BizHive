@@ -138,21 +138,21 @@ const Launch = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Launch Your Business
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Step-by-step guidance to successfully launch your business and enter the market with confidence
           </p>
         </div>
 
         {/* Launch Phases */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Launch Phases</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Launch Phases</h2>
           <div className="space-y-8">
             {launchPhases.map((phase, index) => {
               const Icon = phase.icon;
@@ -164,8 +164,8 @@ const Launch = () => {
               };
               
               return (
-                <Card key={index} className="overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-gray-50 to-white">
+                <Card key={index} className="overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+                  <CardHeader className="bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className={`p-3 rounded-lg ${colors[phase.color as keyof typeof colors]}`}>
@@ -173,14 +173,14 @@ const Launch = () => {
                         </div>
                         <div>
                           <div className="flex items-center space-x-2 mb-1">
-                            <Badge variant="outline">{phase.phase}</Badge>
-                            <Badge variant="secondary" className="flex items-center">
+                            <Badge variant="outline" className="dark:border-gray-600 dark:text-gray-300">{phase.phase}</Badge>
+                            <Badge variant="secondary" className="flex items-center dark:bg-gray-600 dark:text-gray-200">
                               <Clock className="h-3 w-3 mr-1" />
                               {phase.timeframe}
                             </Badge>
                           </div>
-                          <CardTitle className="text-xl">{phase.title}</CardTitle>
-                          <CardDescription>{phase.description}</CardDescription>
+                          <CardTitle className="text-xl dark:text-white">{phase.title}</CardTitle>
+                          <CardDescription className="dark:text-gray-300">{phase.description}</CardDescription>
                         </div>
                       </div>
                     </div>
@@ -189,8 +189,8 @@ const Launch = () => {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {phase.tasks.map((task, taskIndex) => (
                         <div key={taskIndex} className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                          <span className="text-sm">{task}</span>
+                          <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400 flex-shrink-0" />
+                          <span className="text-sm dark:text-gray-300">{task}</span>
                         </div>
                       ))}
                     </div>
@@ -203,19 +203,19 @@ const Launch = () => {
 
         {/* Essential Tools */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Essential Launch Tools</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Essential Launch Tools</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {essentialTools.map((category, index) => (
-              <Card key={index}>
+              <Card key={index} className="dark:bg-gray-800 dark:border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-lg">{category.category}</CardTitle>
+                  <CardTitle className="text-lg dark:text-white">{category.category}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {category.tools.map((tool, toolIndex) => (
-                      <div key={toolIndex} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <h4 className="font-medium text-sm">{tool.name}</h4>
-                        <p className="text-xs text-gray-600 mt-1">{tool.description}</p>
+                      <div key={toolIndex} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <h4 className="font-medium text-sm dark:text-white">{tool.name}</h4>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{tool.description}</p>
                       </div>
                     ))}
                   </div>
@@ -227,13 +227,13 @@ const Launch = () => {
 
         {/* Launch Checklist */}
         <div className="mb-16">
-          <Card>
+          <Card className="dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
+              <CardTitle className="flex items-center dark:text-white">
+                <CheckCircle className="h-5 w-5 mr-2 text-green-600 dark:text-green-400" />
                 Pre-Launch Checklist
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="dark:text-gray-300">
                 Ensure you've completed all essential tasks before launching your business
               </CardDescription>
             </CardHeader>
@@ -243,9 +243,9 @@ const Launch = () => {
                   <div key={index} className="flex items-start space-x-2">
                     <input 
                       type="checkbox" 
-                      className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="mt-1 h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700">{item}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
                   </div>
                 ))}
               </div>
@@ -255,15 +255,15 @@ const Launch = () => {
 
         {/* Launch Resources */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card className="border-l-4 border-l-blue-500">
+          <Card className="border-l-4 border-l-blue-500 dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
               <div className="flex items-center space-x-2">
-                <FileText className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-lg">Document Templates</CardTitle>
+                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <CardTitle className="text-lg dark:text-white">Document Templates</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Download ready-to-use templates for your launch
               </p>
               <Button asChild className="w-full">
@@ -274,15 +274,15 @@ const Launch = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-green-500">
+          <Card className="border-l-4 border-l-green-500 dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
               <div className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-green-600" />
-                <CardTitle className="text-lg">Legal Compliance</CardTitle>
+                <Shield className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <CardTitle className="text-lg dark:text-white">Legal Compliance</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Ensure your business meets all legal requirements
               </p>
               <Button asChild className="w-full">
@@ -293,15 +293,15 @@ const Launch = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-purple-500">
+          <Card className="border-l-4 border-l-purple-500 dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
               <div className="flex items-center space-x-2">
-                <DollarSign className="h-5 w-5 text-purple-600" />
-                <CardTitle className="text-lg">Funding Support</CardTitle>
+                <DollarSign className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <CardTitle className="text-lg dark:text-white">Funding Support</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Explore funding options and investor connections
               </p>
               <Button asChild className="w-full">
