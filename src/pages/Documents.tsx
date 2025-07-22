@@ -116,9 +116,14 @@ const Documents = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Document Library</h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6 animate-bounce-in">
+            <FileText className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 animate-fade-in">
+            Document Library
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto animate-slide-up">
             Access 500+ legal templates, business forms, and compliance documents. 
             Download instantly or edit online with our interactive tools.
           </p>
