@@ -133,13 +133,15 @@ const Index = () => {
                 India's #1 Business Growth Platform
               </div>
             </div>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6 leading-tight">
-              Turn Your <span className="text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-pulse">Business Ideas</span> Into Reality
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 md:mb-8 leading-relaxed max-w-3xl mx-auto px-4">
-              Complete ecosystem for Indian entrepreneurs - from business planning and legal compliance to funding and growth. 
-              Start, launch, and scale your business with expert guidance and AI-powered tools.
-            </p>
+            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl px-6 md:px-10 py-8 md:py-10 shadow-lg mb-6 md:mb-8 max-w-3xl mx-auto">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6 leading-tight">
+                Turn Your <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Business Ideas</span> Into Reality
+              </h1>
+              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                Complete ecosystem for Indian entrepreneurs - from business planning and legal compliance to funding and growth. 
+                Start, launch, and scale your business with expert guidance and AI-powered tools.
+              </p>
+            </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6 md:mb-8 px-4">
               <Button asChild size="lg" className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 h-auto transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
                 <Link to="/plan">
