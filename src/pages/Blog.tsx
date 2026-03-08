@@ -185,7 +185,7 @@ const Blog = () => {
                     alt={post.title}
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <Badge className="absolute top-3 left-3 bg-white/90 text-gray-800">
+                     <Badge className="absolute top-3 left-3 bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200">
                     {post.category}
                   </Badge>
                 </div>
