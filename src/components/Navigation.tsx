@@ -109,12 +109,7 @@ const Navigation = () => {
 
             {/* Auth Buttons (Desktop) */}
             <div className="hidden lg:flex items-center space-x-1">
-              <Button asChild variant="ghost" size="sm">
-                <Link to="/login">Login</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link to="/register">Sign Up</Link>
-              </Button>
+              <AuthButtons />
             </div>
 
             {/* Mobile Menu Toggle */}
