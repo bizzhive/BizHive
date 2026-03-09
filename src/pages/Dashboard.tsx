@@ -66,11 +66,11 @@ const Dashboard = () => {
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Profile Completion</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground">
               20%
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
-              <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '20%' }}></div>
+            <div className="w-full bg-secondary rounded-full h-2.5 mt-2">
+              <div className="bg-primary h-2.5 rounded-full" style={{ width: '20%' }}></div>
             </div>
           </CardContent>
         </Card>
