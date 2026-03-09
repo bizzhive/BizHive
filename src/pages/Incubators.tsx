@@ -1,11 +1,62 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building, DollarSign, FileText, Rocket, Users, Star, MapPin, Calendar, ArrowRight, TrendingUp, Target } from "lucide-react";
+import { Building, DollarSign, FileText, Rocket, Users, Star, MapPin, Calendar, ArrowRight, TrendingUp, Target, Search, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Import local data as a fallback, but we'll try to fetch first to simulate dynamic updates
+import incubatorsDataFallback from "@/data/incubators.json";
 
 const Incubators = () => {
+  const [incubators, setIncubators] = useState(incubatorsDataFallback.incubators);
+  const [loading, setLoading] = useState(true);
+  
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedState, setSelectedState] = useState("All");
+  const [selectedIndustry, setSelectedIndustry] = useState("All");
+  const [selectedStage, setSelectedStage] = useState("All");
+
+  useEffect(() => {
+    // Simulate fetching from an external JSON endpoint
+    const fetchIncubators = async () => {
+      try {
+        setLoading(true);
+        // In a real app, this would be: await fetch('https://api.github.com/gists/...')
+        // We simulate network delay for demonstration
+        await new Promise(resolve => setTimeout(resolve, 800));
+        setIncubators(incubatorsDataFallback.incubators);
+      } catch (error) {
+        console.error("Failed to fetch incubators data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchIncubators();
+  }, []);
+
+  // Get unique values for filters
+  const allStates = ["All", ...new Set(incubatorsDataFallback.incubators.map(i => i.state))];
+  const allIndustries = ["All", ...new Set(incubatorsDataFallback.incubators.flatMap(i => i.industry))];
+  const allStages = ["All", ...new Set(incubatorsDataFallback.incubators.flatMap(i => i.stage))];
+
+  // Apply filters
+  const filteredIncubators = incubators.filter(incubator => {
+    const matchesSearch = incubator.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          incubator.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesState = selectedState === "All" || incubator.state === selectedState;
+    const matchesIndustry = selectedIndustry === "All" || incubator.industry.includes(selectedIndustry);
+    const matchesStage = selectedStage === "All" || incubator.stage.includes(selectedStage);
+    
+    return matchesSearch && matchesState && matchesIndustry && matchesStage;
+  });
+
   const fundingTypes = [
     {
       icon: Building,
@@ -30,41 +81,6 @@ const Incubators = () => {
       color: "text-purple-600 dark:text-purple-400", 
       bgColor: "bg-purple-50 dark:bg-purple-900/20",
       programs: ["Pitch Decks", "Financial Models", "Demo Videos", "Business Plans"]
-    }
-  ];
-
-  const topIncubators = [
-    {
-      name: "T-Hub",
-      location: "Hyderabad",
-      focus: "Technology & Innovation",
-      funding: "₹50L - ₹2Cr",
-      rating: 4.8,
-      description: "India's largest innovation campus supporting tech startups"
-    },
-    {
-      name: "NASSCOM 10,000 Startups",
-      location: "Pan India",
-      focus: "Technology Products",
-      funding: "₹25L - ₹1Cr", 
-      rating: 4.7,
-      description: "Scale-up program for product startups"
-    },
-    {
-      name: "Indian Angel Network",
-      location: "Delhi NCR",
-      focus: "Early Stage",
-      funding: "₹1Cr - ₹5Cr",
-      rating: 4.6,
-      description: "One of India's largest angel investor networks"
-    },
-    {
-      name: "Atal Incubation Centers",
-      location: "Multiple Cities",
-      focus: "Innovation & Entrepreneurship",
-      funding: "₹10L - ₹1Cr",
-      rating: 4.5,
-      description: "Government-backed incubation centers across India"
     }
   ];
 
