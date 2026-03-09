@@ -15,8 +15,9 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-900 dark:bg-gray-950 text-white">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="relative bg-gray-900 dark:bg-gray-950 text-white overflow-hidden bg-grid-pattern">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-shimmer" style={{ backgroundSize: '200% auto' }}></div>
+      <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
