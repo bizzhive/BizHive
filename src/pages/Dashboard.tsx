@@ -44,7 +44,7 @@ const Dashboard = () => {
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Business Stage</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+            <div className="text-2xl font-bold text-foreground flex items-center">
               <Activity className="mr-2 h-5 w-5 text-blue-500" />
               Idea Phase
             </div>
