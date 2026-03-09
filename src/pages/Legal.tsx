@@ -1,11 +1,48 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Download, CheckSquare, Scale, Shield, Users, Building, AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
+import { FileText, Download, CheckSquare, Scale, Shield, Users, Building, AlertTriangle, BookOpen, ArrowRight, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Import local data as a fallback
+import legalDataFallback from "@/data/legal-compliance.json";
 
 const Legal = () => {
+  const [legalTopics, setLegalTopics] = useState(legalDataFallback.legalTopics);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    // Simulate fetching from an external JSON endpoint
+    const fetchLegalData = async () => {
+      try {
+        setLoading(true);
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setLegalTopics(legalDataFallback.legalTopics);
+      } catch (error) {
+        console.error("Failed to fetch legal data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLegalData();
+  }, []);
+
+  // Filter topics based on search
+  const filteredTopics = legalTopics.map(topic => {
+    const filteredItems = topic.items.filter(item => 
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    return { ...topic, items: filteredItems };
+  }).filter(topic => topic.items.length > 0);
+
   const legalServices = [
     {
       icon: FileText,
@@ -33,28 +70,29 @@ const Legal = () => {
     }
   ];
 
-  const legalTopics = [
-    { icon: Building, title: "Business Structure", items: ["Sole Proprietorship", "Partnership", "LLC", "Corporation"] },
-    { icon: Shield, title: "Intellectual Property", items: ["Trademarks", "Copyrights", "Patents", "Trade Secrets"] },
-    { icon: Users, title: "Employment Law", items: ["Hiring Process", "Employee Rights", "Workplace Safety", "Termination"] },
-    { icon: Scale, title: "Contract Law", items: ["Contract Types", "Terms & Conditions", "Breach of Contract", "Dispute Resolution"] }
-  ];
-
-  const complianceChecklist = [
-    { task: "Business Registration", status: "completed", priority: "high" },
-    { task: "Tax Registration (GST/PAN)", status: "completed", priority: "high" },
-    { task: "Employee Provident Fund", status: "pending", priority: "medium" },
-    { task: "Professional Tax Registration", status: "pending", priority: "medium" },
-    { task: "Shop & Establishment License", status: "not-started", priority: "low" },
-    { task: "Trade License", status: "not-started", priority: "low" }
-  ];
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/20';
       case 'pending': return 'text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/20';
       default: return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-700';
     }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'destructive';
+      case 'medium': return 'default';
+      default: return 'secondary';
+    }
+  };
+
+  // Maps icon string to lucide component
+  const getIcon = (iconName: string) => {
+    const icons: Record<string, any> = {
+      Building, FileText, Users, Shield, Scale, AlertTriangle
+    };
+    const IconComponent = icons[iconName] || BookOpen;
+    return <IconComponent className="h-5 w-5 text-white" />;
   };
 
   return (

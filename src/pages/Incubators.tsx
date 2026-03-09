@@ -171,42 +171,150 @@ const Incubators = () => {
           </TabsList>
 
           <TabsContent value="incubators" className="space-y-6">
+            {/* Filters Section */}
+            <Card className="dark:bg-gray-800 dark:border-gray-700 mb-6">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input 
+                      placeholder="Search incubators..." 
+                      className="pl-9 dark:bg-gray-700 dark:border-gray-600"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <Select value={selectedState} onValueChange={setSelectedState}>
+                    <SelectTrigger className="dark:bg-gray-700 dark:border-gray-600">
+                      <SelectValue placeholder="State" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allStates.map(state => (
+                        <SelectItem key={state} value={state}>{state === "All" ? "All States" : state}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
+                    <SelectTrigger className="dark:bg-gray-700 dark:border-gray-600">
+                      <SelectValue placeholder="Industry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allIndustries.map(industry => (
+                        <SelectItem key={industry} value={industry}>{industry === "All" ? "All Industries" : industry}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={selectedStage} onValueChange={setSelectedStage}>
+                    <SelectTrigger className="dark:bg-gray-700 dark:border-gray-600">
+                      <SelectValue placeholder="Stage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allStages.map(stage => (
+                        <SelectItem key={stage} value={stage}>{stage === "All" ? "All Stages" : stage}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+
             <div className="grid md:grid-cols-2 gap-6 stagger-animation">
-              {topIncubators.map((incubator, index) => (
-                <Card key={index} className="group hover:shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-xl dark:text-white mb-2">{incubator.name}</CardTitle>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                          <MapPin className="h-4 w-4" />
-                          {incubator.location}
+              {loading ? (
+                // Loading Skeletons
+                Array(4).fill(0).map((_, i) => (
+                  <Card key={i} className="dark:bg-gray-800 dark:border-gray-700">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2 w-full">
+                          <Skeleton className="h-6 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
                         </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                        <span className="text-sm font-medium dark:text-white">{incubator.rating}</span>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-10 w-full mt-4" />
+                    </CardContent>
+                  </Card>
+                ))
+              ) : filteredIncubators.length > 0 ? (
+                filteredIncubators.map((incubator, index) => (
+                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700 flex flex-col">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-xl dark:text-white mb-2">{incubator.name}</CardTitle>
+                          <div className="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {incubator.location}
+                            </span>
+                            <Badge variant="outline" className="text-xs">{incubator.type}</Badge>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded">
+                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                          <span className="text-sm font-medium dark:text-yellow-500">{incubator.rating}</span>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">{incubator.description}</p>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Focus:</span>
-                        <Badge variant="secondary" className="dark:bg-gray-700 dark:text-gray-300">{incubator.focus}</Badge>
+                    </CardHeader>
+                    <CardContent className="flex-1 flex flex-col">
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm flex-1">{incubator.description}</p>
+                      
+                      <div className="space-y-3 mb-6">
+                        <div>
+                          <span className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Focus Areas:</span>
+                          <div className="flex flex-wrap gap-1">
+                            {incubator.industry.slice(0, 3).map((ind, i) => (
+                              <Badge key={i} variant="secondary" className="text-xs dark:bg-gray-700 dark:text-gray-300">{ind}</Badge>
+                            ))}
+                            {incubator.industry.length > 3 && (
+                              <Badge variant="secondary" className="text-xs dark:bg-gray-700">+{incubator.industry.length - 3}</Badge>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-2 rounded">
+                          <div>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 block">Stages</span>
+                            <span className="text-sm font-medium dark:text-gray-200">{incubator.stage.join(", ")}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs text-gray-500 dark:text-gray-400 block">Funding</span>
+                            <span className="text-sm font-bold text-green-600 dark:text-green-400">{incubator.funding}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Funding:</span>
-                        <span className="text-sm font-medium text-green-600 dark:text-green-400">{incubator.funding}</span>
-                      </div>
-                    </div>
-                    <Button className="w-full mt-4" variant="outline">
-                      Apply Now
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                      
+                      <Button className="w-full mt-auto" variant="outline" onClick={() => window.open(incubator.website, '_blank')}>
+                        Visit Website
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="col-span-2 text-center py-12">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
+                    <Search className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium dark:text-white">No incubators found</h3>
+                  <p className="text-gray-500 dark:text-gray-400 mt-2">Try adjusting your filters or search query.</p>
+                  <Button 
+                    variant="link" 
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelectedState("All");
+                      setSelectedIndustry("All");
+                      setSelectedStage("All");
+                    }}
+                    className="mt-2"
+                  >
+                    Clear all filters
+                  </Button>
+                </div>
+              )}
             </div>
           </TabsContent>
 
