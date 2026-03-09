@@ -89,8 +89,8 @@ const Dashboard = () => {
               <div className={`p-3 rounded-full mb-4 ${action.color}`}>
                 <Activity className="h-6 w-6" />
               </div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{action.title}</h3>
-              <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center">
+              <h3 className="font-semibold text-foreground mb-2">{action.title}</h3>
+              <div className="text-sm text-primary flex items-center">
                 Start <ArrowRight className="ml-1 h-3 w-3" />
               </div>
             </CardContent>
