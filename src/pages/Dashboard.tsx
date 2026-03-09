@@ -76,7 +76,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+      <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { title: "Market Research", path: "/plan/market-research", color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
