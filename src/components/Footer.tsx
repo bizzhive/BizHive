@@ -15,8 +15,9 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-900 dark:bg-gray-950 text-white">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="relative bg-gray-900 dark:bg-gray-950 text-white overflow-hidden bg-grid-pattern">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-shimmer" style={{ backgroundSize: '200% auto' }}></div>
+      <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
@@ -55,11 +56,11 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4 text-blue-400">Business Journey</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link to="/plan" className="hover:text-white transition-colors">Plan Your Business</Link></li>
-              <li><Link to="/launch" className="hover:text-white transition-colors">Launch Your Business</Link></li>
-              <li><Link to="/manage" className="hover:text-white transition-colors">Manage & Scale</Link></li>
-              <li><Link to="/tools" className="hover:text-white transition-colors">Business Tools</Link></li>
-              <li><Link to="/taxation" className="hover:text-white transition-colors">Taxation Guide</Link></li>
+              <li><Link to="/plan" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Plan Your Business</Link></li>
+              <li><Link to="/launch" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Launch Your Business</Link></li>
+              <li><Link to="/manage" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Manage & Scale</Link></li>
+              <li><Link to="/tools" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Business Tools</Link></li>
+              <li><Link to="/taxation" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Taxation Guide</Link></li>
             </ul>
           </div>
 
@@ -67,10 +68,10 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4 text-blue-400">Resources</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link to="/legal" className="hover:text-white transition-colors">Legal Zone</Link></li>
-              <li><Link to="/documents" className="hover:text-white transition-colors">Document Library</Link></li>
-              <li><Link to="/incubators" className="hover:text-white transition-colors">Incubators & Funding</Link></li>
-              <li><Link to="/community" className="hover:text-white transition-colors">Community</Link></li>
+              <li><Link to="/legal" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Legal Zone</Link></li>
+              <li><Link to="/documents" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Document Library</Link></li>
+              <li><Link to="/incubators" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Incubators & Funding</Link></li>
+              <li><Link to="/community" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Community</Link></li>
             </ul>
           </div>
 
