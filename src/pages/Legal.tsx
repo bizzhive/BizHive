@@ -165,30 +165,77 @@ const Legal = () => {
           </TabsList>
           
           <TabsContent value="topics" className="space-y-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-animation">
-              {legalTopics.map((topic, index) => (
-                <Card key={index} className="group hover:shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform">
-                        <topic.icon className="h-5 w-5 text-white" />
+            <Card className="dark:bg-gray-800 dark:border-gray-700 mb-6">
+              <CardContent className="p-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input 
+                    placeholder="Search legal topics and requirements..." 
+                    className="pl-9 dark:bg-gray-700 dark:border-gray-600"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {loading ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array(6).fill(0).map((_, i) => (
+                  <Card key={i} className="dark:bg-gray-800 dark:border-gray-700">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Skeleton className="w-10 h-10 rounded-lg" />
+                        <Skeleton className="h-6 w-32" />
                       </div>
-                      <CardTitle className="text-lg dark:text-white">{topic.title}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {topic.items.map((item, idx) => (
-                        <li key={idx} className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                          <CheckSquare className="h-4 w-4 text-green-500" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-3/4" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredTopics.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-animation">
+                {filteredTopics.map((topic, index) => (
+                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700 h-full flex flex-col">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform">
+                          {getIcon(topic.icon)}
+                        </div>
+                        <CardTitle className="text-lg dark:text-white">{topic.category}</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <ul className="space-y-4">
+                        {topic.items.map((item, idx) => (
+                          <li key={idx} className="flex flex-col gap-1 pb-4 border-b last:border-0 last:pb-0 dark:border-gray-700">
+                            <div className="flex justify-between items-start gap-2">
+                              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.title}</span>
+                              <Badge variant={getPriorityColor(item.priority)} className="text-[10px] uppercase shrink-0">
+                                {item.priority}
+                              </Badge>
+                            </div>
+                            <span className="text-xs text-gray-600 dark:text-gray-400">{item.description}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
+                  <Search className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium dark:text-white">No topics found</h3>
+                <p className="text-gray-500 dark:text-gray-400 mt-2">Try adjusting your search query.</p>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="compliance" className="space-y-6">
@@ -196,26 +243,23 @@ const Legal = () => {
               <CardHeader>
                 <CardTitle className="dark:text-white">Business Compliance Checklist</CardTitle>
                 <CardDescription className="dark:text-gray-300">
-                  Track your legal compliance requirements and deadlines
+                  Track your legal compliance requirements and deadlines (Interactive tracking coming soon)
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {complianceChecklist.map((item, index) => (
+                  {legalTopics.flatMap(t => t.items).slice(0, 8).map((item, index) => (
                     <div key={index} className="flex items-center justify-between p-4 rounded-lg border dark:border-gray-600">
                       <div className="flex items-center gap-3">
-                        <CheckSquare className={`h-5 w-5 ${
-                          item.status === 'completed' ? 'text-green-500' : 
-                          item.status === 'pending' ? 'text-yellow-500' : 'text-gray-400'
-                        }`} />
+                        <CheckSquare className={`h-5 w-5 text-gray-400`} />
                         <div>
-                          <p className="font-medium dark:text-white">{item.task}</p>
-                          <Badge variant="outline" className={`text-xs ${getStatusColor(item.status)}`}>
-                            {item.status.replace('-', ' ').toUpperCase()}
+                          <p className="font-medium dark:text-white">{item.title}</p>
+                          <Badge variant="outline" className={`text-xs ${getStatusColor('not-started')}`}>
+                            NOT STARTED
                           </Badge>
                         </div>
                       </div>
-                      <Badge variant={item.priority === 'high' ? 'destructive' : item.priority === 'medium' ? 'default' : 'secondary'}>
+                      <Badge variant={getPriorityColor(item.priority)}>
                         {item.priority.toUpperCase()}
                       </Badge>
                     </div>
