@@ -275,9 +275,9 @@ const Login = () => {
                             Forgot password?
                           </Link>
                         </div>
-                        <Button type="submit" className="w-full">
-                          Sign In
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                          {isLoading ? "Signing in..." : "Sign In"}
+                          {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
                         </Button>
                       </form>
                     </CardContent>
