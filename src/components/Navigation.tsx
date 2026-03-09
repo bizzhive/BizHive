@@ -96,12 +96,12 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="border-b bg-white/95 backdrop-blur-sm dark:bg-gray-900/95 dark:border-gray-800 sticky top-0 z-50">
+    <nav className="border-b glass sticky top-0 z-50 transition-all duration-300">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 min-w-0 flex-shrink-0">
-            <div className="relative w-10 h-10 flex-shrink-0">
+          <Link to="/" className="flex items-center space-x-2 min-w-0 flex-shrink-0 group">
+            <div className="relative w-10 h-10 flex-shrink-0 group-hover:animate-wiggle">
               <svg viewBox="0 0 40 40" className="w-10 h-10">
                 <defs>
                   <pattern id="honeycombNav" x="0" y="0" width="8" height="7" patternUnits="userSpaceOnUse">
