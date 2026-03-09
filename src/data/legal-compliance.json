@@ -1,0 +1,74 @@
+{
+  "lastUpdated": "2026-03-01",
+  "legalTopics": [
+    {
+      "category": "Business Registration",
+      "icon": "Building",
+      "items": [
+        { "title": "Company Registration (MCA)", "description": "Register your company with the Ministry of Corporate Affairs under Companies Act 2013.", "priority": "high", "applicableTo": ["pvt_ltd", "opc", "llp"] },
+        { "title": "GST Registration", "description": "Mandatory for businesses with turnover exceeding ₹20L (₹10L for NE states).", "priority": "high", "applicableTo": ["all"] },
+        { "title": "PAN & TAN Registration", "description": "Obtain PAN for the entity and TAN for TDS deduction purposes.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "MSME/Udyam Registration", "description": "Free registration for micro, small and medium enterprises for government benefits.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Shop & Establishment License", "description": "Required under state-specific Shops and Establishments Act.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Trade License", "description": "Issued by municipal corporations to operate a business in a specific area.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Import Export Code (IEC)", "description": "Required for businesses involved in import/export of goods or services.", "priority": "low", "applicableTo": ["all"] }
+      ]
+    },
+    {
+      "category": "Tax Compliance",
+      "icon": "FileText",
+      "items": [
+        { "title": "Income Tax Filing", "description": "Annual ITR filing mandatory for all registered businesses. Due dates vary by entity type.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "GST Returns (GSTR-1, GSTR-3B)", "description": "Monthly/quarterly GST return filing for registered businesses.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "TDS Returns", "description": "Quarterly TDS return filing for businesses deducting tax at source.", "priority": "high", "applicableTo": ["pvt_ltd", "llp", "partnership"] },
+        { "title": "Professional Tax", "description": "State-level tax on professions. Applicable in most Indian states.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Advance Tax", "description": "Quarterly advance tax payments if total tax liability exceeds ₹10,000.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Startup Tax Exemption (80-IAC)", "description": "DPIIT-recognized startups can claim 3-year tax holiday within first 10 years.", "priority": "low", "applicableTo": ["pvt_ltd", "llp"] }
+      ]
+    },
+    {
+      "category": "Employment Law",
+      "icon": "Users",
+      "items": [
+        { "title": "Employee Provident Fund (EPF)", "description": "Mandatory for establishments with 20+ employees. 12% employer + 12% employee contribution.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "ESI Registration", "description": "Mandatory for establishments with 10+ employees. Provides medical benefits.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "Minimum Wages Compliance", "description": "Adherence to central and state minimum wage rates for all employee categories.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "Gratuity Act Compliance", "description": "Applicable to establishments with 10+ employees. Payment after 5 years of service.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Sexual Harassment (POSH) Policy", "description": "Internal Complaints Committee mandatory for workplaces with 10+ employees.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "Employment Contracts", "description": "Written contracts recommended for all employees covering terms, NDA, and IP assignment.", "priority": "medium", "applicableTo": ["all"] }
+      ]
+    },
+    {
+      "category": "Intellectual Property",
+      "icon": "Shield",
+      "items": [
+        { "title": "Trademark Registration", "description": "Protect your brand name, logo, and tagline. Valid for 10 years, renewable.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "Copyright Registration", "description": "Protect original works — software code, content, designs, and creative works.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Patent Filing", "description": "Protect novel inventions. Startups get 80% rebate on patent filing fees.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Trade Secret Protection", "description": "Implement NDAs and confidentiality agreements to protect business secrets.", "priority": "medium", "applicableTo": ["all"] },
+        { "title": "Design Registration", "description": "Protect unique product designs. Valid for 10 years, extendable by 5 years.", "priority": "low", "applicableTo": ["all"] }
+      ]
+    },
+    {
+      "category": "Data Protection & IT",
+      "icon": "Scale",
+      "items": [
+        { "title": "Digital Personal Data Protection Act 2023", "description": "Comply with India's data protection law — consent management, data processing notices.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "IT Act 2000 Compliance", "description": "Follow intermediary guidelines, reasonable security practices for digital businesses.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "Privacy Policy & Terms of Service", "description": "Mandatory for all websites and apps collecting user data.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "Cookie Consent Mechanism", "description": "Implement consent mechanisms for cookies and tracking on websites.", "priority": "medium", "applicableTo": ["all"] }
+      ]
+    },
+    {
+      "category": "Sector-Specific Compliance",
+      "icon": "AlertTriangle",
+      "items": [
+        { "title": "FSSAI License (Food)", "description": "Mandatory for food businesses. Type depends on turnover and operations.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "RBI Guidelines (FinTech)", "description": "Compliance with RBI regulations for payment aggregators, NBFCs, and lending.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "Drug License (Pharma/Health)", "description": "Required for manufacturing, stocking, or selling pharmaceutical products.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "RERA Registration (Real Estate)", "description": "Mandatory registration for real estate projects with RERA authority.", "priority": "high", "applicableTo": ["all"] },
+        { "title": "Startup India DPIIT Recognition", "description": "Register with DPIIT for tax benefits, easier compliance, and funding access.", "priority": "medium", "applicableTo": ["all"] }
+      ]
+    }
+  ]
+}
