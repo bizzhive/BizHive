@@ -29,10 +29,10 @@ const Dashboard = () => {
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome back! Here's your business overview.</p>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Welcome back! Here's your business overview.</p>
         </div>
-        <Button onClick={() => navigate("/plan")} className="bg-blue-600 hover:bg-blue-700">
+        <Button onClick={() => navigate("/plan")} className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <PlusCircle className="mr-2 h-4 w-4" />
           New Business Plan
         </Button>
