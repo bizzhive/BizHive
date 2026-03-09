@@ -398,9 +398,9 @@ const Login = () => {
                           and{" "}
                           <Link to="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">Privacy Policy</Link>
                         </div>
-                        <Button type="submit" className="w-full">
-                          Create Account
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                          {isLoading ? "Creating Account..." : "Create Account"}
+                          {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
                         </Button>
                       </form>
                     </CardContent>
