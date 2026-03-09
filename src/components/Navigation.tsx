@@ -167,12 +167,7 @@ const Navigation = () => {
                     </Button>
                     
                     <div className="space-y-2">
-                      <Button asChild variant="ghost" className="w-full">
-                        <Link to="/login">Login</Link>
-                      </Button>
-                      <Button asChild className="w-full">
-                        <Link to="/register">Sign Up</Link>
-                      </Button>
+                      <MobileAuthButtons setIsOpen={setIsOpen} />
                     </div>
                   </div>
                 </div>
