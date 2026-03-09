@@ -123,12 +123,17 @@ const Navigation = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`px-2 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`relative px-2 py-2 rounded-md text-sm font-medium transition-all duration-300 overflow-hidden group ${
                   isActive(item.href)
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                    ? "text-blue-600 dark:text-blue-400 font-bold"
                     : "text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
                 }`}
               >
+                <span className="relative z-10">{item.name}</span>
+                {isActive(item.href) && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full animate-fade-in" />
+                )}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600/50 dark:bg-blue-400/50 rounded-full transition-all duration-300 group-hover:w-full" />
                 {item.name}
               </Link>
             ))}

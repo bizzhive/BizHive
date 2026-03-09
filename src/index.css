@@ -216,3 +216,45 @@
 .btn-enhanced:hover::before {
   left: 100%;
 }
+
+/* Gen Z Aesthetics - Glassmorphism & Effects */
+.glass {
+  @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg border border-white/20 dark:border-gray-700/50 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+}
+
+.glass-card {
+  @apply bg-white/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/30 dark:border-gray-700/30;
+}
+
+.neon-glow {
+  @apply hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-shadow duration-300;
+}
+
+.gradient-text-animated {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.dark .bg-grid-pattern {
+  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
