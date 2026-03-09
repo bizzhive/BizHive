@@ -134,7 +134,6 @@ const Navigation = () => {
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full animate-fade-in" />
                 )}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600/50 dark:bg-blue-400/50 rounded-full transition-all duration-300 group-hover:w-full" />
-                {item.name}
               </Link>
             ))}
           </div>
