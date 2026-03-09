@@ -4,8 +4,75 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Menu, X, Moon, Sun, Globe, MessageCircle } from "lucide-react";
+import { Menu, X, Moon, Sun, Globe, MessageCircle, LogOut, User } from "lucide-react";
 import { useTheme, languages } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+
+const AuthButtons = () => {
+  const { user, signOut } = useAuth();
+  
+  if (user) {
+    return (
+      <>
+        <Button asChild variant="ghost" size="sm">
+          <Link to="/dashboard">Dashboard</Link>
+        </Button>
+        <Button variant="ghost" size="sm" onClick={signOut}>
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
+        </Button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Button asChild variant="ghost" size="sm">
+        <Link to="/login">Login</Link>
+      </Button>
+      <Button asChild size="sm">
+        <Link to="/register">Sign Up</Link>
+      </Button>
+    </>
+  );
+};
+
+const MobileAuthButtons = ({ setIsOpen }: { setIsOpen: (v: boolean) => void }) => {
+  const { user, signOut } = useAuth();
+
+  if (user) {
+    return (
+      <>
+        <Button asChild variant="ghost" className="w-full justify-start">
+          <Link to="/dashboard" onClick={() => setIsOpen(false)}>Dashboard</Link>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50" 
+          onClick={() => {
+            signOut();
+            setIsOpen(false);
+          }}
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
+        </Button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Button asChild variant="ghost" className="w-full">
+        <Link to="/login" onClick={() => setIsOpen(false)}>Login</Link>
+      </Button>
+      <Button asChild className="w-full">
+        <Link to="/register" onClick={() => setIsOpen(false)}>Sign Up</Link>
+      </Button>
+    </>
+  );
+};
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -109,12 +176,7 @@ const Navigation = () => {
 
             {/* Auth Buttons (Desktop) */}
             <div className="hidden lg:flex items-center space-x-1">
-              <Button asChild variant="ghost" size="sm">
-                <Link to="/login">Login</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link to="/register">Sign Up</Link>
-              </Button>
+              <AuthButtons />
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -172,12 +234,7 @@ const Navigation = () => {
                     </Button>
                     
                     <div className="space-y-2">
-                      <Button asChild variant="ghost" className="w-full">
-                        <Link to="/login">Login</Link>
-                      </Button>
-                      <Button asChild className="w-full">
-                        <Link to="/register">Sign Up</Link>
-                      </Button>
+                      <MobileAuthButtons setIsOpen={setIsOpen} />
                     </div>
                   </div>
                 </div>
