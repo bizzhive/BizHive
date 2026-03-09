@@ -55,7 +55,7 @@ const Dashboard = () => {
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Saved Tools</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+            <div className="text-2xl font-bold text-foreground flex items-center">
               <FileText className="mr-2 h-5 w-5 text-green-500" />
               0
             </div>
