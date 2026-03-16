@@ -22,6 +22,7 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Taxation from "./pages/Taxation";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import AIAssistant from "./pages/AIAssistant";
 import MarketResearch from "./pages/plan/MarketResearch";
 import BusinessPlan from "./pages/plan/BusinessPlan";
@@ -29,6 +30,10 @@ import BusinessCanvas from "./pages/tools/BusinessCanvas";
 import SwotAnalysis from "./pages/tools/SwotAnalysis";
 import StartupCalculator from "./pages/tools/StartupCalculator";
 import FinancialCalculator from "./pages/tools/FinancialCalculator";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -44,32 +49,36 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/plan" element={<Plan />} />
-              <Route path="/plan/market-research" element={<MarketResearch />} />
-              <Route path="/plan/business-plan" element={<BusinessPlan />} />
-              <Route path="/launch" element={<Launch />} />
-              <Route path="/manage" element={<Manage />} />
-              <Route path="/legal" element={<Legal />} />
-              <Route path="/incubators" element={<Incubators />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/documents" element={<Documents />} />
-              <Route path="/tools" element={<Tools />} />
-              <Route path="/tools/business-canvas" element={<BusinessCanvas />} />
-              <Route path="/tools/swot-analysis" element={<SwotAnalysis />} />
-              <Route path="/tools/startup-calculator" element={<StartupCalculator />} />
-              <Route path="/tools/financial-calculator" element={<FinancialCalculator />} />
-              <Route path="/taxation" element={<Taxation />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/ai-assistant" element={<AIAssistant />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Login />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/subscribe" element={<Contact />} />
-              <Route path="/tools/*" element={<Tools />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
+                <Route path="/plan" element={<Plan />} />
+                <Route path="/plan/market-research" element={<MarketResearch />} />
+                <Route path="/plan/business-plan" element={<BusinessPlan />} />
+                <Route path="/launch" element={<Launch />} />
+                <Route path="/manage" element={<Manage />} />
+                <Route path="/legal" element={<Legal />} />
+                <Route path="/incubators" element={<Incubators />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/documents" element={<Documents />} />
+                <Route path="/tools" element={<Tools />} />
+                <Route path="/tools/business-canvas" element={<BusinessCanvas />} />
+                <Route path="/tools/swot-analysis" element={<SwotAnalysis />} />
+                <Route path="/tools/startup-calculator" element={<StartupCalculator />} />
+                <Route path="/tools/financial-calculator" element={<FinancialCalculator />} />
+                <Route path="/taxation" element={<Taxation />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:id" element={<BlogPost />} />
+                <Route path="/ai-assistant" element={<AIAssistant />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/subscribe" element={<Contact />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
     </AuthProvider>

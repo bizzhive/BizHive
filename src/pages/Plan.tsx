@@ -81,7 +81,7 @@ const Plan = () => {
                 <li>• Incorporation filing</li>
               </ul>
               <Button asChild className="w-full">
-                <Link to="/plan/registration">Register Business</Link>
+                <Link to="/legal">Register Business</Link>
               </Button>
             </CardContent>
           </Card>
@@ -134,27 +134,27 @@ const Plan = () => {
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Quick Planning Tools</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-              <Link to="/plan/tools/business-canvas">
+              <Link to="/tools/business-canvas">
                 <Target className="h-6 w-6" />
                 <span>Business Canvas</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-              <Link to="/plan/tools/swot-analysis">
+              <Link to="/tools/swot-analysis">
                 <TrendingUp className="h-6 w-6" />
                 <span>SWOT Analysis</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-              <Link to="/plan/tools/financial-calculator">
+              <Link to="/tools/financial-calculator">
                 <DollarSign className="h-6 w-6" />
                 <span>Financial Calculator</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-              <Link to="/plan/tools/checklist">
+              <Link to="/launch">
                 <CheckCircle className="h-6 w-6" />
-                <span>Planning Checklist</span>
+                <span>Launch Checklist</span>
               </Link>
             </Button>
           </div>

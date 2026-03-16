@@ -1,25 +1,43 @@
-
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Newspaper } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Subscribing email:", email);
-    setEmail("");
+    setSubscribing(true);
+    try {
+      const { error } = await supabase.from("newsletter_subscribers").insert({ email });
+      if (error) {
+        if (error.code === "23505") {
+          toast({ title: "Already subscribed!", description: "This email is already on our list." });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({ title: "Subscribed!", description: "You'll receive our latest updates." });
+      }
+      setEmail("");
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to subscribe", variant: "destructive" });
+    } finally {
+      setSubscribing(false);
+    }
   };
 
   return (
-    <footer className="relative bg-gray-900 dark:bg-gray-950 text-white overflow-hidden bg-grid-pattern">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-shimmer" style={{ backgroundSize: '200% auto' }}></div>
+    <footer className="relative bg-gray-900 dark:bg-gray-950 text-white overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
       <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="relative w-8 h-8">
@@ -38,47 +56,39 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-gray-400 mb-4 text-sm">
-              Empowering Indian entrepreneurs with comprehensive resources, tools, and guidance for business success. From planning to scaling, we're your trusted partner in the entrepreneurial journey.
+              Empowering Indian entrepreneurs with comprehensive resources, tools, and guidance for business success.
             </p>
             <div className="space-y-2 text-sm text-gray-400">
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4" />
-                <span>support@bizhive.com</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4" />
-                <span>+91 XXXXX XXXXX</span>
-              </div>
+              <div className="flex items-center space-x-2"><Mail className="h-4 w-4" /><span>support@bizhive.com</span></div>
+              <div className="flex items-center space-x-2"><Phone className="h-4 w-4" /><span>+91 XXXXX XXXXX</span></div>
             </div>
           </div>
 
-          {/* Business Journey */}
           <div>
             <h3 className="font-semibold mb-4 text-blue-400">Business Journey</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link to="/plan" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Plan Your Business</Link></li>
-              <li><Link to="/launch" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Launch Your Business</Link></li>
-              <li><Link to="/manage" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Manage & Scale</Link></li>
-              <li><Link to="/tools" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Business Tools</Link></li>
-              <li><Link to="/taxation" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Taxation Guide</Link></li>
+              <li><Link to="/plan" className="hover:text-white transition-colors">Plan Your Business</Link></li>
+              <li><Link to="/launch" className="hover:text-white transition-colors">Launch Your Business</Link></li>
+              <li><Link to="/manage" className="hover:text-white transition-colors">Manage & Scale</Link></li>
+              <li><Link to="/tools" className="hover:text-white transition-colors">Business Tools</Link></li>
+              <li><Link to="/taxation" className="hover:text-white transition-colors">Taxation Guide</Link></li>
             </ul>
           </div>
 
-          {/* Resources */}
           <div>
             <h3 className="font-semibold mb-4 text-blue-400">Resources</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link to="/legal" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Legal Zone</Link></li>
-              <li><Link to="/documents" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Document Library</Link></li>
-              <li><Link to="/incubators" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Incubators & Funding</Link></li>
-              <li><Link to="/community" className="hover:text-white hover:translate-x-1 inline-block transition-transform">Community</Link></li>
+              <li><Link to="/legal" className="hover:text-white transition-colors">Legal Zone</Link></li>
+              <li><Link to="/documents" className="hover:text-white transition-colors">Document Library</Link></li>
+              <li><Link to="/incubators" className="hover:text-white transition-colors">Incubators & Funding</Link></li>
+              <li><Link to="/community" className="hover:text-white transition-colors">Community</Link></li>
+              <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
             </ul>
           </div>
 
-          {/* Newsletter */}
           <div>
             <h3 className="font-semibold mb-4 text-blue-400">Stay Updated</h3>
-            <p className="text-sm text-gray-400 mb-4">Subscribe to our newsletter for the latest business insights and updates.</p>
+            <p className="text-sm text-gray-400 mb-4">Subscribe to our newsletter for the latest business insights.</p>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <Input
                 type="email"
@@ -88,8 +98,8 @@ const Footer = () => {
                 className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
                 required
               />
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                Subscribe
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={subscribing}>
+                {subscribing ? "Subscribing..." : "Subscribe"}
               </Button>
             </form>
             <div className="mt-4">
@@ -100,14 +110,13 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-            <p>© 2024 Entrepreneurship Support Platform. All rights reserved.</p>
+            <p>© 2024 BizHive. All rights reserved.</p>
             <p>Designed by <span className="text-blue-400">Tushar Gehlot</span></p>
           </div>
           <div className="mt-4 flex flex-wrap justify-center space-x-4 text-xs">
             <Link to="/privacy" className="hover:text-white">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-white">Terms of Service</Link>
-            <Link to="/refund" className="hover:text-white">Refund Policy</Link>
-            <Link to="/sitemap" className="hover:text-white">Sitemap</Link>
+            <Link to="/contact" className="hover:text-white">Contact</Link>
           </div>
         </div>
       </div>
