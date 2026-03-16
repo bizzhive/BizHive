@@ -81,7 +81,7 @@ const Plan = () => {
                 <li>• Incorporation filing</li>
               </ul>
               <Button asChild className="w-full">
-                <Link to="/plan/registration">Register Business</Link>
+                <Link to="/legal">Register Business</Link>
               </Button>
             </CardContent>
           </Card>
