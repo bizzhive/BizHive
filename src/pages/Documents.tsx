@@ -1,260 +1,165 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Download, Edit, FileText, Shield, Building, Users, DollarSign, Bookmark, Filter } from "lucide-react";
+import { Search, Download, FileText, Shield, Building, Users, DollarSign, Bookmark, Filter, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+
+const categoryIcons: Record<string, any> = {
+  legal: Shield, business: Building, financial: DollarSign, hr: Users, contracts: FileText,
+};
 
 const Documents = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
-  const documentCategories = [
-    { id: "all", name: "All Documents", count: 500 },
-    { id: "legal", name: "Legal & Compliance", count: 150, icon: Shield },
-    { id: "business", name: "Business Registration", count: 80, icon: Building },
-    { id: "financial", name: "Financial & Tax", count: 120, icon: DollarSign },
-    { id: "hr", name: "HR & Employment", count: 90, icon: Users },
-    { id: "contracts", name: "Contracts & Agreements", count: 60, icon: FileText },
-  ];
+  useEffect(() => {
+    const fetchDocs = async () => {
+      const { data, error } = await supabase.from("documents").select("*").order("created_at", { ascending: false });
+      if (!error && data) setDocuments(data);
+      setLoading(false);
+    };
+    fetchDocs();
+  }, []);
 
-  const featuredDocuments = [
-    {
-      id: 1,
-      title: "GST Registration Application",
-      description: "Complete form for Goods and Services Tax registration with step-by-step guide",
-      category: "financial",
-      type: "Form",
-      premium: false,
-      downloads: 2500,
-      rating: 4.8,
-    },
-    {
-      id: 2,
-      title: "Private Limited Company Incorporation Kit",
-      description: "Complete set of documents for company incorporation including MOA, AOA, and forms",
-      category: "business",
-      type: "Bundle",
-      premium: true,
-      downloads: 1800,
-      rating: 4.9,
-    },
-    {
-      id: 3,
-      title: "Employment Contract Template",
-      description: "Comprehensive employment agreement template compliant with Indian labor laws",
-      category: "hr",
-      type: "Template",
-      premium: true,
-      downloads: 3200,
-      rating: 4.7,
-    },
-    {
-      id: 4,
-      title: "FSSAI License Application",
-      description: "Food Safety and Standards Authority license application with required documents checklist",
-      category: "legal",
-      type: "Form",
-      premium: false,
-      downloads: 1500,
-      rating: 4.6,
-    },
-    {
-      id: 5,
-      title: "Non-Disclosure Agreement (NDA)",
-      description: "Mutual and unilateral NDA templates for protecting confidential business information",
-      category: "contracts",
-      type: "Template",
-      premium: true,
-      downloads: 2100,
-      rating: 4.8,
-    },
-    {
-      id: 6,
-      title: "Trademark Registration Guide",
-      description: "Complete guide and forms for trademark registration in India with examples",
-      category: "legal",
-      type: "Guide",
-      premium: false,
-      downloads: 900,
-      rating: 4.5,
-    },
-  ];
-
-  const filteredDocuments = featuredDocuments.filter(doc => {
+  const filteredDocuments = documents.filter((doc) => {
     const matchesSearch = doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         doc.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (doc.description || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || doc.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const handleDownload = (docId: number, isPremium: boolean) => {
-    if (isPremium) {
-      // Redirect to login or show premium modal
-      alert("This is a premium document. Please upgrade your account to access.");
-    } else {
-      console.log(`Downloading document ${docId}`);
+  const categories = [
+    { id: "all", name: "All Documents" },
+    { id: "legal", name: "Legal & Compliance", icon: Shield },
+    { id: "business", name: "Business Registration", icon: Building },
+    { id: "financial", name: "Financial & Tax", icon: DollarSign },
+    { id: "hr", name: "HR & Employment", icon: Users },
+    { id: "contracts", name: "Contracts & Agreements", icon: FileText },
+  ];
+
+  const handleDownload = async (doc: any) => {
+    if (doc.is_premium && !user) {
+      toast({ title: "Premium Document", description: "Please log in and upgrade to access premium documents.", variant: "destructive" });
+      return;
     }
+    if (doc.file_url) {
+      window.open(doc.file_url, "_blank");
+    } else {
+      toast({ title: "Coming Soon", description: "This document will be available for download shortly." });
+    }
+    // Increment download count
+    await supabase.from("documents").update({ download_count: (doc.download_count || 0) + 1 }).eq("id", doc.id);
   };
 
-  const handleEdit = (docId: number, isPremium: boolean) => {
-    if (isPremium) {
-      alert("Premium feature: Edit documents online with our interactive editor.");
-    } else {
-      console.log(`Opening editor for document ${docId}`);
+  const handleSave = async (doc: any) => {
+    if (!user) {
+      toast({ title: "Login Required", description: "Please log in to save documents.", variant: "destructive" });
+      return;
     }
-  };
-
-  const handleRequestDocument = () => {
-    // Handle document request
-    alert("Document request submitted! We'll add it to our library soon.");
+    const { error } = await supabase.from("user_documents").insert({
+      user_id: user.id,
+      document_id: doc.id,
+      title: doc.title,
+    });
+    if (error) {
+      toast({ title: "Error", description: "Failed to save document", variant: "destructive" });
+    } else {
+      toast({ title: "Saved!", description: `${doc.title} saved to your library.` });
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6 animate-bounce-in">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
             <FileText className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 animate-fade-in">
-            Document Library
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto animate-slide-up">
-            Access 500+ legal templates, business forms, and compliance documents. 
-            Download instantly or edit online with our interactive tools.
+          <h1 className="text-5xl font-bold text-foreground mb-6">Document Library</h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Access legal templates, business forms, and compliance documents.
           </p>
         </div>
 
-        {/* Search and Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8 border dark:border-gray-700">
+        {/* Search */}
+        <div className="bg-card rounded-lg shadow-sm p-6 mb-8 border">
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
-              <Input
-                placeholder="Search documents, forms, templates..."
-                className="pl-10 text-lg h-12 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input placeholder="Search documents..." className="pl-10 text-lg h-12" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-              <select
-                className="px-4 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                {documentCategories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name} ({category.count})
-                  </option>
+              <Filter className="h-5 w-5 text-muted-foreground" />
+              <select className="px-4 py-2 border rounded-md bg-background text-foreground border-input" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
           </div>
-
-          {searchQuery && filteredDocuments.length === 0 && (
-            <div className="mt-6 text-center py-8">
-              <FileText className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No documents found</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                We couldn't find any documents matching "{searchQuery}"
-              </p>
-              <Button onClick={handleRequestDocument} variant="outline">
-                Request This Document
-              </Button>
-            </div>
-          )}
         </div>
 
         {/* Categories */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-          {documentCategories.slice(1).map(category => {
-            const Icon = category.icon;
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+          {categories.slice(1).map((cat) => {
+            const Icon = cat.icon!;
             return (
-              <Card 
-                key={category.id}
-                className={`cursor-pointer transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 ${
-                  selectedCategory === category.id ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
-                }`}
-                onClick={() => setSelectedCategory(category.id)}
-              >
+              <Card key={cat.id} className={`cursor-pointer transition-all hover:shadow-md ${selectedCategory === cat.id ? "ring-2 ring-primary bg-primary/5" : ""}`} onClick={() => setSelectedCategory(cat.id)}>
                 <CardContent className="p-4 text-center">
-                  <Icon className="h-8 w-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
-                  <div className="font-medium text-sm dark:text-white">{category.name}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{category.count} docs</div>
+                  <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
+                  <div className="font-medium text-sm text-foreground">{cat.name}</div>
                 </CardContent>
               </Card>
             );
           })}
         </div>
 
-        {/* Documents Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDocuments.map(doc => (
-            <Card key={doc.id} className="hover:shadow-lg transition-shadow dark:bg-gray-800 dark:border-gray-700">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg leading-tight mb-2 dark:text-white">{doc.title}</CardTitle>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Badge variant={doc.premium ? "default" : "secondary"} className={doc.premium ? "" : "dark:bg-gray-600 dark:text-gray-200"}>
-                        {doc.premium ? "Premium" : "Free"}
-                      </Badge>
-                      <Badge variant="outline" className="dark:border-gray-600 dark:text-gray-300">{doc.type}</Badge>
+        {loading ? (
+          <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : filteredDocuments.length === 0 ? (
+          <div className="text-center py-12">
+            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">No documents found</h3>
+            <p className="text-muted-foreground">Try adjusting your search or category filter.</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredDocuments.map((doc) => (
+              <Card key={doc.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg leading-tight mb-2">{doc.title}</CardTitle>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Badge variant={doc.is_premium ? "default" : "secondary"}>{doc.is_premium ? "Premium" : "Free"}</Badge>
+                        <Badge variant="outline">{doc.category}</Badge>
+                      </div>
                     </div>
+                    <Button variant="ghost" size="sm" onClick={() => handleSave(doc)}><Bookmark className="h-4 w-4" /></Button>
                   </div>
-                  <Button variant="ghost" size="sm" className="dark:text-gray-300">
-                    <Bookmark className="h-4 w-4" />
+                  <p className="text-sm text-muted-foreground leading-relaxed">{doc.description}</p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                    <span>{(doc.download_count || 0).toLocaleString()} downloads</span>
+                    {doc.tags?.length > 0 && <span className="text-xs">{doc.tags.slice(0, 2).join(", ")}</span>}
+                  </div>
+                  <Button size="sm" className="w-full" onClick={() => handleDownload(doc)}>
+                    <Download className="h-4 w-4 mr-2" /> Download
                   </Button>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{doc.description}</p>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  <span>{doc.downloads.toLocaleString()} downloads</span>
-                  <span className="flex items-center">
-                    ★ {doc.rating} rating
-                  </span>
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => handleDownload(doc.id, doc.premium)}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => handleEdit(doc.id, doc.premium)}
-                    className="dark:border-gray-600 dark:text-gray-300"
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Request Document Section */}
-        <div className="mt-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-center text-white">
-          <h2 className="text-2xl font-bold mb-4">Can't Find What You're Looking For?</h2>
-          <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-            Our team is constantly adding new documents. Request any business document and we'll create it for you.
-          </p>
-          <Button onClick={handleRequestDocument} variant="secondary" size="lg">
-            Request a Document
-          </Button>
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
