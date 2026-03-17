@@ -24,4 +24,8 @@
       };
     };
   };
+  # Environment variables
+  idx.env = {
+    "PATH" = "$PATH:$PWD/node_modules/.bin";
+  };
 }
