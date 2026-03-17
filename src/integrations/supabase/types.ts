@@ -161,6 +161,36 @@ export type Database = {
         }
         Relationships: []
       }
+      community_groups: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_private: boolean
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_private?: boolean
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_private?: boolean
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       community_messages: {
         Row: {
           content: string
@@ -203,6 +233,7 @@ export type Database = {
           category: string
           content: string
           created_at: string
+          group_id: string | null
           id: string
           pinned: boolean
           title: string
@@ -214,6 +245,7 @@ export type Database = {
           category?: string
           content: string
           created_at?: string
+          group_id?: string | null
           id?: string
           pinned?: boolean
           title: string
@@ -225,12 +257,21 @@ export type Database = {
           category?: string
           content?: string
           created_at?: string
+          group_id?: string | null
           id?: string
           pinned?: boolean
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "community_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contact_submissions: {
         Row: {
@@ -319,6 +360,48 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      legal_document_templates: {
+        Row: {
+          category: string
+          created_at: string
+          field_schema: Json
+          id: string
+          jurisdiction: string
+          published: boolean
+          slug: string
+          summary: string | null
+          template_content: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          field_schema?: Json
+          id?: string
+          jurisdiction?: string
+          published?: boolean
+          slug: string
+          summary?: string | null
+          template_content: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          field_schema?: Json
+          id?: string
+          jurisdiction?: string
+          published?: boolean
+          slug?: string
+          summary?: string | null
+          template_content?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -497,6 +580,53 @@ export type Database = {
           },
         ]
       }
+      user_legal_documents: {
+        Row: {
+          created_at: string
+          field_values: Json
+          generated_content: string
+          id: string
+          slug: string | null
+          status: string
+          template_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          field_values?: Json
+          generated_content: string
+          id?: string
+          slug?: string | null
+          status?: string
+          template_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          field_values?: Json
+          generated_content?: string
+          id?: string
+          slug?: string | null
+          status?: string
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_legal_documents_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "legal_document_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -529,7 +659,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "user" | "premium" | "admin"
+      app_role: "user" | "premium" | "admin" | "moderator"
       business_stage: "idea" | "planning" | "launching" | "growing" | "scaling"
       business_structure:
         | "sole_proprietorship"
@@ -675,7 +805,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["user", "premium", "admin"],
+      app_role: ["user", "premium", "admin", "moderator"],
       business_stage: ["idea", "planning", "launching", "growing", "scaling"],
       business_structure: [
         "sole_proprietorship",
