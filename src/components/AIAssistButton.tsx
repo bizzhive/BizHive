@@ -8,7 +8,7 @@ import { toast } from "sonner";
 interface AIAssistButtonProps {
   field: string;
   onSuggestion: (suggestion: string) => void;
-  context?: any;
+  context?: Record<string, unknown>;
 }
 
 export function AIAssistButton({ field, onSuggestion, context }: AIAssistButtonProps) {

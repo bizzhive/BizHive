@@ -28,7 +28,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([INITIAL_MSG]);
-  const [userContext, setUserContext] = useState<any>(null);
+  const [userContext, setUserContext] = useState<Record<string, unknown> | null>(null);
   const { session, user } = useAuth();
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -112,7 +112,9 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
           try {
             const c = JSON.parse(json).choices?.[0]?.delta?.content;
             if (c) upsert(c);
-          } catch {}
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
     } catch (e) {

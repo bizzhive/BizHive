@@ -27,8 +27,8 @@ const Footer = () => {
         toast({ title: "Subscribed!", description: "You'll receive our latest updates." });
       }
       setEmail("");
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Failed to subscribe", variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Error", description: (error as Error).message || "Failed to subscribe", variant: "destructive" });
     } finally {
       setSubscribing(false);
     }
