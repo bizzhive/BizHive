@@ -176,6 +176,16 @@ const Launch = () => {
             <CardContent><p className="text-sm text-muted-foreground mb-4">Explore funding options</p><Button asChild className="w-full"><Link to="/incubators">Find Funding</Link></Button></CardContent>
           </Card>
         </div>
+
+        {/* Why Launch Right */}
+        <div className="bg-muted/50 rounded-2xl p-8 mb-8 border">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Why Getting Your Launch Right Matters</h2>
+          <p className="text-muted-foreground mb-4">Your launch sets the tone for everything that follows. A well-executed launch builds momentum, attracts early customers, and establishes credibility in the market. According to research, startups that follow a structured launch process are 2.7x more likely to succeed in their first year.</p>
+          <p className="text-muted-foreground">Use the checklist above to track every critical step, from legal compliance to marketing readiness. Each item represents a common failure point that can be avoided with proper preparation.</p>
+        </div>
+
+        {/* FAQ */}
+        <FAQSection items={launchFAQs} />
       </div>
     </div>
   );

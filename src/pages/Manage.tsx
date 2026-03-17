@@ -91,6 +91,34 @@ const Manage = () => {
             ))}
           </div>
         </div>
+
+        {/* Why Growth Management Matters */}
+        <div className="bg-muted/50 rounded-2xl p-8 mb-8 border">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Why Strategic Growth Management is Critical</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-muted-foreground mb-3">90% of startups fail, and a leading cause is premature scaling — growing faster than your operations, team, or finances can support. Strategic growth management helps you scale sustainably.</p>
+              <p className="text-muted-foreground">Focus on building strong foundations: efficient processes, reliable team, and healthy cash flow before pursuing aggressive growth.</p>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Unit Economics First:</strong> Ensure each sale is profitable before scaling volume</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Systems Before People:</strong> Document processes so new hires can onboard quickly</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Customer Retention:</strong> It costs 5x more to acquire a new customer than retain one</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <FAQSection items={manageFAQs} />
       </div>
     </div>
   );

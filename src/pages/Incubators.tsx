@@ -403,6 +403,28 @@ const Incubators = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Why Join Section */}
+        <div className="bg-muted/50 rounded-2xl p-8 my-12 border">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Why Join an Incubator?</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <h3 className="font-semibold text-foreground">🎯 Expert Mentorship</h3>
+              <p className="text-sm text-muted-foreground">Get guidance from industry veterans who've built and scaled businesses. Their experience helps you avoid costly mistakes and accelerate growth.</p>
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-foreground">💰 Access to Funding</h3>
+              <p className="text-sm text-muted-foreground">Incubators connect you with angel investors, VCs, and government grants. Many offer seed funding or help you prepare for fundraising rounds.</p>
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-foreground">🤝 Network & Community</h3>
+              <p className="text-sm text-muted-foreground">Join a community of fellow founders, access shared resources, and build relationships that can lead to partnerships, customers, and co-founders.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <FAQSection items={incubatorFAQs} />
       </div>
     </div>
   );
