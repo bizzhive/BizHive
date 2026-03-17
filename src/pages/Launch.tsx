@@ -7,6 +7,15 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import FAQSection from "@/components/FAQSection";
+
+const launchFAQs = [
+  { question: "When is the right time to launch?", answer: "Launch when you have a Minimum Viable Product (MVP) that solves a core problem. Don't wait for perfection — early feedback is invaluable. Most successful startups launch with 60-70% of planned features and iterate based on customer feedback." },
+  { question: "What licenses do I need before launching?", answer: "It depends on your industry. At minimum: GST registration (if turnover exceeds ₹20L), Shop & Establishment license, PAN card. Industry-specific licenses like FSSAI (food), Drug License (pharma), or RERA (real estate) may also be needed." },
+  { question: "How much should I spend on my initial launch?", answer: "Follow the lean startup approach — spend minimally on launch marketing (10-15% of your initial budget). Focus on organic channels, social media, and word-of-mouth. Paid advertising should come after you've validated product-market fit." },
+  { question: "Should I soft launch or go all-in?", answer: "Always soft launch first. Test with a small, friendly audience (100-500 users), collect feedback, fix critical issues, then scale. This reduces risk and helps you refine your offering before spending on broad marketing." },
+  { question: "What common launch mistakes should I avoid?", answer: "Top mistakes: 1) Launching without market validation, 2) Underestimating legal compliance, 3) No customer support plan, 4) Ignoring cash flow management, 5) Trying to serve everyone instead of a niche, 6) Not having a post-launch iteration plan." },
+];
 
 const launchChecklist = [
   "Business plan finalized and approved",
