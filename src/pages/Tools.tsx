@@ -1,118 +1,88 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, TrendingUp, Calculator, DollarSign, PieChart, BarChart } from "lucide-react";
+import { ArrowRight, BarChart3, Calculator, DollarSign, PieChart, Target, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Tools = () => {
   const tools = [
     {
       name: "Business Model Canvas",
-      description: "Create a visual representation of your business model using the proven Business Model Canvas framework.",
+      description: "Map your value proposition, customer segments, channels, and economics in one place.",
       icon: Target,
       href: "/tools/business-canvas",
-      color: "blue",
-      features: ["9 Key Components", "Visual Layout", "Export Options", "Save Progress"]
+      features: ["9 key blocks", "Visual layout", "Save progress", "Reusable outputs"],
     },
     {
       name: "SWOT Analysis",
-      description: "Analyze your business's Strengths, Weaknesses, Opportunities, and Threats to make informed strategic decisions.",
+      description: "Break your business into strengths, weaknesses, opportunities, and threats for clearer decisions.",
       icon: TrendingUp,
       href: "/tools/swot-analysis",
-      color: "green",
-      features: ["Strategic Framework", "Color-coded Sections", "Action Items", "Download Report"]
+      features: ["Strategic framing", "Actionable prompts", "Save work", "Shareable summary"],
     },
     {
       name: "Startup Cost Calculator",
-      description: "Calculate your initial investment requirements and monthly operating costs to determine total startup capital needed.",
+      description: "Estimate capital needed for launch, monthly burn, and initial runway.",
       icon: Calculator,
       href: "/tools/startup-calculator",
-      color: "purple",
-      features: ["One-time Costs", "Monthly Expenses", "Runway Planning", "Funding Requirements"]
+      features: ["One-time costs", "Monthly costs", "Runway planning", "Capital target"],
     },
     {
       name: "Financial Calculator",
-      description: "Calculate revenue projections, expenses, and profitability for your business with detailed financial analysis.",
+      description: "Project revenue, expenses, break-even points, and profit direction.",
       icon: DollarSign,
       href: "/tools/financial-calculator",
-      color: "orange",
-      features: ["Revenue Projections", "Expense Tracking", "Profitability Analysis", "Break-even Calculation"]
-    }
-  ];
-
-  const comingSoonTools = [
-    {
-      name: "Pitch Deck Builder",
-      description: "Create compelling investor presentations with our guided pitch deck builder.",
-      icon: PieChart,
-      color: "red"
+      features: ["Revenue projections", "Expense planning", "Break-even", "Scenario review"],
     },
     {
-      name: "Market Size Calculator",
-      description: "Estimate your total addressable market (TAM) and market opportunity.",
-      icon: BarChart,
-      color: "teal"
-    }
+      name: "Pitch Deck Builder",
+      description: "Create a guided investor story with autosave and a live slide-style preview.",
+      icon: PieChart,
+      href: "/tools/pitch-deck-builder",
+      features: ["10-slide structure", "Autosave", "Slide preview", "Draft export"],
+    },
   ];
 
-  const colors = {
-    blue: "bg-blue-500 text-blue-50",
-    green: "bg-green-500 text-green-50",
-    purple: "bg-purple-500 text-purple-50",
-    orange: "bg-orange-500 text-orange-50",
-    red: "bg-red-500 text-red-50",
-    teal: "bg-teal-500 text-teal-50"
-  };
+  const upcoming = [
+    {
+      name: "Market Size Calculator",
+      description: "Estimate TAM, SAM, and SOM with structured prompts.",
+      icon: BarChart3,
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6 animate-bounce-in">
-            <Target className="h-8 w-8 text-white" />
+        <div className="mb-16 text-center">
+          <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent">
+            <Target className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 animate-fade-in">
-            Business Tools
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto animate-slide-up">
-            Powerful tools to help you plan, analyze, and grow your business
-          </p>
+          <h1 className="text-5xl font-bold text-foreground">Business Tools</h1>
+          <p className="mx-auto mt-4 max-w-3xl text-xl text-muted-foreground">Use guided tools to plan, model, and present your business with more confidence.</p>
         </div>
 
-        {/* Available Tools */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Available Tools</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {tools.map((tool, index) => {
+          <h2 className="mb-6 text-2xl font-bold text-foreground">Available Tools</h2>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {tools.map((tool) => {
               const Icon = tool.icon;
               return (
-                <Card key={index} className="hover:shadow-xl transition-all duration-300 group dark:bg-gray-800 dark:border-gray-700">
+                <Card key={tool.name} className="group transition-all hover:-translate-y-1 hover:shadow-xl">
                   <CardHeader>
-                    <div className={`w-12 h-12 rounded-lg ${colors[tool.color as keyof typeof colors]} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <Icon className="h-6 w-6" />
                     </div>
-                    <CardTitle className="text-xl dark:text-white">{tool.name}</CardTitle>
-                    <CardDescription className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {tool.description}
-                    </CardDescription>
+                    <CardTitle>{tool.name}</CardTitle>
+                    <CardDescription>{tool.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Features:</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {tool.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                            {feature}
-                          </div>
-                        ))}
-                      </div>
+                    <div className="mb-5 grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                      {tool.features.map((feature) => (
+                        <div key={feature} className="rounded-md bg-muted px-3 py-2">{feature}</div>
+                      ))}
                     </div>
                     <Button asChild className="w-full">
-                      <Link to={tool.href} className="flex items-center justify-center">
-                        Launch Tool <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
+                      <Link to={tool.href}>Launch Tool <ArrowRight className="h-4 w-4" /></Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -121,27 +91,22 @@ const Tools = () => {
           </div>
         </div>
 
-        {/* Coming Soon */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Coming Soon</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {comingSoonTools.map((tool, index) => {
+          <h2 className="mb-6 text-2xl font-bold text-foreground">Coming Next</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {upcoming.map((tool) => {
               const Icon = tool.icon;
               return (
-                <Card key={index} className="opacity-75 dark:bg-gray-800 dark:border-gray-700">
+                <Card key={tool.name} className="bg-muted/40">
                   <CardHeader>
-                    <div className={`w-12 h-12 rounded-lg ${colors[tool.color as keyof typeof colors]} flex items-center justify-center mb-4`}>
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
                       <Icon className="h-6 w-6" />
                     </div>
-                    <CardTitle className="text-xl dark:text-white">{tool.name}</CardTitle>
-                    <CardDescription className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {tool.description}
-                    </CardDescription>
+                    <CardTitle>{tool.name}</CardTitle>
+                    <CardDescription>{tool.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button disabled className="w-full">
-                      Coming Soon
-                    </Button>
+                    <Button disabled className="w-full">Coming Soon</Button>
                   </CardContent>
                 </Card>
               );

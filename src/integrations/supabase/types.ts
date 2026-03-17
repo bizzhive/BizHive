@@ -657,6 +657,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_user_banned: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "user" | "premium" | "admin" | "moderator"
