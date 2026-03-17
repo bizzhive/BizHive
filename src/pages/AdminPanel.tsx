@@ -51,14 +51,23 @@ const AdminPanel = () => {
   }, [user, navigate]);
 
   const fetchData = async () => {
-    const [{ data: c }, { data: s }, { data: a }] = await Promise.all([
+    const [{ data: c }, { data: s }] = await Promise.all([
       supabase.from("contact_submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
-      supabase.from("admin_settings").select("*").eq("key", "ai_system_prompt").single(),
     ]);
     if (c) setContacts(c);
     if (s) setSubscribers(s);
-    if (a?.value) setAiPrompt(a.value);
+    // Fetch AI prompt via raw REST call since admin_settings isn't in generated types
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/admin_settings?key=eq.ai_system_prompt&select=value`, {
+        headers: {
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+      });
+      const rows = await res.json();
+      if (rows?.[0]?.value) setAiPrompt(rows[0].value);
+    } catch {}
   };
 
   const handleSavePrompt = async () => {
