@@ -47,11 +47,20 @@ const Login = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: loginData.email,
         password: loginData.password,
       });
       if (error) throw error;
+      
+      // Check if admin
+      if (data.user?.email === "kaleidis.official@gmail.com") {
+        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
+        if (roles?.some((r) => r.role === "admin")) {
+          navigate("/admin");
+          return;
+        }
+      }
       navigate("/dashboard");
     } catch (error: any) {
       toast({

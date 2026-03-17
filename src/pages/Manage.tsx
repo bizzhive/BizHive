@@ -3,7 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users, DollarSign, Target, BarChart3, Cog, Rocket, Shield, Award, ArrowRight, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import FAQSection from "@/components/FAQSection";
 
+const manageFAQs = [
+  { question: "When should I start scaling my business?", answer: "Scale when you have consistent revenue, a proven business model, and repeatable customer acquisition. Key indicators: positive unit economics, growing demand you can't fulfill, and operational processes that are documented and can be delegated." },
+  { question: "How do I manage cash flow during growth?", answer: "Maintain at least 3-6 months of operating expenses as runway. Use cash flow forecasting, negotiate longer payment terms with suppliers, invoice promptly, and consider invoice factoring for B2B businesses. Never confuse revenue with profit." },
+  { question: "What metrics should I track?", answer: "Focus on: Customer Acquisition Cost (CAC), Lifetime Value (LTV), Monthly Recurring Revenue (MRR), Churn Rate, Burn Rate, and Runway. The LTV:CAC ratio should be at least 3:1 for a healthy business." },
+  { question: "How do I build a strong team while scaling?", answer: "Hire for culture fit first, skills second. Document processes before hiring. Start with generalists, move to specialists as you grow. Invest in onboarding, use OKRs for alignment, and build a feedback culture early." },
+  { question: "Should I seek external funding to grow?", answer: "Not always. Bootstrap if your business generates healthy cash flow. Seek funding only if: you need to grow faster than cash flow allows, your market has a winner-takes-all dynamic, or capital-intensive infrastructure is needed. Remember, every rupee of funding comes with dilution." },
+];
 const Manage = () => {
   const navigate = useNavigate();
 
@@ -83,6 +91,34 @@ const Manage = () => {
             ))}
           </div>
         </div>
+
+        {/* Why Growth Management Matters */}
+        <div className="bg-muted/50 rounded-2xl p-8 mb-8 border">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Why Strategic Growth Management is Critical</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-muted-foreground mb-3">90% of startups fail, and a leading cause is premature scaling — growing faster than your operations, team, or finances can support. Strategic growth management helps you scale sustainably.</p>
+              <p className="text-muted-foreground">Focus on building strong foundations: efficient processes, reliable team, and healthy cash flow before pursuing aggressive growth.</p>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Unit Economics First:</strong> Ensure each sale is profitable before scaling volume</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Systems Before People:</strong> Document processes so new hires can onboard quickly</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Customer Retention:</strong> It costs 5x more to acquire a new customer than retain one</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <FAQSection items={manageFAQs} />
       </div>
     </div>
   );
