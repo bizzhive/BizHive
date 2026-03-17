@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +28,7 @@ import BusinessCanvas from "./pages/tools/BusinessCanvas";
 import SwotAnalysis from "./pages/tools/SwotAnalysis";
 import StartupCalculator from "./pages/tools/StartupCalculator";
 import FinancialCalculator from "./pages/tools/FinancialCalculator";
+import PitchDeckBuilder from "./pages/tools/PitchDeckBuilder";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Privacy from "./pages/Privacy";
@@ -71,6 +71,7 @@ const App = () => (
                 <Route path="/tools/swot-analysis" element={<SwotAnalysis />} />
                 <Route path="/tools/startup-calculator" element={<StartupCalculator />} />
                 <Route path="/tools/financial-calculator" element={<FinancialCalculator />} />
+                <Route path="/tools/pitch-deck-builder" element={<PitchDeckBuilder />} />
                 <Route path="/taxation" element={<Taxation />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:id" element={<BlogPost />} />

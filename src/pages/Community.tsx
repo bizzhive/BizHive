@@ -1,144 +1,225 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useMemo, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Users, MessageSquare, BookOpen, ExternalLink, Lightbulb, GraduationCap, Handshake, ArrowRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowRight, MessageSquare, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Community = () => {
-  const forumTopics = [
-    { title: "How to choose the right business structure?", replies: 24, category: "Business Setup", hot: true },
-    { title: "Best accounting software for small businesses", replies: 18, category: "Tools", hot: false },
-    { title: "GST filing tips for first-time filers", replies: 31, category: "Taxation", hot: true },
-    { title: "Marketing on a shoestring budget", replies: 15, category: "Marketing", hot: false },
-    { title: "Finding angel investors in India", replies: 22, category: "Funding", hot: true },
-  ];
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [groups, setGroups] = useState<any[]>([]);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<string>("");
+  const [selectedPostId, setSelectedPostId] = useState<string>("");
+  const [postTitle, setPostTitle] = useState("");
+  const [postContent, setPostContent] = useState("");
+  const [replyContent, setReplyContent] = useState("");
 
-  const learningResources = [
-    { title: "Business Planning 101", platform: "YouTube", duration: "45 min", url: "https://youtube.com", level: "Beginner", icon: "🎥" },
-    { title: "Financial Management for Startups", platform: "NPTEL", duration: "12 weeks", url: "https://nptel.ac.in", level: "Intermediate", icon: "📚" },
-    { title: "Digital Marketing Masterclass", platform: "YouTube", duration: "2 hours", url: "https://youtube.com", level: "Beginner", icon: "🎥" },
-    { title: "Indian Tax System Overview", platform: "SWAYAM", duration: "8 weeks", url: "https://swayam.gov.in", level: "Beginner", icon: "📖" },
-    { title: "Startup Legal Essentials", platform: "YouTube", duration: "1 hour", url: "https://youtube.com", level: "Beginner", icon: "🎥" },
-    { title: "Advanced Business Strategy", platform: "NPTEL", duration: "8 weeks", url: "https://nptel.ac.in", level: "Advanced", icon: "📚" },
-  ];
+  const fetchCommunity = async () => {
+    const [groupsRes, postsRes, messagesRes] = await Promise.all([
+      supabase.from("community_groups").select("*").order("created_at", { ascending: true }),
+      supabase.from("community_posts").select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false }),
+      supabase.from("community_messages").select("*").order("created_at", { ascending: true }),
+    ]);
 
-  const cofounderProfiles = [
-    { role: "Technical Co-founder", skills: ["Full Stack Dev", "AI/ML", "Cloud"], industry: "SaaS", location: "Bangalore" },
-    { role: "Marketing Co-founder", skills: ["Growth Hacking", "SEO", "Content"], industry: "D2C", location: "Mumbai" },
-    { role: "Operations Co-founder", skills: ["Supply Chain", "Logistics", "Finance"], industry: "E-commerce", location: "Delhi" },
-  ];
+    const nextGroups = groupsRes.data ?? [];
+    const nextPosts = postsRes.data ?? [];
+    const nextMessages = messagesRes.data ?? [];
+
+    setGroups(nextGroups);
+    setPosts(nextPosts);
+    setMessages(nextMessages);
+
+    if (!selectedGroupId && nextGroups[0]) setSelectedGroupId(nextGroups[0].id);
+    if (!selectedPostId && nextPosts[0]) setSelectedPostId(nextPosts[0].id);
+  };
+
+  useEffect(() => {
+    fetchCommunity();
+  }, []);
+
+  const filteredPosts = useMemo(() => {
+    if (!selectedGroupId) return posts;
+    return posts.filter((post) => post.group_id === selectedGroupId);
+  }, [posts, selectedGroupId]);
+
+  useEffect(() => {
+    if (filteredPosts.length > 0 && !filteredPosts.some((post) => post.id === selectedPostId)) {
+      setSelectedPostId(filteredPosts[0].id);
+    }
+  }, [filteredPosts, selectedPostId]);
+
+  const selectedPost = filteredPosts.find((post) => post.id === selectedPostId) ?? null;
+  const postMessages = messages.filter((message) => message.post_id === selectedPostId);
+
+  const createPost = async () => {
+    if (!user) {
+      toast({ title: "Login required", description: "Sign in to post in the community.", variant: "destructive" });
+      return;
+    }
+    if (!postTitle.trim() || !postContent.trim()) return;
+
+    const { error } = await supabase.from("community_posts").insert({
+      title: postTitle.trim(),
+      content: postContent.trim(),
+      category: "discussion",
+      group_id: selectedGroupId || null,
+      author_id: user.id,
+      author_name: user.user_metadata?.full_name || user.email || "Member",
+    });
+
+    if (error) {
+      toast({ title: "Could not create post", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    setPostTitle("");
+    setPostContent("");
+    toast({ title: "Discussion created" });
+    await fetchCommunity();
+  };
+
+  const sendReply = async () => {
+    if (!user) {
+      toast({ title: "Login required", description: "Sign in to reply.", variant: "destructive" });
+      return;
+    }
+    if (!selectedPostId || !replyContent.trim()) return;
+
+    const { error } = await supabase.from("community_messages").insert({
+      post_id: selectedPostId,
+      user_id: user.id,
+      user_name: user.user_metadata?.full_name || user.email || "Member",
+      content: replyContent.trim(),
+    });
+
+    if (error) {
+      toast({ title: "Could not send reply", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    setReplyContent("");
+    await fetchCommunity();
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
-            <Users className="h-8 w-8 text-white" />
+      <div className="container mx-auto px-4 py-12 space-y-10">
+        <div className="text-center">
+          <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent">
+            <Users className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-5xl font-bold text-foreground mb-6">Community & Learning</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Connect with fellow entrepreneurs, find co-founders, and access comprehensive learning resources
+          <h1 className="text-5xl font-bold text-foreground">Community & Chat Groups</h1>
+          <p className="mx-auto mt-4 max-w-3xl text-xl text-muted-foreground">
+            Join topic-based founder groups, create discussions, and chat inside each thread.
           </p>
         </div>
 
-        {/* Discussion Forums */}
-        <section className="mb-16">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <MessageSquare className="h-6 w-6 text-primary" /> Discussion Forums
-            </h2>
-          </div>
-          <div className="space-y-3">
-            {forumTopics.map((topic, i) => (
-              <Card key={i} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Lightbulb className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                    <div>
-                      <h3 className="font-medium text-foreground">{topic.title}</h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs">{topic.category}</Badge>
-                        {topic.hot && <Badge className="text-xs bg-orange-500">🔥 Hot</Badge>}
+        <div className="grid gap-6 xl:grid-cols-[280px_1fr_1fr]">
+          <Card>
+            <CardHeader><CardTitle>Groups</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {groups.map((group) => (
+                <button
+                  key={group.id}
+                  type="button"
+                  onClick={() => setSelectedGroupId(group.id)}
+                  className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${selectedGroupId === group.id ? "border-primary bg-primary/5" : "hover:bg-muted"}`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-medium text-foreground">{group.name}</span>
+                    <Badge variant={group.is_private ? "secondary" : "outline"}>{group.is_private ? "Private" : "Public"}</Badge>
+                  </div>
+                  {group.description && <p className="mt-2 text-sm text-muted-foreground">{group.description}</p>}
+                </button>
+              ))}
+            </CardContent>
+          </Card>
+
+          <div className="space-y-6">
+            <Card>
+              <CardHeader><CardTitle>Start a discussion</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <Input placeholder="Discussion title" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
+                <Textarea placeholder="What do you want to discuss with the group?" className="min-h-[140px]" value={postContent} onChange={(e) => setPostContent(e.target.value)} />
+                <Button onClick={createPost}>Post to group</Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle>Discussions</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {filteredPosts.map((post) => (
+                  <button
+                    key={post.id}
+                    type="button"
+                    onClick={() => setSelectedPostId(post.id)}
+                    className={`w-full rounded-lg border p-4 text-left transition-colors ${selectedPostId === post.id ? "border-primary bg-primary/5" : "hover:bg-muted"}`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="font-medium text-foreground">{post.title}</div>
+                        <div className="mt-1 text-sm text-muted-foreground">{post.author_name || "Member"}</div>
                       </div>
+                      {post.pinned && <Badge>Pinned</Badge>}
                     </div>
-                  </div>
-                  <span className="text-sm text-muted-foreground whitespace-nowrap">{topic.replies} replies</span>
-                </CardContent>
-              </Card>
-            ))}
+                    <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{post.content}</p>
+                  </button>
+                ))}
+                {filteredPosts.length === 0 && <p className="text-sm text-muted-foreground">No discussions in this group yet.</p>}
+              </CardContent>
+            </Card>
           </div>
-          <p className="text-sm text-muted-foreground mt-4 text-center">
-            Full forum features coming soon! Join the conversation and share your entrepreneurial journey.
-          </p>
-        </section>
 
-        {/* Find Co-founders */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-            <Handshake className="h-6 w-6 text-primary" /> Find Co-founders
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {cofounderProfiles.map((profile, i) => (
-              <Card key={i} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-lg">{profile.role}</CardTitle>
-                  <CardDescription>Looking in {profile.industry} · {profile.location}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {profile.skills.map((skill) => (
-                      <Badge key={skill} variant="secondary" className="text-xs">{skill}</Badge>
+          <Card>
+            <CardHeader>
+              <CardTitle>{selectedPost?.title || "Thread chat"}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {selectedPost ? (
+                <>
+                  <div className="rounded-xl border bg-muted/40 p-4">
+                    <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
+                      <MessageSquare className="h-4 w-4" />
+                      {selectedPost.author_name || "Member"}
+                    </div>
+                    <p className="text-sm leading-relaxed text-foreground">{selectedPost.content}</p>
+                  </div>
+
+                  <div className="max-h-[320px] space-y-3 overflow-auto rounded-xl border p-3">
+                    {postMessages.map((message) => (
+                      <div key={message.id} className="rounded-lg bg-muted/50 p-3">
+                        <div className="mb-1 text-xs text-muted-foreground">{message.user_name || "Member"}</div>
+                        <p className="text-sm text-foreground">{message.content}</p>
+                      </div>
                     ))}
+                    {postMessages.length === 0 && <p className="text-sm text-muted-foreground">No replies yet.</p>}
                   </div>
-                  <Button variant="outline" className="w-full" disabled>
-                    Connect (Coming Soon)
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
 
-        {/* Learning Resources */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-            <GraduationCap className="h-6 w-6 text-primary" /> Free Learning Resources
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {learningResources.map((resource, i) => (
-              <Card key={i} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl">{resource.icon}</span>
-                    <Badge variant="outline">{resource.level}</Badge>
-                  </div>
-                  <CardTitle className="text-lg mt-2">{resource.title}</CardTitle>
-                  <CardDescription>{resource.platform} · {resource.duration}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="outline" className="w-full">
-                    <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                      Start Learning <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-center text-white">
-          <h2 className="text-2xl font-bold mb-4">Want Personalized Guidance?</h2>
-          <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-            Our AI assistant can help you with specific business questions and provide tailored advice.
-          </p>
-          <Button asChild variant="secondary" size="lg">
-            <Link to="/ai-assistant">
-              Talk to AI Assistant <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+                  <Textarea placeholder="Add a reply" className="min-h-[120px]" value={replyContent} onChange={(e) => setReplyContent(e.target.value)} />
+                  <Button onClick={sendReply}>Send reply</Button>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">Choose a discussion to see the chat.</p>
+              )}
+            </CardContent>
+          </Card>
         </div>
+
+        <Card className="border-none bg-muted/50">
+          <CardContent className="flex flex-col items-center gap-4 py-8 text-center">
+            <h2 className="text-2xl font-bold text-foreground">Need direct guidance?</h2>
+            <p className="max-w-2xl text-muted-foreground">Use Bee for faster answers, then bring the best ideas back into the community groups.</p>
+            <Button asChild variant="outline"><Link to="/ai-assistant">Open Bee AI <ArrowRight className="h-4 w-4" /></Link></Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
