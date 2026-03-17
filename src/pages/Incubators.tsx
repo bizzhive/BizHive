@@ -8,9 +8,17 @@ import { Building, DollarSign, FileText, Rocket, Users, Star, MapPin, Calendar, 
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import FAQSection from "@/components/FAQSection";
 
-// Import local data as a fallback, but we'll try to fetch first to simulate dynamic updates
 import incubatorsDataFallback from "@/data/incubators.json";
+
+const incubatorFAQs = [
+  { question: "What is a startup incubator?", answer: "A startup incubator is an organization that helps early-stage companies grow by providing mentorship, resources, workspace, and sometimes funding. In India, many are supported by the government under programs like Atal Innovation Mission and Startup India." },
+  { question: "How is an incubator different from an accelerator?", answer: "Incubators nurture early-stage startups over a longer period (6-24 months) with flexible structure. Accelerators are more intense, time-bound programs (3-6 months) focused on rapid growth, usually ending with a demo day for investors." },
+  { question: "Do I need to give equity to join an incubator?", answer: "Not always. Government-backed incubators (IIT incubators, NASSCOM, etc.) often don't take equity. Private accelerators like Y Combinator or Techstars typically take 5-10% equity. Always read the terms carefully before joining." },
+  { question: "What should I look for in an incubator?", answer: "Key factors: 1) Industry alignment with your startup, 2) Quality of mentors and network, 3) Track record of portfolio companies, 4) Funding connections, 5) Location and facilities, 6) Terms and equity requirements, 7) Alumni network strength." },
+  { question: "How do I apply to an incubator?", answer: "Most accept applications online. Prepare: a clear problem statement, your solution, market size, team background, traction/progress, and what you need from the incubator. Apply to 5-10 relevant incubators simultaneously for best chances." },
+];
 
 const Incubators = () => {
   const [incubators, setIncubators] = useState(incubatorsDataFallback.incubators);
