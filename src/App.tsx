@@ -23,7 +23,6 @@ import NotFound from "./pages/NotFound";
 import Taxation from "./pages/Taxation";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
-import AIAssistant from "./pages/AIAssistant";
 import MarketResearch from "./pages/plan/MarketResearch";
 import BusinessPlan from "./pages/plan/BusinessPlan";
 import BusinessCanvas from "./pages/tools/BusinessCanvas";
@@ -34,6 +33,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import AdminPanel from "./pages/AdminPanel";
 
 const queryClient = new QueryClient();
 
@@ -66,7 +66,6 @@ const App = () => (
                 <Route path="/taxation" element={<Taxation />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:id" element={<BlogPost />} />
-                <Route path="/ai-assistant" element={<AIAssistant />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -75,6 +74,7 @@ const App = () => (
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/subscribe" element={<Contact />} />
+                <Route path="/admin" element={<AdminPanel />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
