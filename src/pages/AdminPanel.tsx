@@ -72,15 +72,22 @@ const AdminPanel = () => {
 
   const handleSavePrompt = async () => {
     setSavingPrompt(true);
-    const { error } = await supabase
-      .from("admin_settings")
-      .update({ value: aiPrompt, updated_at: new Date().toISOString() })
-      .eq("key", "ai_system_prompt");
-    
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
+    try {
+      const session = (await supabase.auth.getSession()).data.session;
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/admin_settings?key=eq.ai_system_prompt`, {
+        method: "PATCH",
+        headers: {
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${session?.access_token}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ value: aiPrompt, updated_at: new Date().toISOString() }),
+      });
+      if (!res.ok) throw new Error("Failed to save");
       toast({ title: "Saved", description: "AI system prompt updated successfully." });
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
     }
     setSavingPrompt(false);
   };
