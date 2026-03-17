@@ -34,6 +34,11 @@ import ResetPassword from "./pages/ResetPassword";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import AdminPanel from "./pages/AdminPanel";
+import AIAssistant from "./pages/AIAssistant";
+import PlanLearn from "./pages/plan/PlanLearn";
+import LaunchLearn from "./pages/launch/LaunchLearn";
+import ManageLearn from "./pages/manage/ManageLearn";
+import ResourcesLearn from "./pages/resources/ResourcesLearn";
 
 const queryClient = new QueryClient();
 
@@ -52,8 +57,11 @@ const App = () => (
                 <Route path="/plan" element={<Plan />} />
                 <Route path="/plan/market-research" element={<MarketResearch />} />
                 <Route path="/plan/business-plan" element={<BusinessPlan />} />
+                <Route path="/plan/learn" element={<PlanLearn />} />
                 <Route path="/launch" element={<Launch />} />
+                <Route path="/launch/learn" element={<LaunchLearn />} />
                 <Route path="/manage" element={<Manage />} />
+                <Route path="/manage/learn" element={<ManageLearn />} />
                 <Route path="/legal" element={<Legal />} />
                 <Route path="/incubators" element={<Incubators />} />
                 <Route path="/community" element={<Community />} />
@@ -75,6 +83,8 @@ const App = () => (
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/subscribe" element={<Contact />} />
                 <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/ai-assistant" element={<AIAssistant />} />
+                <Route path="/resources/learn" element={<ResourcesLearn />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
