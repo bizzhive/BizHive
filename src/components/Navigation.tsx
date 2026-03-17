@@ -25,6 +25,7 @@ const navGroups = [
       { name: "Market Research", href: "/plan/market-research", desc: "Industry insights & analysis" },
       { name: "Business Plan", href: "/plan/business-plan", desc: "Write a winning plan" },
       { name: "Business Canvas", href: "/tools/business-canvas", desc: "Visual business model" },
+      { name: "Learn: Planning", href: "/plan/learn", desc: "📖 Planning fundamentals" },
     ],
   },
   {
@@ -33,6 +34,7 @@ const navGroups = [
       { name: "Launch Checklist", href: "/launch", desc: "Step-by-step launch guide" },
       { name: "Legal & Compliance", href: "/legal", desc: "Registrations & licenses" },
       { name: "Taxation", href: "/taxation", desc: "Tax planning & GST" },
+      { name: "Learn: Launching", href: "/launch/learn", desc: "📖 Launch fundamentals" },
     ],
   },
   {
@@ -42,6 +44,7 @@ const navGroups = [
       { name: "Incubators & Funding", href: "/incubators", desc: "Find the right incubator" },
       { name: "SWOT Analysis", href: "/tools/swot-analysis", desc: "Strengths & weaknesses" },
       { name: "All Tools", href: "/tools", desc: "Calculators & frameworks" },
+      { name: "Learn: Growing", href: "/manage/learn", desc: "📖 Growth fundamentals" },
     ],
   },
   {
@@ -50,6 +53,7 @@ const navGroups = [
       { name: "Documents", href: "/documents", desc: "Templates & forms" },
       { name: "Blog", href: "/blog", desc: "Articles & guides" },
       { name: "Community", href: "/community", desc: "Forums & networking" },
+      { name: "Learn: Resources", href: "/resources/learn", desc: "📖 Using resources" },
     ],
   },
 ];
@@ -110,6 +114,20 @@ const Navigation = () => {
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link
+                      to="/ai-assistant"
+                      className={cn(
+                        "inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                        isActive("/ai-assistant") && "bg-accent text-accent-foreground"
+                      )}
+                    >
+                      <BeeIcon className="w-4 h-4 mr-1.5" />
+                      Bee AI
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
                       to="/contact"
                       className={cn(
                         "inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
@@ -130,7 +148,6 @@ const Navigation = () => {
               {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </Button>
 
-            {/* Auth Buttons Desktop */}
             <div className="hidden lg:flex items-center gap-1.5">
               {user ? (
                 <>
@@ -147,7 +164,7 @@ const Navigation = () => {
                   <Button asChild variant="ghost" size="sm">
                     <Link to="/login">Login</Link>
                   </Button>
-                  <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button asChild size="sm">
                     <Link to="/register">Sign Up</Link>
                   </Button>
                 </>
@@ -199,6 +216,16 @@ const Navigation = () => {
                         )}
                       </div>
                     ))}
+                    <Link
+                      to="/ai-assistant"
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-lg transition-colors",
+                        isActive("/ai-assistant") ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent"
+                      )}
+                    >
+                      <BeeIcon className="w-4 h-4" /> Bee AI
+                    </Link>
                     <Link
                       to="/contact"
                       onClick={() => setIsOpen(false)}
