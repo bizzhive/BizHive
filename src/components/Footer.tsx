@@ -44,10 +44,10 @@ const Footer = () => {
                 <svg viewBox="0 0 32 32" className="w-8 h-8">
                   <defs>
                     <pattern id="honeycombFooter" x="0" y="0" width="8" height="7" patternUnits="userSpaceOnUse">
-                      <polygon points="4,0 8,2.3 8,4.7 4,7 0,4.7 0,2.3" fill="#3B82F6" stroke="#60A5FA" strokeWidth="0.3"/>
+                      <polygon points="4,0 8,2.3 8,4.7 4,7 0,4.7 0,2.3" fill="#3B82F6" stroke="#60A5FA" strokeWidth="0.3" />
                     </pattern>
                   </defs>
-                  <circle cx="16" cy="16" r="14" fill="url(#honeycombFooter)"/>
+                  <circle cx="16" cy="16" r="14" fill="url(#honeycombFooter)" />
                 </svg>
               </div>
               <div>
@@ -96,8 +96,8 @@ const Footer = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
-                required
-              />
+                required />
+              
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={subscribing}>
                 {subscribing ? "Subscribing..." : "Subscribe"}
               </Button>
@@ -110,7 +110,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-            <p>© 2024 BizHive. All rights reserved.</p>
+            <p>© 2026 BizHive. All rights reserved.</p>
             <p>Designed by <span className="text-blue-400">Tushar Gehlot</span></p>
           </div>
           <div className="mt-4 flex flex-wrap justify-center space-x-4 text-xs">
@@ -120,8 +120,8 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>);
+
 };
 
 export default Footer;
