@@ -39,19 +39,11 @@ const Login = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: loginData.email,
         password: loginData.password,
       });
       if (error) throw error;
-      
-      if (data.user?.email === "kaleidis.official@gmail.com") {
-        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
-        if (roles?.some((r) => r.role === "admin")) {
-          navigate("/admin");
-          return;
-        }
-      }
       navigate("/dashboard");
     } catch (error: any) {
       toast({ title: "Error", description: error.message || "Failed to log in", variant: "destructive" });
@@ -154,7 +146,7 @@ const Login = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="password">Password</Label>
+                          <Label htmlFor="password">Passowrd</Label>
                           <div className="relative">
                             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input id="password" type="password" placeholder="Enter your password" className="pl-10" value={loginData.password} onChange={(e) => setLoginData({...loginData, password: e.target.value})} required />

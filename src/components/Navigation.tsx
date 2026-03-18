@@ -65,14 +65,24 @@ const UserProfileMenu = () => {
 
   useEffect(() => {
     const checkAdminRole = async () => {
-      if (!user) return;
-      // Placeholder: Implement actual admin role check logic here
-      // For example, fetch user roles from your database
-      // const { data: roles } = await supabase.from('user_roles').select('role').eq('user_id', user.id);
-      // setIsAdmin(roles?.some(r => r.role === 'admin') || false);
-      setIsAdmin(true); // Temporarily true for UI development
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      const { data } = await supabase.rpc('has_role', { role: 'admin' });
+      setIsAdmin(data || false);
     };
     checkAdminRole();
+    // Re-check when user changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+        checkAdminRole();
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, [user]);
 
   return (

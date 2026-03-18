@@ -82,36 +82,6 @@ CREATE POLICY "Users can check own ban" ON public.user_bans FOR SELECT TO authen
 -- Enable realtime for community messages
 ALTER PUBLICATION supabase_realtime ADD TABLE public.community_messages;
 
--- Auto-assign admin role for kaleidis.official@gmail.com
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path TO 'public'
-AS $function$
-BEGIN
-  INSERT INTO public.profiles (user_id, full_name)
-  VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', ''));
-  
-  INSERT INTO public.user_roles (user_id, role)
-  VALUES (NEW.id, 'user');
-  
-  -- Auto-assign admin role for specific email
-  IF NEW.email = 'kaleidis.official@gmail.com' THEN
-    INSERT INTO public.user_roles (user_id, role)
-    VALUES (NEW.id, 'admin')
-    ON CONFLICT (user_id, role) DO NOTHING;
-  END IF;
-  
-  RETURN NEW;
-END;
-$function$;
-
--- Also insert admin role for existing user if they already registered
-INSERT INTO public.user_roles (user_id, role)
-SELECT id, 'admin'::app_role FROM auth.users WHERE email = 'kaleidis.official@gmail.com'
-ON CONFLICT (user_id, role) DO NOTHING;
-
 -- Storage policies for documents bucket
 CREATE POLICY "Anyone can read documents" ON storage.objects FOR SELECT USING (bucket_id = 'documents');
 CREATE POLICY "Admins can upload documents" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'documents' AND public.has_role(auth.uid(), 'admin'));
