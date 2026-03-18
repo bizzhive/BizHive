@@ -131,7 +131,7 @@ const Dashboard = () => {
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Welcome to BizHive! 🎉</DialogTitle>
+            <DialogTitle>Welcome to BizHive</DialogTitle>
             <DialogDescription>Tell us about yourself so we can personalize your experience.</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleOnboarding} className="space-y-4">
