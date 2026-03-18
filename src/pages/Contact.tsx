@@ -37,9 +37,8 @@ const Contact = () => {
   };
 
   const contactInfo = [
-    { icon: Mail, title: "Email Support", details: "support@bizhive.com", description: "We respond within 24 hours" },
+    { icon: Mail, title: "Email Support", details: "bizzhive.support@gmail.com", description: "We respond within 24 hours" },
     { icon: Phone, title: "Phone Support", details: "+91 XXXXX XXXXX", description: "Mon-Fri, 9 AM - 6 PM IST" },
-    { icon: MapPin, title: "Office Address", details: "Mumbai, Maharashtra, India", description: "By appointment only" },
     { icon: Clock, title: "Business Hours", details: "Monday - Friday", description: "9:00 AM - 6:00 PM IST" },
   ];
 
