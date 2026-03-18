@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -11,11 +11,12 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Menu, Moon, Sun, LogOut, ChevronDown } from "lucide-react";
+import { Menu, Moon, Sun, LogOut, ChevronDown, User, Shield } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import BeeIcon from "./BeeIcon";
+import { supabase } from "@/integrations/supabase/client";
 
 const navGroups = [
   {
@@ -58,12 +59,71 @@ const navGroups = [
   },
 ];
 
+const UserProfileMenu = () => {
+  const { user, signOut } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      if (!user) return;
+      // Placeholder: Implement actual admin role check logic here
+      // For example, fetch user roles from your database
+      // const { data: roles } = await supabase.from('user_roles').select('role').eq('user_id', user.id);
+      // setIsAdmin(roles?.some(r => r.role === 'admin') || false);
+      setIsAdmin(true); // Temporarily true for UI development
+    };
+    checkAdminRole();
+  }, [user]);
+
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className="bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground data-[state=open]:text-foreground">
+            <User className="h-4 w-4 mr-1.5" />
+            Profile
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[200px] gap-1 p-3">
+              <li>
+                <NavigationMenuLink asChild>
+                  <Link to="/dashboard" className="block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent">
+                    Dashboard
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+              {isAdmin && (
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link to="/admin" className="flex items-center select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent">
+                      <Shield className="h-4 w-4 mr-2" />
+                      Admin
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+              )}
+              <li>
+                <NavigationMenuLink asChild>
+                  <button onClick={signOut} className="flex items-center w-full select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent text-destructive">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </button>
+                </NavigationMenuLink>
+              </li>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+};
+
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -150,15 +210,7 @@ const Navigation = () => {
 
             <div className="hidden lg:flex items-center gap-1.5">
               {user ? (
-                <>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to="/dashboard">Dashboard</Link>
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={signOut}>
-                    <LogOut className="h-4 w-4 mr-1" />
-                    Logout
-                  </Button>
-                </>
+                <UserProfileMenu />
               ) : (
                 <>
                   <Button asChild variant="ghost" size="sm">
@@ -244,10 +296,11 @@ const Navigation = () => {
                         <Button asChild variant="outline" className="w-full">
                           <Link to="/dashboard" onClick={() => setIsOpen(false)}>Dashboard</Link>
                         </Button>
+                        {/* Add Admin link for mobile here if needed */}
                         <Button
                           variant="ghost"
                           className="w-full text-destructive hover:text-destructive"
-                          onClick={() => { signOut(); setIsOpen(false); }}
+                          onClick={() => { useAuth().signOut(); setIsOpen(false); }}
                         >
                           <LogOut className="h-4 w-4 mr-2" />
                           Logout
