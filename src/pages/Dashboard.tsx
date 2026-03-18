@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, PlusCircle, Activity, FileText, ArrowRight, User, Building } from "lucide-react";
+import { Loader2, PlusCircle, Activity, FileText, ArrowRight, Copy } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -105,6 +105,13 @@ const Dashboard = () => {
       setSaving(false);
     }
   };
+  
+  const copyToClipboard = () => {
+    if (user?.id) {
+      navigator.clipboard.writeText(user.id);
+      toast({ title: "Copied!", description: "User ID copied to clipboard." });
+    }
+  };
 
   if (authLoading || loading) {
     return (
@@ -168,7 +175,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Business Stage</CardTitle>
@@ -204,6 +211,19 @@ const Dashboard = () => {
             <div className="text-2xl font-bold text-foreground">{completion}%</div>
             <div className="w-full bg-secondary rounded-full h-2.5 mt-2">
               <div className="bg-primary h-2.5 rounded-full transition-all" style={{ width: `${completion}%` }}></div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-medium text-muted-foreground">User ID</CardTitle>
+            <Button variant="ghost" size="icon" onClick={copyToClipboard} className="h-6 w-6">
+              <Copy className="h-4 w-4 text-muted-foreground" />
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xs font-mono text-muted-foreground break-all">
+              {user?.id}
             </div>
           </CardContent>
         </Card>
