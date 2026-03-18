@@ -1,7 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BookOpen, FileText, Building, Users, TrendingUp, Scale, Search, Target, DollarSign, Shield, Award, CheckCircle, Rocket, Zap, Heart } from "lucide-react";
+import { ArrowRight, BookOpen, FileText, Building, Users, TrendingUp, Scale, Search, Target, DollarSign, Shield, Award, CheckCircle, Rocket, Zap, Heart, Globe, Lightbulb, BarChart3, GraduationCap, Store, Smartphone, Landmark } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import BeeIcon from "@/components/BeeIcon";
@@ -17,11 +16,9 @@ const Index = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // Reveal on scroll
           if (entry.target.classList.contains("reveal-on-scroll") && entry.isIntersecting) {
             entry.target.classList.add("is-revealed");
           }
-          // Stats counter
           if (entry.target.id === "stats-section" && entry.isIntersecting) {
             animateCounters();
             observer.unobserve(entry.target);
@@ -81,11 +78,37 @@ const Index = () => {
     { name: "Neha Gupta", role: "D2C Brand", text: "Taxation guide is a lifesaver for new businesses." },
   ];
 
+  const journeySteps = [
+    { step: "01", title: "Plan", desc: "Validate your idea with market research, create a solid business plan, and map your business model on canvas.", icon: Lightbulb, color: "from-amber-500 to-orange-500" },
+    { step: "02", title: "Launch", desc: "Register your business, get licenses, set up compliance, understand taxation, and prepare for day one.", icon: Rocket, color: "from-blue-500 to-cyan-500" },
+    { step: "03", title: "Grow", desc: "Analyze strengths with SWOT, find incubators and funding, optimize financials, and scale operations.", icon: TrendingUp, color: "from-emerald-500 to-green-500" },
+    { step: "04", title: "Scale", desc: "Access advanced tools, connect with the community, get AI-powered advice, and take your business national.", icon: BarChart3, color: "from-violet-500 to-purple-500" },
+  ];
+
+  const useCases = [
+    { icon: Store, title: "Opening a Retail Store", desc: "From FSSAI licenses to GST registration, get every document and checklist you need." },
+    { icon: Smartphone, title: "Launching a Tech Startup", desc: "Business canvas, pitch decks, incubator matching, and incorporation guidance." },
+    { icon: GraduationCap, title: "Freelancer Going Pro", desc: "Understand taxation, create invoices, and register as a sole proprietor or LLP." },
+    { icon: Globe, title: "E-commerce Business", desc: "Market research tools, financial calculators, and legal compliance for online selling." },
+    { icon: Landmark, title: "Social Enterprise / NGO", desc: "Registration guides, compliance checklists, and funding scheme directories." },
+    { icon: Users, title: "Agency or Consultancy", desc: "Business planning tools, client management frameworks, and growth strategies." },
+  ];
+
+  const sources = [
+    "Ministry of Corporate Affairs (MCA)",
+    "DPIIT & Startup India",
+    "GST Portal & CBDT",
+    "Reserve Bank of India (RBI)",
+    "SEBI & FEMA Guidelines",
+    "NPTEL & Skill India",
+    "State MSME Portals",
+    "FSSAI & Labour Dept.",
+  ];
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center py-20 overflow-hidden">
-        {/* Animated honeycomb background */}
         <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]">
           <svg width="100%" height="100%">
             <defs>
@@ -98,22 +121,18 @@ const Index = () => {
           </svg>
         </div>
 
-        {/* Floating gradient orbs */}
         <div className="absolute top-20 left-[10%] w-64 h-64 bg-amber-400/20 dark:bg-amber-500/10 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-20 right-[10%] w-80 h-80 bg-blue-400/15 dark:bg-blue-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "3s" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-300/10 dark:bg-purple-500/5 rounded-full blur-3xl" />
 
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className={`max-w-4xl mx-auto transform transition-all duration-1000 ${isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
-            {/* Badge */}
             <div className="mb-8 flex justify-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border bg-background/60 backdrop-blur-sm shadow-sm">
                 <BeeIcon className="w-5 h-5" />
-                <span className="text-sm font-semibold bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">India's #1 Business Growth Platform</span>
+                <span className="text-sm font-semibold bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">India's Business Growth Platform</span>
               </div>
             </div>
 
-            {/* Main heading */}
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-foreground mb-6 leading-[0.95] tracking-tight">
               Build Your
               <br />
@@ -123,7 +142,7 @@ const Index = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              The ultimate toolkit for ambitious entrepreneurs. Plan, launch, and scale your startup with AI-powered guidance and a thriving community.
+              From opening a neighborhood store to launching a tech startup — BizHive gives you the tools, templates, legal guidance, and AI-powered advice to succeed at every stage.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -142,10 +161,59 @@ const Index = () => {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Floating bee decoration */}
-        <div className="absolute bottom-10 right-[15%] hidden lg:block animate-float" style={{ animationDelay: "1.5s" }}>
-          <BeeIcon className="w-16 h-16 opacity-20" />
+      {/* What is BizHive */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center reveal-on-scroll">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+              What is BizHive?
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+              BizHive is India's comprehensive business growth platform — a single destination where entrepreneurs, freelancers, and small business owners find everything they need to start, run, and scale a business. Whether you're filing your first GST return, writing a pitch deck for investors, or figuring out FSSAI licensing for your cloud kitchen, BizHive has you covered with step-by-step guides, interactive tools, legal templates, and an AI assistant that understands Indian business regulations.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {useCases.map((uc, i) => {
+                const Icon = uc.icon;
+                return (
+                  <div key={i} className="p-4 rounded-xl bg-background border hover:shadow-md transition-shadow text-left">
+                    <Icon className="h-6 w-6 text-primary mb-2" />
+                    <h4 className="font-semibold text-foreground text-sm mb-1">{uc.title}</h4>
+                    <p className="text-xs text-muted-foreground">{uc.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How We Help — Journey Steps */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 reveal-on-scroll">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">How We Help You Succeed</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Your four-stage journey from idea to empire.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {journeySteps.map((s, i) => {
+              const Icon = s.icon;
+              return (
+                <div key={i} className="reveal-on-scroll relative group" style={{ transitionDelay: `${i * 100}ms` }}>
+                  <div className="p-6 rounded-2xl border bg-background hover:shadow-xl transition-all duration-300 h-full">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                      <Icon className="h-6 w-6 text-white" />
+                    </div>
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Step {s.step}</span>
+                    <h3 className="text-xl font-bold text-foreground mt-1 mb-2">{s.title}</h3>
+                    <p className="text-sm text-muted-foreground">{s.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -212,8 +280,36 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Bento Features */}
+      {/* Why BizHive */}
       <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 reveal-on-scroll">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">Why BizHive?</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {[
+              { icon: DollarSign, title: "100% Free Tools", desc: "No paywalls, no trials. Every calculator, canvas, and template is free." },
+              { icon: Globe, title: "India-Focused", desc: "Built for Indian regulations — GST, MCA, FSSAI, Startup India, and more." },
+              { icon: BeeIcon, title: "AI-Powered Advisor", desc: "Bee AI understands your business context and gives tailored advice." },
+              { icon: Users, title: "Active Community", desc: "Connect with founders, mentors, and experts across industries." },
+            ].map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <div key={i} className="reveal-on-scroll text-center p-6 rounded-2xl bg-background border hover:shadow-lg transition-all" style={{ transitionDelay: `${i * 80}ms` }}>
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Icon className="h-7 w-7 text-primary" />
+                  </div>
+                  <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Bento Features */}
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 reveal-on-scroll">
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">Your Complete Playbook</h2>
@@ -268,6 +364,23 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Our Sources */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10 reveal-on-scroll">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Our Sources</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto text-sm">All information is sourced from official Indian government portals and regulatory bodies.</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto reveal-on-scroll">
+            {sources.map((s, i) => (
+              <span key={i} className="px-4 py-2 rounded-full border bg-background text-sm font-medium text-foreground hover:bg-accent transition-colors">
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500" />
@@ -280,7 +393,7 @@ const Index = () => {
               Join the community of makers and founders shaping the future of India's startup ecosystem.
             </p>
             <Button asChild size="lg" className="bg-white text-orange-600 hover:bg-white/90 text-lg px-10 py-6 rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
-              <Link to="/register">
+              <Link to="/login">
                 Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
