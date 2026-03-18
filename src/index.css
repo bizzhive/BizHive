@@ -94,6 +94,35 @@
   }
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(25 30% 75%);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(25 60% 55%);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(25 20% 30%);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(25 40% 45%);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(25 30% 75%) transparent;
+}
+.dark * {
+  scrollbar-color: hsl(25 20% 30%) transparent;
+}
+
 /* Custom animations */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
