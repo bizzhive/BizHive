@@ -90,7 +90,11 @@ const AdminPanel = () => {
         navigate("/login");
         return;
       }
-      // Temporarily bypass admin checks to allow access
+      const { data } = await supabase.rpc('has_role', { role: 'admin' });
+      if (!data) {
+        navigate("/dashboard");
+        return;
+      }
       setIsAdmin(true);
       await fetchData();
       setLoading(false);
