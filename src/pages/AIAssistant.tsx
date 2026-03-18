@@ -14,7 +14,7 @@ type Msg = { role: "user" | "assistant"; content: string };
 
 const INITIAL_MSG: Msg = {
   role: "assistant",
-  content: "Hey! I'm **Bee** 🐝, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or strategies!"
+  content: "Hey! I'm **Bee**, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or strategies!"
 };
 
 const AIAssistant = () => {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +13,7 @@ type Msg = { role: "user" | "assistant"; content: string };
 
 const INITIAL_MSG: Msg = {
   role: "assistant",
-  content: "Hey! I'm **Bee** 🐝, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or whatever you see on this page!"
+  content: "Hey! I'm **Bee**, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or whatever you see on this page!"
 };
 
 interface BeePanelProps {
@@ -138,7 +137,6 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
       <div className="px-4 py-3 border-b flex-shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BeeIcon className="w-6 h-6" />
@@ -150,7 +148,6 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
         </Button>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -187,7 +184,6 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
       <div className="px-4 py-3 border-t flex-shrink-0">
         <div className="flex gap-2">
           <Textarea

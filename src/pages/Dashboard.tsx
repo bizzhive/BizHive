@@ -131,7 +131,7 @@ const Dashboard = () => {
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Welcome to BizHive! 🎉</DialogTitle>
+            <DialogTitle>Welcome to BizHive</DialogTitle>
             <DialogDescription>Tell us about yourself so we can personalize your experience.</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleOnboarding} className="space-y-4">
@@ -164,9 +164,9 @@ const Dashboard = () => {
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-foreground">{profile?.full_name || "My Profile"}</h1>
           <p className="text-muted-foreground mt-1">
-            Welcome back{profile?.full_name ? `, ${profile.full_name}` : ""}! Here's your business overview.
+            Welcome back! Here's your business overview.
           </p>
         </div>
         <Button onClick={() => navigate("/plan")} className="bg-primary hover:bg-primary/90 text-primary-foreground">
