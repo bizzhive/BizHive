@@ -19,21 +19,15 @@ serve(async (req) => {
       throw new Error('GOOGLE_API_KEY is not configured');
     }
 
-    const systemPrompt = `You are an expert business consultant AI helping a founder fill out the "${field}" section of a business strategy tool.\n\nUser/Business Context:\n${JSON.stringify(context, null, 2)}\n\nProvide a concise, professional, and highly specific suggestion for this section. DO NOT use introductory or concluding filler phrases (e.g., "Here is a suggestion", "Hope this helps"). Just provide the raw content in a few bullet points or short sentences.`;
+    const systemPrompt = `You are an expert business consultant AI helping a founder fill out the "${field}" section of a business strategy tool.\n\nUser/Business Context:\n${JSON.stringify(context, null, 2)}\n\nProvide a concise, professional, and highly specific suggestion for this section. DO NOT use introductory or concluding filler phrases. Just provide the raw content in a few bullet points or short sentences.`;
     
     const fullPrompt = systemPrompt + "\n\nUser prompt: " + prompt;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GOOGLE_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: fullPrompt
-          }]
-        }]
+        contents: [{ parts: [{ text: fullPrompt }] }],
       }),
     });
 
@@ -44,7 +38,7 @@ serve(async (req) => {
     const data = await response.json();
     const suggestion = data.candidates[0].content.parts[0].text;
 
-    return new Response(JSON.stringify({ suggestion: suggestion }), {
+    return new Response(JSON.stringify({ suggestion }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

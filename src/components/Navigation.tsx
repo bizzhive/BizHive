@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -11,79 +10,59 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Menu, Moon, Sun, LogOut, ChevronDown, User, Shield } from "lucide-react";
+import { Menu, Moon, Sun, LogOut, ChevronDown, User, ClipboardList, Rocket, TrendingUp, BookOpen } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import BeeIcon from "./BeeIcon";
-import { supabase } from "@/integrations/supabase/client";
 
 const navGroups = [
   {
     label: "Plan",
+    icon: ClipboardList,
     items: [
+      { name: "Learn: Planning", href: "/plan/learn", desc: "Planning fundamentals" },
       { name: "Business Planning", href: "/plan", desc: "Create your roadmap" },
       { name: "Market Research", href: "/plan/market-research", desc: "Industry insights & analysis" },
       { name: "Business Plan", href: "/plan/business-plan", desc: "Write a winning plan" },
       { name: "Business Canvas", href: "/tools/business-canvas", desc: "Visual business model" },
-      { name: "Learn: Planning", href: "/plan/learn", desc: "📖 Planning fundamentals" },
     ],
   },
   {
     label: "Launch",
+    icon: Rocket,
     items: [
+      { name: "Learn: Launching", href: "/launch/learn", desc: "Launch fundamentals" },
       { name: "Launch Checklist", href: "/launch", desc: "Step-by-step launch guide" },
       { name: "Legal & Compliance", href: "/legal", desc: "Registrations & licenses" },
       { name: "Taxation", href: "/taxation", desc: "Tax planning & GST" },
-      { name: "Learn: Launching", href: "/launch/learn", desc: "📖 Launch fundamentals" },
     ],
   },
   {
     label: "Grow",
+    icon: TrendingUp,
     items: [
+      { name: "Learn: Growing", href: "/manage/learn", desc: "Growth fundamentals" },
       { name: "Manage & Scale", href: "/manage", desc: "Operations & growth" },
       { name: "Incubators & Funding", href: "/incubators", desc: "Find the right incubator" },
       { name: "SWOT Analysis", href: "/tools/swot-analysis", desc: "Strengths & weaknesses" },
       { name: "All Tools", href: "/tools", desc: "Calculators & frameworks" },
-      { name: "Learn: Growing", href: "/manage/learn", desc: "📖 Growth fundamentals" },
     ],
   },
   {
     label: "Resources",
+    icon: BookOpen,
     items: [
+      { name: "Learn: Resources", href: "/resources/learn", desc: "Using resources" },
       { name: "Documents", href: "/documents", desc: "Templates & forms" },
       { name: "Blog", href: "/blog", desc: "Articles & guides" },
       { name: "Community", href: "/community", desc: "Forums & networking" },
-      { name: "Learn: Resources", href: "/resources/learn", desc: "📖 Using resources" },
     ],
   },
 ];
 
 const UserProfileMenu = () => {
-  const { user, signOut } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const checkAdminRole = async () => {
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
-      const { data } = await supabase.rpc('has_role', { role: 'admin' });
-      setIsAdmin(data || false);
-    };
-    checkAdminRole();
-    // Re-check when user changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
-        checkAdminRole();
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [user]);
+  const { signOut } = useAuth();
 
   return (
     <NavigationMenu>
@@ -98,20 +77,10 @@ const UserProfileMenu = () => {
               <li>
                 <NavigationMenuLink asChild>
                   <Link to="/dashboard" className="block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent">
-                    Dashboard
+                    My Profile
                   </Link>
                 </NavigationMenuLink>
               </li>
-              {isAdmin && (
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link to="/admin" className="flex items-center select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent">
-                      <Shield className="h-4 w-4 mr-2" />
-                      Admin
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-              )}
               <li>
                 <NavigationMenuLink asChild>
                   <button onClick={signOut} className="flex items-center w-full select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent text-destructive">
@@ -133,7 +102,7 @@ const Navigation = () => {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -141,7 +110,6 @@ const Navigation = () => {
     <nav className="border-b bg-background/80 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 flex-shrink-0 group">
             <BeeIcon className="w-9 h-9 group-hover:scale-110 transition-transform duration-300" />
             <div className="flex flex-col">
@@ -150,37 +118,40 @@ const Navigation = () => {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden lg:block">
             <NavigationMenu>
               <NavigationMenuList className="gap-0.5">
-                {navGroups.map((group) => (
-                  <NavigationMenuItem key={group.label}>
-                    <NavigationMenuTrigger className="bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground data-[state=open]:text-foreground">
-                      {group.label}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[320px] gap-1 p-3">
-                        {group.items.map((item) => (
-                          <li key={item.href}>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                to={item.href}
-                                className={cn(
-                                  "block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent",
-                                  isActive(item.href) && "bg-accent text-accent-foreground"
-                                )}
-                              >
-                                <div className="text-sm font-medium leading-none mb-1">{item.name}</div>
-                                <p className="text-xs leading-snug text-muted-foreground">{item.desc}</p>
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                ))}
+                {navGroups.map((group) => {
+                  const Icon = group.icon;
+                  return (
+                    <NavigationMenuItem key={group.label}>
+                      <NavigationMenuTrigger className="bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground data-[state=open]:text-foreground">
+                        <Icon className="h-4 w-4 mr-1.5" />
+                        {group.label}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="grid w-[320px] gap-1 p-3">
+                          {group.items.map((item) => (
+                            <li key={item.href}>
+                              <NavigationMenuLink asChild>
+                                <Link
+                                  to={item.href}
+                                  className={cn(
+                                    "block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent",
+                                    isActive(item.href) && "bg-accent text-accent-foreground"
+                                  )}
+                                >
+                                  <div className="text-sm font-medium leading-none mb-1">{item.name}</div>
+                                  <p className="text-xs leading-snug text-muted-foreground">{item.desc}</p>
+                                </Link>
+                              </NavigationMenuLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  );
+                })}
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link
@@ -212,7 +183,6 @@ const Navigation = () => {
             </NavigationMenu>
           </div>
 
-          {/* Right Controls */}
           <div className="flex items-center gap-1.5">
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-9 h-9">
               {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
@@ -222,18 +192,12 @@ const Navigation = () => {
               {user ? (
                 <UserProfileMenu />
               ) : (
-                <>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to="/login">Login</Link>
-                  </Button>
-                  <Button asChild size="sm">
-                    <Link to="/register">Sign Up</Link>
-                  </Button>
-                </>
+                <Button asChild variant="ghost" size="sm">
+                  <Link to="/login">Login</Link>
+                </Button>
               )}
             </div>
 
-            {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="lg:hidden">
@@ -304,27 +268,21 @@ const Navigation = () => {
                     {user ? (
                       <>
                         <Button asChild variant="outline" className="w-full">
-                          <Link to="/dashboard" onClick={() => setIsOpen(false)}>Dashboard</Link>
+                          <Link to="/dashboard" onClick={() => setIsOpen(false)}>My Profile</Link>
                         </Button>
-                        {/* Add Admin link for mobile here if needed */}
                         <Button
                           variant="ghost"
                           className="w-full text-destructive hover:text-destructive"
-                          onClick={() => { useAuth().signOut(); setIsOpen(false); }}
+                          onClick={() => { signOut(); setIsOpen(false); }}
                         >
                           <LogOut className="h-4 w-4 mr-2" />
                           Logout
                         </Button>
                       </>
                     ) : (
-                      <>
-                        <Button asChild variant="outline" className="w-full">
-                          <Link to="/login" onClick={() => setIsOpen(false)}>Login</Link>
-                        </Button>
-                        <Button asChild className="w-full">
-                          <Link to="/register" onClick={() => setIsOpen(false)}>Sign Up</Link>
-                        </Button>
-                      </>
+                      <Button asChild variant="outline" className="w-full">
+                        <Link to="/login" onClick={() => setIsOpen(false)}>Login</Link>
+                      </Button>
                     )}
                   </div>
                 </div>

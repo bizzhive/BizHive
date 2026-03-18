@@ -51,7 +51,7 @@ const Footer = () => {
               Empowering Indian entrepreneurs with comprehensive resources, tools, and guidance for business success.
             </p>
             <div className="space-y-2 text-sm text-background/70 dark:text-muted-foreground">
-              <div className="flex items-center space-x-2"><Mail className="h-4 w-4" /><span>support@bizhive.com</span></div>
+              <div className="flex items-center space-x-2"><Mail className="h-4 w-4" /><span>bizzhive.support@gmail.com</span></div>
               <div className="flex items-center space-x-2"><Phone className="h-4 w-4" /><span>+91 XXXXX XXXXX</span></div>
             </div>
           </div>
@@ -102,13 +102,14 @@ const Footer = () => {
 
         <div className="border-t border-background/10 dark:border-border mt-8 pt-8 text-center text-sm text-background/60 dark:text-muted-foreground">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-            <p>© 2026 BizHive. All rights reserved.</p>
-            <p>Designed by <span className="text-primary">Tushar Gehlot</span></p>
+            <p>&copy; 2026 BizHive. All rights reserved.</p>
+            <p>Designed & Developed by <a href="mailto:ghttushar2002@gmail.com" className="text-primary hover:text-primary/80 transition-colors">Tushar Gehlot</a></p>
           </div>
           <div className="mt-4 flex flex-wrap justify-center space-x-4 text-xs">
             <Link to="/privacy" className="hover:text-background dark:hover:text-foreground">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-background dark:hover:text-foreground">Terms of Service</Link>
             <Link to="/contact" className="hover:text-background dark:hover:text-foreground">Contact</Link>
+            <Link to="/admin" className="hover:text-background dark:hover:text-foreground">Admin Panel</Link>
           </div>
         </div>
       </div>

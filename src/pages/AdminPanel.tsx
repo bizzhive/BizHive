@@ -6,30 +6,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { BookOpen, FileText, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users } from "lucide-react";
+import { BookOpen, FileText, Lock, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users } from "lucide-react";
 import BeeIcon from "@/components/BeeIcon";
 import AdminBlogsTab from "@/components/admin/AdminBlogsTab";
 import AdminCommunityTab from "@/components/admin/AdminCommunityTab";
 import AdminDocumentsTab from "@/components/admin/AdminDocumentsTab";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
 
+const ADMIN_PASSWORD = "admin#Tushar07";
+
 const AdminPanel = () => {
-  const { user } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [contacts, setContacts] = useState<any[]>([]);
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -44,19 +39,33 @@ const AdminPanel = () => {
   const [aiPrompt, setAiPrompt] = useState("");
   const [savingPrompt, setSavingPrompt] = useState(false);
 
+  // Check sessionStorage on mount
+  useEffect(() => {
+    if (sessionStorage.getItem("bizhive_admin") === "true") {
+      setAuthenticated(true);
+    }
+  }, []);
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordInput === ADMIN_PASSWORD) {
+      sessionStorage.setItem("bizhive_admin", "true");
+      setAuthenticated(true);
+      toast({ title: "Welcome", description: "Admin access granted." });
+    } else {
+      toast({ title: "Access Denied", description: "Incorrect password.", variant: "destructive" });
+    }
+    setPasswordInput("");
+  };
+
   const fetchData = async () => {
+    setLoading(true);
+    // Admin operations need an authenticated Supabase user with admin role for RLS
+    // For password-only admin, we fetch what's publicly readable and use anon key
     const [
-      contactsRes,
-      subscribersRes,
-      settingsRes,
-      blogsRes,
-      groupsRes,
-      postsRes,
-      messagesRes,
-      documentsRes,
-      profilesRes,
-      rolesRes,
-      bansRes,
+      contactsRes, subscribersRes, settingsRes, blogsRes,
+      groupsRes, postsRes, messagesRes, documentsRes,
+      profilesRes, rolesRes, bansRes,
     ] = await Promise.all([
       supabase.from("contact_submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
@@ -82,26 +91,25 @@ const AdminPanel = () => {
     setRoles(rolesRes.data ?? []);
     setBans(bansRes.data ?? []);
     setAiPrompt(settingsRes.data?.value ?? "");
+    setLoading(false);
   };
 
   useEffect(() => {
-    const checkAdmin = async () => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-      const { data } = await supabase.rpc('has_role', { role: 'admin' });
-      if (!data) {
-        navigate("/dashboard");
-        return;
-      }
-      setIsAdmin(true);
-      await fetchData();
-      setLoading(false);
-    };
+    if (authenticated) {
+      fetchData();
 
-    checkAdmin();
-  }, [navigate, user]);
+      // Realtime subscriptions
+      const channel = supabase
+        .channel('admin-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'contact_submissions' }, () => fetchData())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'newsletter_subscribers' }, () => fetchData())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'community_messages' }, () => fetchData())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'community_posts' }, () => fetchData())
+        .subscribe();
+
+      return () => { supabase.removeChannel(channel); };
+    }
+  }, [authenticated]);
 
   const handleSavePrompt = async () => {
     setSavingPrompt(true);
@@ -110,29 +118,54 @@ const AdminPanel = () => {
       value: aiPrompt,
       updated_at: new Date().toISOString(),
     });
-
     setSavingPrompt(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
       return;
     }
-
     toast({ title: "Saved", description: "AI system prompt updated." });
   };
 
-  if (loading || !isAdmin) {
+  // Password gate
+  if (!authenticated) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Card className="w-full max-w-sm">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-2">
+              <Shield className="h-10 w-10 text-primary" />
+            </div>
+            <CardTitle>Admin Access</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="Enter admin password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  className="pl-10"
+                  required
+                  autoFocus
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Access Panel
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   const filteredContacts = contacts.filter((contact) =>
     contactSearch === "" ||
-    contact.name.toLowerCase().includes(contactSearch.toLowerCase()) ||
-    contact.email.toLowerCase().includes(contactSearch.toLowerCase()) ||
-    contact.subject.toLowerCase().includes(contactSearch.toLowerCase())
+    contact.name?.toLowerCase().includes(contactSearch.toLowerCase()) ||
+    contact.email?.toLowerCase().includes(contactSearch.toLowerCase()) ||
+    contact.subject?.toLowerCase().includes(contactSearch.toLowerCase())
   );
 
   return (
@@ -146,10 +179,15 @@ const AdminPanel = () => {
               <p className="text-sm text-muted-foreground">Manage content, community, files, users, and Bee.</p>
             </div>
           </div>
-          <Button variant="outline" onClick={fetchData}>
-            <RefreshCw className="h-4 w-4" />
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={fetchData} disabled={loading}>
+              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+            <Button variant="ghost" onClick={() => { sessionStorage.removeItem("bizhive_admin"); setAuthenticated(false); }}>
+              Logout
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="contacts" className="space-y-6">
@@ -226,10 +264,10 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="blogs"><AdminBlogsTab blogs={blogs} onRefresh={fetchData} currentUserId={user?.id} /></TabsContent>
-          <TabsContent value="community"><AdminCommunityTab groups={communityGroups} posts={communityPosts} messages={communityMessages} onRefresh={fetchData} currentUserId={user?.id} /></TabsContent>
+          <TabsContent value="blogs"><AdminBlogsTab blogs={blogs} onRefresh={fetchData} currentUserId={undefined} /></TabsContent>
+          <TabsContent value="community"><AdminCommunityTab groups={communityGroups} posts={communityPosts} messages={communityMessages} onRefresh={fetchData} currentUserId={undefined} /></TabsContent>
           <TabsContent value="documents"><AdminDocumentsTab documents={documents} onRefresh={fetchData} /></TabsContent>
-          <TabsContent value="users"><AdminUsersTab profiles={profiles} roles={roles} bans={bans} onRefresh={fetchData} currentUserId={user?.id} /></TabsContent>
+          <TabsContent value="users"><AdminUsersTab profiles={profiles} roles={roles} bans={bans} onRefresh={fetchData} currentUserId={undefined} /></TabsContent>
 
           <TabsContent value="ai">
             <Card>
