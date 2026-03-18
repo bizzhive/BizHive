@@ -40,6 +40,7 @@ import PlanLearn from "./pages/plan/PlanLearn";
 import LaunchLearn from "./pages/launch/LaunchLearn";
 import ManageLearn from "./pages/manage/ManageLearn";
 import ResourcesLearn from "./pages/resources/ResourcesLearn";
+import EmailVerification from "./pages/EmailVerification";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,7 @@ const App = () => (
                 <Route path="/admin" element={<AdminPanel />} />
                 <Route path="/ai-assistant" element={<AIAssistant />} />
                 <Route path="/resources/learn" element={<ResourcesLearn />} />
+                <Route path="/email-verification" element={<EmailVerification />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>

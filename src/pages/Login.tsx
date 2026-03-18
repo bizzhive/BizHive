@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { Mail, Lock, User, ArrowRight, Shield, Star } from "lucide-react";
-import { lovable } from "@/integrations/lovable";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -23,8 +22,11 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      const { error } = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin,
+        },
       });
       if (error) throw error;
     } catch (error: any) {
@@ -72,7 +74,7 @@ const Login = () => {
         options: { data: { full_name: registerData.name } },
       });
       if (error) throw error;
-      toast({ title: "Success", description: "Registration successful! Please check your email to verify your account." });
+      navigate("/email-verification");
     } catch (error: any) {
       toast({ title: "Error", description: error.message || "Failed to register", variant: "destructive" });
     } finally {
@@ -155,7 +157,7 @@ const Login = () => {
                           <Label htmlFor="password">Password</Label>
                           <div className="relative">
                             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input id="password" type="password" placeholder="Enter your password" className="pl-10" value={loginData.password} onChange={(e) => setLoginData({...loginData, password: e.target.value})} required />
+                            <Input id="password" type="password" placeholder="Enter your password" className="pl-10" value={loginData.password} onChange={(e) => setLoginData({...loginData, password: e.targe.value})} required />
                           </div>
                         </div>
                         <div className="text-sm"><Link to="/forgot-password" className="text-primary hover:underline">Forgot password?</Link></div>
