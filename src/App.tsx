@@ -55,7 +55,7 @@ const ScrollToTop = () => {
   return null;
 };
 
-const AnimatedRoutes = () => {
+const AppRoutes = () => {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
@@ -113,7 +113,7 @@ const App = () => (
           <BrowserRouter>
             <ScrollToTop />
             <Layout>
-              <AnimatedRoutes />
+              <AppRoutes />
             </Layout>
             <CookieConsent />
           </BrowserRouter>
