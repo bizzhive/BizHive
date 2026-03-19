@@ -1,67 +1,77 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, Session } from "@supabase/supabase-js";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  isLoading: boolean;
-  signOut: () => Promise<void>;
-}
+const AuthContext = createContext({});
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  session: null,
-  isLoading: true,
-  signOut: async () => {},
-});
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user ?? null);
+      setLoading(false);
+    };
+    checkUser();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
-      setIsLoading(false);
-
-      // Clear caches on sign out
-      if (_event === "SIGNED_OUT") {
-        localStorage.clear();
-        sessionStorage.clear();
+      if (event === "SIGNED_IN") {
+        navigate("/");
+      } else if (event === "SIGNED_OUT") {
+        navigate("/login");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    localStorage.clear();
-    sessionStorage.clear();
+  const signUp = async (email, password, fullName) => {
+    const { data, error } = await supabase.auth.signUp({
+      email, password, options: { data: { full_name: fullName } },
+    });
+    if (error) throw error;
+    // Store email for verification page
+    sessionStorage.setItem("pending_verification_email", email);
+    navigate("/verify-email");
+    return data;
   };
 
-  return (
-    <AuthContext.Provider value={{ user, session, isLoading, signOut }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const resendVerificationEmail = async (email) => {
+    const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+    });
+    if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+        throw error;
+    }
+    toast({ title: "Email Sent", description: "A new verification link has been sent to your email." });
+  }
+
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/` },
+    });
+    if (error) throw error;
+  };
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const value = { user, loading, signUp, signInWithGoogle, signOut, resendVerificationEmail };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

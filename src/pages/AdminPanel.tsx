@@ -17,6 +17,8 @@ import AdminCommunityTab from "@/components/admin/AdminCommunityTab";
 import AdminDocumentsTab from "@/components/admin/AdminDocumentsTab";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
 
+// WARNING: This is a critical security vulnerability.
+// This password is included in the production JavaScript bundle and is visible to anyone.
 const ADMIN_PASSWORD = "admin#Tushar07";
 
 const AdminPanel = () => {
@@ -38,12 +40,17 @@ const AdminPanel = () => {
   const [contactSearch, setContactSearch] = useState("");
   const [aiPrompt, setAiPrompt] = useState("");
   const [savingPrompt, setSavingPrompt] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
 
-  // Check sessionStorage on mount
   useEffect(() => {
     if (sessionStorage.getItem("bizhive_admin") === "true") {
       setAuthenticated(true);
     }
+    const getSupabaseUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setCurrentUserId(data.user?.id);
+    };
+    getSupabaseUser();
   }, []);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
@@ -60,8 +67,6 @@ const AdminPanel = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    // Admin operations need an authenticated Supabase user with admin role for RLS
-    // For password-only admin, we fetch what's publicly readable and use anon key
     const [
       contactsRes, subscribersRes, settingsRes, blogsRes,
       groupsRes, postsRes, messagesRes, documentsRes,
@@ -75,9 +80,9 @@ const AdminPanel = () => {
       supabase.from("community_posts").select("*").order("created_at", { ascending: false }),
       supabase.from("community_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      supabase.from("user_roles").select("*").order("role", { ascending: true }),
-      supabase.from("user_bans").select("*").order("banned_at", { ascending: false }),
+      supabase.from("profiles").select('user_id, full_name, users(email)'),
+      supabase.from("user_roles").select("*"),
+      supabase.from("user_bans").select("*"),
     ]);
 
     setContacts(contactsRes.data ?? []);
@@ -87,7 +92,10 @@ const AdminPanel = () => {
     setCommunityPosts(postsRes.data ?? []);
     setCommunityMessages(messagesRes.data ?? []);
     setDocuments(documentsRes.data ?? []);
-    setProfiles(profilesRes.data ?? []);
+    if (profilesRes.data) {
+        const formattedProfiles = profilesRes.data.map(p => ({ ...p, email: p.users?.email, users: undefined }));
+        setProfiles(formattedProfiles);
+    }
     setRoles(rolesRes.data ?? []);
     setBans(bansRes.data ?? []);
     setAiPrompt(settingsRes.data?.value ?? "");
@@ -97,14 +105,13 @@ const AdminPanel = () => {
   useEffect(() => {
     if (authenticated) {
       fetchData();
-
-      // Realtime subscriptions
       const channel = supabase
-        .channel('admin-realtime')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'contact_submissions' }, () => fetchData())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'newsletter_subscribers' }, () => fetchData())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'community_messages' }, () => fetchData())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'community_posts' }, () => fetchData())
+        .channel('admin-realtime-all')
+        .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
+            console.log('Realtime change detected:', payload);
+            toast({ title: `Content changed in ${payload.table}`, description: "Refreshing all data..." });
+            fetchData();
+        })
         .subscribe();
 
       return () => { supabase.removeChannel(channel); };
@@ -113,47 +120,24 @@ const AdminPanel = () => {
 
   const handleSavePrompt = async () => {
     setSavingPrompt(true);
-    const { error } = await supabase.from("admin_settings").upsert({
-      key: "ai_system_prompt",
-      value: aiPrompt,
-      updated_at: new Date().toISOString(),
-    });
+    const { error } = await supabase.from("admin_settings").upsert({ key: "ai_system_prompt", value: aiPrompt });
     setSavingPrompt(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
-      return;
+    } else {
+      toast({ title: "Saved", description: "AI system prompt updated." });
     }
-    toast({ title: "Saved", description: "AI system prompt updated." });
   };
 
-  // Password gate
   if (!authenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Card className="w-full max-w-sm">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-2">
-              <Shield className="h-10 w-10 text-primary" />
-            </div>
-            <CardTitle>Admin Access</CardTitle>
-          </CardHeader>
+          <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Access</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="password"
-                  placeholder="Enter admin password"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  className="pl-10"
-                  required
-                  autoFocus
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Access Panel
-              </Button>
+              <div className="relative"><Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input type="password" placeholder="Enter admin password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} className="pl-10" required autoFocus/></div>
+              <Button type="submit" className="w-full">Access Panel</Button>
             </form>
           </CardContent>
         </Card>
@@ -161,11 +145,10 @@ const AdminPanel = () => {
     );
   }
 
-  const filteredContacts = contacts.filter((contact) =>
-    contactSearch === "" ||
-    contact.name?.toLowerCase().includes(contactSearch.toLowerCase()) ||
-    contact.email?.toLowerCase().includes(contactSearch.toLowerCase()) ||
-    contact.subject?.toLowerCase().includes(contactSearch.toLowerCase())
+  const filteredContacts = contacts.filter(c => 
+    contactSearch === "" || 
+    c.name?.toLowerCase().includes(contactSearch.toLowerCase()) || 
+    c.email?.toLowerCase().includes(contactSearch.toLowerCase())
   );
 
   return (
@@ -174,19 +157,11 @@ const AdminPanel = () => {
         <div className="mb-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
-              <p className="text-sm text-muted-foreground">Manage content, community, files, users, and Bee.</p>
-            </div>
+            <div><h1 className="text-3xl font-bold text-foreground">Admin Panel</h1><p className="text-sm text-muted-foreground">Manage content, users, and system settings.</p></div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={fetchData} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-              Refresh
-            </Button>
-            <Button variant="ghost" onClick={() => { sessionStorage.removeItem("bizhive_admin"); setAuthenticated(false); }}>
-              Logout
-            </Button>
+            <Button variant="outline" onClick={fetchData} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />Refresh</Button>
+            <Button variant="ghost" onClick={() => { sessionStorage.removeItem("bizhive_admin"); setAuthenticated(false); }}>Logout</Button>
           </div>
         </div>
 
@@ -203,85 +178,27 @@ const AdminPanel = () => {
 
           <TabsContent value="contacts">
             <Card>
-              <CardHeader>
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <CardTitle>Contact submissions ({contacts.length})</CardTitle>
-                  <div className="relative w-full md:w-72">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search messages..." value={contactSearch} onChange={(e) => setContactSearch(e.target.value)} className="pl-9" />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="max-h-[620px] overflow-auto rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Subject</TableHead>
-                        <TableHead>Message</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredContacts.map((contact) => (
-                        <TableRow key={contact.id}>
-                          <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
-                          <TableCell className="font-medium">{contact.name}</TableCell>
-                          <TableCell>{contact.email}</TableCell>
-                          <TableCell><Badge variant="secondary">{contact.category}</Badge></TableCell>
-                          <TableCell>{contact.subject}</TableCell>
-                          <TableCell className="max-w-[360px] truncate text-sm">{contact.message}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
+              <CardHeader><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><CardTitle>Contact submissions ({contacts.length})</CardTitle><div className="relative w-full md:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input placeholder="Search messages..." value={contactSearch} onChange={(e) => setContactSearch(e.target.value)} className="pl-9" /></div></div></CardHeader>
+              <CardContent><div className="max-h-[620px] overflow-auto rounded-md border"><Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Category</TableHead><TableHead>Subject</TableHead><TableHead>Message</TableHead></TableRow></TableHeader><TableBody>{filteredContacts.map(c => <TableRow key={c.id}><TableCell className="whitespace-nowrap text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</TableCell><TableCell className="font-medium">{c.name}</TableCell><TableCell>{c.email}</TableCell><TableCell><Badge variant="secondary">{c.category}</Badge></TableCell><TableCell>{c.subject}</TableCell><TableCell className="max-w-[360px] truncate text-sm">{c.message}</TableCell></TableRow>)}</TableBody></Table></div></CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="subscribers">
             <Card>
               <CardHeader><CardTitle>Newsletter subscribers ({subscribers.length})</CardTitle></CardHeader>
-              <CardContent>
-                <div className="max-h-[620px] overflow-auto rounded-md border">
-                  <Table>
-                    <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Email</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                      {subscribers.map((subscriber) => (
-                        <TableRow key={subscriber.id}>
-                          <TableCell className="text-xs text-muted-foreground">{new Date(subscriber.created_at).toLocaleDateString()}</TableCell>
-                          <TableCell>{subscriber.email}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
+              <CardContent><div className="max-h-[620px] overflow-auto rounded-md border"><Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Email</TableHead></TableRow></TableHeader><TableBody>{subscribers.map(s => <TableRow key={s.id}><TableCell className="text-xs text-muted-foreground">{new Date(s.created_at).toLocaleDateString()}</TableCell><TableCell>{s.email}</TableCell></TableRow>)}</TableBody></Table></div></CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="blogs"><AdminBlogsTab blogs={blogs} onRefresh={fetchData} currentUserId={undefined} /></TabsContent>
-          <TabsContent value="community"><AdminCommunityTab groups={communityGroups} posts={communityPosts} messages={communityMessages} onRefresh={fetchData} currentUserId={undefined} /></TabsContent>
+          <TabsContent value="blogs"><AdminBlogsTab blogs={blogs} onRefresh={fetchData} currentUserId={currentUserId} /></TabsContent>
+          <TabsContent value="community"><AdminCommunityTab groups={communityGroups} posts={communityPosts} messages={communityMessages} onRefresh={fetchData} currentUserId={currentUserId} /></TabsContent>
           <TabsContent value="documents"><AdminDocumentsTab documents={documents} onRefresh={fetchData} /></TabsContent>
-          <TabsContent value="users"><AdminUsersTab profiles={profiles} roles={roles} bans={bans} onRefresh={fetchData} currentUserId={undefined} /></TabsContent>
+          <TabsContent value="users"><AdminUsersTab profiles={profiles} roles={roles} bans={bans} onRefresh={fetchData} currentUserId={currentUserId} /></TabsContent>
 
           <TabsContent value="ai">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><BeeIcon className="h-5 w-5" />Train Bee AI</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">Customize the system prompt Bee uses to answer users.</p>
-                <Textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} className="min-h-[320px] font-mono text-sm" placeholder="Enter custom system prompt for Bee AI..." />
-                <Button onClick={handleSavePrompt} disabled={savingPrompt}>
-                  <Save className="h-4 w-4" />
-                  {savingPrompt ? "Saving..." : "Save Prompt"}
-                </Button>
-              </CardContent>
+              <CardHeader><CardTitle className="flex items-center gap-2"><BeeIcon className="h-5 w-5" />Train Bee AI</CardTitle></CardHeader>
+              <CardContent className="space-y-4"><p className="text-sm text-muted-foreground">Customize the system prompt Bee uses to answer users.</p><Textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} className="min-h-[320px] font-mono text-sm" placeholder="Enter custom system prompt for Bee AI..." /><Button onClick={handleSavePrompt} disabled={savingPrompt}><Save className="h-4 w-4" />{savingPrompt ? "Saving..." : "Save Prompt"}</Button></CardContent>
             </Card>
           </TabsContent>
         </Tabs>

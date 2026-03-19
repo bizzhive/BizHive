@@ -2,6 +2,7 @@
   channel = "stable-24.05";
   packages = [
     pkgs.nodejs_20
+    pkgs.supabase-cli
   ];
   idx.extensions = [
     "svelte.svelte-vscode"
@@ -17,15 +18,9 @@
           "--"
           "--port"
           "$PORT"
-          "--host"
-          "0.0.0.0"
         ];
         manager = "web";
       };
     };
-  };
-  # Environment variables
-  idx.env = {
-    "PATH" = "$PATH:$PWD/node_modules/.bin";
   };
 }

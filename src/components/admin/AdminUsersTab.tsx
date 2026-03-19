@@ -32,7 +32,8 @@ const AdminUsersTab = ({ profiles, roles, bans, onRefresh, currentUserId }: Admi
         if (ban.user_id !== profile.user_id) return false;
         return !ban.expires_at || +new Date(ban.expires_at) > Date.now();
       });
-      return { ...profile, userRoles, activeBan };
+      // The email should now be directly on the profile object from the parent component
+      return { ...profile, userRoles, activeBan, email: profile.email };
     });
   }, [profiles, roles, bans]);
 
@@ -93,6 +94,7 @@ const AdminUsersTab = ({ profiles, roles, bans, onRefresh, currentUserId }: Admi
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
+                <TableHead>Email</TableHead> {/* Email column added */}
                 <TableHead>Roles</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
@@ -106,6 +108,9 @@ const AdminUsersTab = ({ profiles, roles, bans, onRefresh, currentUserId }: Admi
                       <div className="font-medium">{row.full_name || "Unnamed User"}</div>
                       <div className="text-xs text-muted-foreground">{row.user_id}</div>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-muted-foreground">{row.email || "No email"}</div>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-2">
@@ -147,7 +152,7 @@ const AdminUsersTab = ({ profiles, roles, bans, onRefresh, currentUserId }: Admi
                 </TableRow>
               ))}
               {rows.length === 0 && (
-                <TableRow><TableCell colSpan={4} className="py-8 text-center text-muted-foreground">No users found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">No users found.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

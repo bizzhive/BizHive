@@ -1,5 +1,14 @@
 {
+  "builds": [
+    {
+      "src": "vite.config.ts",
+      "use": "@vercel/vite"
+    }
+  ],
   "rewrites": [
-    { "source": "/((?!assets|favicon|robots|placeholder).*)", "destination": "/" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
