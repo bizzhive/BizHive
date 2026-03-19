@@ -142,7 +142,7 @@ const Index = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              From opening a neighborhood store to launching a tech startup — BizHive gives you the tools, templates, legal guidance, and AI-powered advice to succeed at every stage.
+              India is a land of business. Here, no idea is small and no business is unscalable. From a general store to a global app — we are here for all.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

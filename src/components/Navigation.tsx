@@ -14,11 +14,13 @@ import { Menu, Moon, Sun, LogOut, ChevronDown, User, ClipboardList, Rocket, Tren
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 import BeeIcon from "./BeeIcon";
+import LanguageSelector from "./LanguageSelector";
 
 const navGroups = [
   {
-    label: "Plan",
+    labelKey: "nav.plan",
     icon: ClipboardList,
     items: [
       { name: "Learn: Planning", href: "/plan/learn", desc: "Planning fundamentals" },
@@ -29,7 +31,7 @@ const navGroups = [
     ],
   },
   {
-    label: "Launch",
+    labelKey: "nav.launch",
     icon: Rocket,
     items: [
       { name: "Learn: Launching", href: "/launch/learn", desc: "Launch fundamentals" },
@@ -39,7 +41,7 @@ const navGroups = [
     ],
   },
   {
-    label: "Grow",
+    labelKey: "nav.grow",
     icon: TrendingUp,
     items: [
       { name: "Learn: Growing", href: "/manage/learn", desc: "Growth fundamentals" },
@@ -50,10 +52,9 @@ const navGroups = [
     ],
   },
   {
-    label: "Resources",
+    labelKey: "nav.resources",
     icon: BookOpen,
     items: [
-      { name: "Learn: Resources", href: "/resources/learn", desc: "Using resources" },
       { name: "Documents", href: "/documents", desc: "Templates & forms" },
       { name: "Blog", href: "/blog", desc: "Articles & guides" },
       { name: "Community", href: "/community", desc: "Forums & networking" },
@@ -63,6 +64,7 @@ const navGroups = [
 
 const UserProfileMenu = () => {
   const { signOut } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <NavigationMenu>
@@ -70,14 +72,14 @@ const UserProfileMenu = () => {
         <NavigationMenuItem>
           <NavigationMenuTrigger className="bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground data-[state=open]:text-foreground">
             <User className="h-4 w-4 mr-1.5" />
-            Profile
+            {t("nav.profile")}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[200px] gap-1 p-3">
               <li>
                 <NavigationMenuLink asChild>
                   <Link to="/dashboard" className="block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent">
-                    My Profile
+                    {t("nav.myProfile")}
                   </Link>
                 </NavigationMenuLink>
               </li>
@@ -85,7 +87,7 @@ const UserProfileMenu = () => {
                 <NavigationMenuLink asChild>
                   <button onClick={signOut} className="flex items-center w-full select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent text-destructive">
                     <LogOut className="h-4 w-4 mr-2" />
-                    Logout
+                    {t("nav.logout")}
                   </button>
                 </NavigationMenuLink>
               </li>
@@ -103,6 +105,7 @@ const Navigation = () => {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const { t } = useTranslation();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -124,10 +127,10 @@ const Navigation = () => {
                 {navGroups.map((group) => {
                   const Icon = group.icon;
                   return (
-                    <NavigationMenuItem key={group.label}>
+                    <NavigationMenuItem key={group.labelKey}>
                       <NavigationMenuTrigger className="bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground data-[state=open]:text-foreground">
                         <Icon className="h-4 w-4 mr-1.5" />
-                        {group.label}
+                        {t(group.labelKey)}
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
                         <ul className="grid w-[320px] gap-1 p-3">
@@ -162,7 +165,7 @@ const Navigation = () => {
                       )}
                     >
                       <BeeIcon className="w-4 h-4 mr-1.5" />
-                      Bee AI
+                      {t("nav.beeAi")}
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -175,7 +178,7 @@ const Navigation = () => {
                         isActive("/contact") && "bg-accent text-accent-foreground"
                       )}
                     >
-                      Contact
+                      {t("nav.contact")}
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -184,6 +187,7 @@ const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-1.5">
+            <LanguageSelector />
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-9 h-9">
               {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </Button>
@@ -193,7 +197,7 @@ const Navigation = () => {
                 <UserProfileMenu />
               ) : (
                 <Button asChild variant="ghost" size="sm">
-                  <Link to="/login">Login</Link>
+                  <Link to="/login">{t("nav.login")}</Link>
                 </Button>
               )}
             </div>
@@ -213,15 +217,15 @@ const Navigation = () => {
 
                   <div className="flex-1 space-y-1">
                     {navGroups.map((group) => (
-                      <div key={group.label}>
+                      <div key={group.labelKey}>
                         <button
-                          onClick={() => setOpenGroup(openGroup === group.label ? null : group.label)}
+                          onClick={() => setOpenGroup(openGroup === group.labelKey ? null : group.labelKey)}
                           className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-semibold text-foreground rounded-lg hover:bg-accent transition-colors"
                         >
-                          {group.label}
-                          <ChevronDown className={cn("h-4 w-4 transition-transform", openGroup === group.label && "rotate-180")} />
+                          {t(group.labelKey)}
+                          <ChevronDown className={cn("h-4 w-4 transition-transform", openGroup === group.labelKey && "rotate-180")} />
                         </button>
-                        {openGroup === group.label && (
+                        {openGroup === group.labelKey && (
                           <div className="ml-3 space-y-0.5 animate-fade-in">
                             {group.items.map((item) => (
                               <Link
@@ -250,7 +254,7 @@ const Navigation = () => {
                         isActive("/ai-assistant") ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent"
                       )}
                     >
-                      <BeeIcon className="w-4 h-4" /> Bee AI
+                      <BeeIcon className="w-4 h-4" /> {t("nav.beeAi")}
                     </Link>
                     <Link
                       to="/contact"
@@ -260,7 +264,7 @@ const Navigation = () => {
                         isActive("/contact") ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent"
                       )}
                     >
-                      Contact
+                      {t("nav.contact")}
                     </Link>
                   </div>
 
@@ -268,7 +272,7 @@ const Navigation = () => {
                     {user ? (
                       <>
                         <Button asChild variant="outline" className="w-full">
-                          <Link to="/dashboard" onClick={() => setIsOpen(false)}>My Profile</Link>
+                          <Link to="/dashboard" onClick={() => setIsOpen(false)}>{t("nav.myProfile")}</Link>
                         </Button>
                         <Button
                           variant="ghost"
@@ -276,12 +280,12 @@ const Navigation = () => {
                           onClick={() => { signOut(); setIsOpen(false); }}
                         >
                           <LogOut className="h-4 w-4 mr-2" />
-                          Logout
+                          {t("nav.logout")}
                         </Button>
                       </>
                     ) : (
                       <Button asChild variant="outline" className="w-full">
-                        <Link to="/login" onClick={() => setIsOpen(false)}>Login</Link>
+                        <Link to="/login" onClick={() => setIsOpen(false)}>{t("nav.login")}</Link>
                       </Button>
                     )}
                   </div>
