@@ -56,6 +56,7 @@ const ResourcesLearn = () => (
     title="Learn: Using Resources Effectively"
     subtitle="Maximize the value of tools, documents, and community"
     chapters={chapters}
+    pageSlug="resources-learn"
   />
 );
 
