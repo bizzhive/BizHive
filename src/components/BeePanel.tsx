@@ -73,7 +73,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
         },
         body: JSON.stringify({
           messages: chatMessages.filter((m) => m !== INITIAL_MSG),
-          context: { ...userContext, currentPage: location.pathname },
+          context: { ...userContext, currentPage: location.pathname, language: i18n.language },
         }),
       });
 
