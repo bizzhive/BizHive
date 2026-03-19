@@ -33,6 +33,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     if (prefillMessage && open) {
