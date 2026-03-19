@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "plan": "Plan",
+    "launch": "Launch",
+    "grow": "Grow",
+    "resources": "Resources",
+    "beeAi": "Bee AI",
+    "contact": "Contact",
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "Profile",
+    "myProfile": "My Profile"
+  },
+  "hero": {
+    "badge": "India's Business Growth Platform",
+    "title1": "Build Your",
+    "title2": "Business Empire",
+    "subtitle": "India is a land of business. Here, no idea is small and no business is unscalable. From a general store to a global app — we are here for all.",
+    "cta1": "Start Planning Free",
+    "cta2": "Explore Tools"
+  },
+  "common": {
+    "learnMore": "Learn More",
+    "getStarted": "Get Started",
+    "next": "Next",
+    "previous": "Previous",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "chapter": "Chapter",
+    "of": "of",
+    "completed": "Completed",
+    "continueWhere": "Continue where you left off",
+    "progress": "Progress"
+  },
+  "achievements": {
+    "firstSteps": "First Steps",
+    "firstStepsDesc": "Complete your first chapter",
+    "strategist": "Strategist",
+    "strategistDesc": "Finish all Planning chapters",
+    "launchReady": "Launch Ready",
+    "launchReadyDesc": "Finish all Launch chapters",
+    "growthMaster": "Growth Master",
+    "growthMasterDesc": "Finish all Growth chapters",
+    "scholar": "Scholar",
+    "scholarDesc": "Complete all Learn content",
+    "communityVoice": "Community Voice",
+    "communityVoiceDesc": "Make your first community post",
+    "toolMaster": "Tool Master",
+    "toolMasterDesc": "Use 3 or more tools"
+  },
+  "cookie": {
+    "message": "We use cookies to enhance your experience. By continuing to visit this site, you agree to our use of cookies.",
+    "accept": "Accept",
+    "decline": "Decline"
+  }
+}
