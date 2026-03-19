@@ -512,6 +512,27 @@ export type Database = {
           },
         ]
       }
+      user_achievements: {
+        Row: {
+          achievement_key: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_key: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_key?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_bans: {
         Row: {
           banned_at: string
@@ -626,6 +647,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_progress: {
+        Row: {
+          chapter_index: number
+          completed_at: string
+          id: string
+          page_slug: string
+          user_id: string
+        }
+        Insert: {
+          chapter_index: number
+          completed_at?: string
+          id?: string
+          page_slug: string
+          user_id: string
+        }
+        Update: {
+          chapter_index?: number
+          completed_at?: string
+          id?: string
+          page_slug?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

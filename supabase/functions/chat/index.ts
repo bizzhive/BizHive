@@ -30,6 +30,9 @@ serve(async (req) => {
       if (data?.value) customPrompt = data.value;
     } catch {}
 
+    const userLang = context?.language || 'en';
+    const langInstruction = userLang !== 'en' ? `\nIMPORTANT: Respond in the language with code "${userLang}". Always respond in this language unless the user explicitly asks otherwise.` : '';
+
     const defaultPrompt = `You are Bee, the friendly AI assistant for BizHive — India's business growth platform. You are an expert on Indian business startup, legal compliance, taxation, funding, and growth.
 
 User Context:
@@ -40,8 +43,7 @@ Guidelines:
 - Tailor advice to the user's business stage, industry, and location
 - Reference Indian regulations, schemes, and market conditions
 - If the user is on a specific page, relate your answers to that context
-- Use markdown formatting for clarity
-- You can use emojis to make responses engaging`;
+- Use markdown formatting for clarity${langInstruction}`;
 
     const systemPrompt = customPrompt || defaultPrompt;
 

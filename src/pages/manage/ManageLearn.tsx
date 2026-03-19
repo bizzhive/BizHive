@@ -67,6 +67,83 @@ const chapters = [
       "> \"What gets measured gets managed.\" — Peter Drucker",
     ],
   },
+  {
+    title: "Leadership & Management",
+    content: [
+      "As your startup grows from 5 to 50 to 500 people, your role shifts from doing to leading. This transition is the hardest part of entrepreneurship.",
+      "## From Founder to CEO",
+      "- At 1-10 employees: You're a player-coach. Do everything and lead by example.\n- At 10-50: You're a manager. Build systems, hire managers, delegate daily operations.\n- At 50+: You're a leader. Set vision, culture, and strategy. Empower teams to execute.",
+      "## Decision-Making Frameworks",
+      "- Reversible vs Irreversible: Make reversible decisions quickly (Type 2). Take time for irreversible ones (Type 1).\n- RACI Matrix: For every decision, define who is Responsible, Accountable, Consulted, and Informed.\n- First Principles: Break problems down to fundamental truths rather than reasoning by analogy.",
+      "## Building Culture",
+      "- Culture is what happens when the founder isn't in the room\n- Hire and fire based on values, not just performance\n- Celebrate failures that came from bold experimentation\n- Transparency builds trust — share financials, strategy, and challenges with your team\n- Weekly all-hands meetings keep everyone aligned",
+      "## Managing Conflict",
+      "Conflict is inevitable and healthy when managed well. Address issues directly, focus on behaviors not personalities, and use structured feedback frameworks like SBI (Situation, Behavior, Impact).",
+      "> The best leaders are not those who have the most answers, but those who ask the best questions.",
+    ],
+  },
+  {
+    title: "Data-Driven Decision Making",
+    content: [
+      "In the age of information, gut feeling alone isn't enough. Data-driven businesses outperform by 5-6% in productivity.",
+      "## Building a Data Culture",
+      "- Start by defining your North Star Metric — the one number that best captures the value you deliver\n- Make data accessible to every team member\n- Create dashboards for each team: sales, marketing, product, operations\n- Review metrics weekly as a team\n- Question assumptions — if something has 'always been done this way,' ask why",
+      "## Key Metrics by Function",
+      "- Sales: conversion rate, average deal size, sales cycle length, pipeline value\n- Marketing: CAC, ROAS, click-through rate, engagement rate, brand awareness\n- Product: DAU/MAU, feature adoption rate, time-to-value, bug count\n- Operations: order fulfillment time, error rate, capacity utilization\n- Finance: burn rate, runway, gross margin, cash conversion cycle",
+      "## Tools for Data Analysis",
+      "- Google Analytics 4: website and app analytics\n- Mixpanel or Amplitude: product analytics\n- Google Data Studio or Metabase: custom dashboards\n- Excel/Google Sheets: surprisingly powerful for early-stage analysis\n- SQL: learn basic SQL to query your own database",
+      "## Avoiding Data Pitfalls",
+      "- Vanity metrics: followers, page views, and downloads that don't correlate with revenue\n- Survivorship bias: only studying successes, not failures\n- Correlation vs causation: just because two things happen together doesn't mean one caused the other\n- Sample size issues: don't make major decisions based on 10 data points",
+      "> Data tells you what happened. Analysis tells you why. Insight tells you what to do next.",
+    ],
+  },
+  {
+    title: "Crisis Management",
+    content: [
+      "Every business faces crises — economic downturns, PR disasters, supply chain breaks, or pandemic-level disruptions. Preparation is everything.",
+      "## Types of Business Crises",
+      "- Financial: Cash flow emergencies, losing a major client, funding falling through\n- Operational: Key employee quits, supplier fails, technology outage\n- Reputational: Negative press, social media backlash, product recall\n- External: Natural disasters, regulatory changes, pandemic, economic recession\n- Legal: Lawsuits, compliance violations, IP disputes",
+      "## Crisis Response Framework",
+      "- Detect: Set up alerts and monitoring systems\n- Assess: How severe is it? Is it getting worse?\n- Contain: Stop the bleeding immediately\n- Communicate: Be transparent with stakeholders\n- Resolve: Fix the root cause, not just symptoms\n- Learn: Post-mortem analysis to prevent recurrence",
+      "## Financial Crisis Playbook",
+      "- Cut non-essential expenses immediately\n- Renegotiate payment terms with vendors\n- Accelerate collections from customers\n- Consider emergency funding: revenue-based financing, MSME emergency credit line\n- If layoffs are necessary, do them once and deeply — multiple rounds destroy morale",
+      "## Communication During Crisis",
+      "- Customers: Acknowledge the issue, share what you're doing, provide timeline\n- Team: Be honest about the situation, share the plan, ask for input\n- Investors: Early communication prevents surprise — investors hate surprises\n- Media: Prepare a statement, designate a spokesperson, stick to facts",
+      "> A crisis doesn't build character — it reveals it. How you handle adversity defines your business for years to come.",
+    ],
+  },
+  {
+    title: "International Expansion",
+    content: [
+      "If your product has proven demand in India, international expansion can multiply your addressable market by 10-50x.",
+      "## Readiness Assessment",
+      "Before expanding internationally, ensure: product-market fit is strong in India, unit economics are positive, your team can handle divided attention, and you have or can raise sufficient capital.",
+      "## Market Selection Framework",
+      "- Market size and growth rate\n- Cultural proximity (Middle East and Southeast Asia often work well for Indian businesses)\n- Regulatory complexity (Singapore is easiest, EU is hardest)\n- Competitive landscape\n- Language and localization needs\n- Payment infrastructure",
+      "## Entry Strategies",
+      "- Digital-first: SaaS and services can sell globally from India with zero physical presence\n- Partnership: Find local distributors or resellers\n- Subsidiary: Register a company locally (needed for some markets)\n- Acquisition: Buy a local player for instant market access\n- Franchise: License your brand and model",
+      "## Legal & Compliance",
+      "- Foreign Exchange Management Act (FEMA) compliance for outward remittances\n- Liberalised Remittance Scheme (LRS) for individual investments abroad\n- Transfer pricing documentation for inter-company transactions\n- Local tax registration (VAT/GST) in target markets\n- Data privacy compliance (GDPR for EU, CCPA for California)",
+      "## Practical Tips for Indian Startups Going Global",
+      "- Start with one market, not five\n- Hire a local champion who understands the market\n- Price in local currency\n- Adapt your marketing — what works in India may not work elsewhere\n- Consider Singapore or Dubai as a holding company jurisdiction\n- Use Deel, Remote.com, or Multiplier for international hiring without setting up entities",
+      "> India is a $3.5 trillion economy. The world is a $100 trillion economy. Don't limit your ambition to one country.",
+    ],
+  },
+  {
+    title: "Exit Strategies",
+    content: [
+      "Building a business is one thing. Knowing when and how to exit is equally important for wealth creation.",
+      "## Types of Exits",
+      "- Acquisition: Selling your company to a larger player. Most common exit in India. Examples: Flipkart to Walmart, FreeCharge to Axis Bank.\n- IPO (Initial Public Offering): Going public on BSE/NSE. Requires significant scale (typically ₹500Cr+ revenue).\n- Secondary Sale: Selling your shares to another investor while the company continues operating.\n- Management Buyout: Your management team buys out the founders.\n- Merger: Combining with a complementary business for strategic value.\n- Acqui-hire: A company acquires yours primarily for the team, not the product.",
+      "## Planning Your Exit",
+      "- Start thinking about exit from Day 1 — not because you want to leave, but because it shapes how you build\n- Build value drivers: recurring revenue, strong IP, diverse customer base, clean financials, documented processes\n- Maintain clean corporate records and financial statements\n- Keep your cap table simple — messy cap tables kill deals\n- Build relationships with potential acquirers well before you want to sell",
+      "## Valuation Approaches",
+      "- Revenue multiple: Common for tech companies (1-10x annual revenue)\n- EBITDA multiple: Common for traditional businesses (5-15x EBITDA)\n- Discounted Cash Flow (DCF): Based on projected future cash flows\n- Comparable transactions: What similar companies sold for recently\n- Asset-based: Value of physical assets (real estate, equipment, inventory)",
+      "## Tax Implications of Exit",
+      "- Long-term capital gains tax: 20% with indexation for unlisted shares held 2+ years\n- Short-term capital gains: Taxed at your income tax slab rate\n- Section 54F exemption: Reinvest proceeds in residential property within 2 years\n- Angel tax considerations for seed-stage investments\n- ESOP taxation: Important to plan employee tax impact during exit\n- Consult a CA and a tax lawyer before any exit — the difference in tax planning can be crores",
+      "> Not every exit is about billions. A ₹5Cr exit from a bootstrapped company you built in 3 years is an extraordinary outcome. Define success on your own terms.",
+    ],
+  },
 ];
 
 const ManageLearn = () => (
@@ -74,6 +151,7 @@ const ManageLearn = () => (
     title="Learn: Growing & Scaling"
     subtitle="Master the art of sustainable business growth"
     chapters={chapters}
+    pageSlug="manage-learn"
   />
 );
 

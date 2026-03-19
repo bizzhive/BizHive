@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import BeeIcon from "./BeeIcon";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -32,6 +33,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     if (prefillMessage && open) {
@@ -71,7 +73,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
         },
         body: JSON.stringify({
           messages: chatMessages.filter((m) => m !== INITIAL_MSG),
-          context: { ...userContext, currentPage: location.pathname },
+          context: { ...userContext, currentPage: location.pathname, language: i18n.language },
         }),
       });
 
