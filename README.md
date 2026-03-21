@@ -4,6 +4,35 @@
 
 **URL**: https://lovable.dev/projects/5a4dd085-bec8-491a-b650-4bbc1d540682
 
+## Setup & Configuration
+
+### 1. Connect Supabase
+Create a `.env` file in the root directory (already created) and fill in your Supabase credentials:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+```
+
+### 2. Connect Google Gemini (AI)
+The AI chat feature runs on Supabase Edge Functions. You need to set the API key in your Supabase project:
+1. Go to Supabase Dashboard > Edge Functions.
+2. Add a new secret named `GOOGLE_API_KEY` with your Gemini API key.
+3. Deploy the function:
+   ```bash
+   supabase functions deploy chat --no-verify-jwt
+   ```
+
+### 3. Connect GitHub & Vercel
+To deploy the frontend:
+1. Push this repository to your GitHub account.
+2. Log in to Vercel and "Add New Project".
+3. Import your BizHive repository.
+4. In Vercel Project Settings > Environment Variables, add:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+5. Deploy!
+
 ## How can I edit this code?
 
 There are several ways of editing your application.

@@ -43,25 +43,20 @@ Guidelines:
 - Tailor advice to the user's business stage, industry, and location
 - Reference Indian regulations, schemes, and market conditions
 - If the user is on a specific page, relate your answers to that context
+
 - Use markdown formatting for clarity${langInstruction}`;
 
     const systemPrompt = customPrompt || defaultPrompt;
 
-    // Build contents for Gemini API
-    const contents = [];
-    
     // Add system instruction as first user message context
     const allMessages = [
       { role: 'user', parts: [{ text: `System instructions: ${systemPrompt}` }] },
       { role: 'model', parts: [{ text: 'Understood. I will follow these instructions.' }] },
-    ];
-
-    for (const msg of messages) {
-      allMessages.push({
+      ...messages.map((msg: any) => ({
         role: msg.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: msg.content }],
-      });
-    }
+      })),
+    ];
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${GOOGLE_API_KEY}`,
@@ -76,14 +71,10 @@ Guidelines:
       const errText = await response.text();
       console.error("Gemini API error:", response.status, errText);
       
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limits exceeded" }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      const isRateLimit = response.status === 429;
       
-      return new Response(JSON.stringify({ error: "AI API error" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return new Response(JSON.stringify({ error: isRateLimit ? "Rate limits exceeded" : "AI API error" }), {
+        status: isRateLimit ? 429 : 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
