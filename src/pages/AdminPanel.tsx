@@ -10,16 +10,13 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { BookOpen, FileText, Lock, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users } from "lucide-react";
+import { BarChart3, BookOpen, FileText, Lock, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users } from "lucide-react";
 import BeeIcon from "@/components/BeeIcon";
 import AdminBlogsTab from "@/components/admin/AdminBlogsTab";
 import AdminCommunityTab from "@/components/admin/AdminCommunityTab";
 import AdminDocumentsTab from "@/components/admin/AdminDocumentsTab";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
-
-// WARNING: This is a critical security vulnerability.
-// This password is included in the production JavaScript bundle and is visible to anyone.
-const ADMIN_PASSWORD = "admin#Tushar07";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const AdminPanel = () => {
   const { toast } = useToast();
@@ -41,29 +38,19 @@ const AdminPanel = () => {
   const [aiPrompt, setAiPrompt] = useState("");
   const [savingPrompt, setSavingPrompt] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | undefined>();
+  // Hardcoded allowed emails for demo security. Use RLS in production.
+  const ALLOWED_ADMINS = ["admin@bizhive.com", "bizzhive.support@gmail.com"];
 
   useEffect(() => {
-    if (sessionStorage.getItem("bizhive_admin") === "true") {
-      setAuthenticated(true);
-    }
     const getSupabaseUser = async () => {
       const { data } = await supabase.auth.getUser();
       setCurrentUserId(data.user?.id);
+      if (data.user?.email && ALLOWED_ADMINS.includes(data.user.email)) {
+        setAuthenticated(true);
+      }
     };
     getSupabaseUser();
   }, []);
-
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwordInput === ADMIN_PASSWORD) {
-      sessionStorage.setItem("bizhive_admin", "true");
-      setAuthenticated(true);
-      toast({ title: "Welcome", description: "Admin access granted." });
-    } else {
-      toast({ title: "Access Denied", description: "Incorrect password.", variant: "destructive" });
-    }
-    setPasswordInput("");
-  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -118,6 +105,30 @@ const AdminPanel = () => {
     }
   }, [authenticated]);
 
+  // Analytics Data Preparation
+  const contactStats = contacts.reduce((acc: any, curr) => {
+    const date = new Date(curr.created_at).toLocaleDateString();
+    acc[date] = (acc[date] || 0) + 1;
+    return acc;
+  }, {});
+  
+  const contactChartData = Object.keys(contactStats).map(date => ({
+    date,
+    submissions: contactStats[date]
+  })).slice(-7); // Last 7 days
+
+  const postStats = communityPosts.reduce((acc: any, curr) => {
+    const date = new Date(curr.created_at).toLocaleDateString();
+    acc[date] = (acc[date] || 0) + 1;
+    return acc;
+  }, {});
+
+  const activityChartData = Object.keys(postStats).map(date => ({
+    date,
+    posts: postStats[date]
+  })).slice(-7);
+
+
   const handleSavePrompt = async () => {
     setSavingPrompt(true);
     const { error } = await supabase.from("admin_settings").upsert({ key: "ai_system_prompt", value: aiPrompt });
@@ -135,10 +146,8 @@ const AdminPanel = () => {
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Access</CardTitle></CardHeader>
           <CardContent>
-            <form onSubmit={handlePasswordSubmit} className="space-y-4">
-              <div className="relative"><Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input type="password" placeholder="Enter admin password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} className="pl-10" required autoFocus/></div>
-              <Button type="submit" className="w-full">Access Panel</Button>
-            </form>
+             <p className="text-center text-muted-foreground mb-4">You are not authorized to view this page.</p>
+             <Button className="w-full" onClick={() => window.location.href = '/'}>Go Home</Button>
           </CardContent>
         </Card>
       </div>
@@ -167,6 +176,7 @@ const AdminPanel = () => {
 
         <Tabs defaultValue="contacts" className="space-y-6">
           <TabsList className="h-auto flex-wrap justify-start gap-2 bg-transparent p-0">
+            <TabsTrigger value="analytics" className="gap-2"><BarChart3 className="h-4 w-4" />Analytics</TabsTrigger>
             <TabsTrigger value="contacts" className="gap-2"><MessageSquare className="h-4 w-4" />Messages</TabsTrigger>
             <TabsTrigger value="subscribers" className="gap-2"><Mail className="h-4 w-4" />Subscribers</TabsTrigger>
             <TabsTrigger value="blogs" className="gap-2"><BookOpen className="h-4 w-4" />Blogs</TabsTrigger>
@@ -175,6 +185,39 @@ const AdminPanel = () => {
             <TabsTrigger value="users" className="gap-2"><Shield className="h-4 w-4" />Users</TabsTrigger>
             <TabsTrigger value="ai" className="gap-2"><BeeIcon className="h-4 w-4" />AI Training</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="analytics">
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader><CardTitle>Contact Submissions (Last 7 Days)</CardTitle></CardHeader>
+                <CardContent className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={contactChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Bar dataKey="submissions" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle>Community Activity (Last 7 Days)</CardTitle></CardHeader>
+                <CardContent className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={activityChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="posts" stroke="#82ca9d" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           <TabsContent value="contacts">
             <Card>

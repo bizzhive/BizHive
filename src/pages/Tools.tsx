@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart3, Calculator, DollarSign, PieChart, Target, TrendingUp } from "lucide-react";
+import { ArrowRight, BarChart3, Calculator, ChevronRight, DollarSign, Home, PieChart, Target, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Tools = () => {
@@ -53,6 +53,13 @@ const Tools = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="flex items-center text-sm text-muted-foreground mb-8">
+          <Link to="/" className="hover:text-primary flex items-center"><Home className="h-4 w-4 mr-1" />Home</Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <span className="text-foreground font-medium">Tools</span>
+        </div>
+
         <div className="mb-16 text-center">
           <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent">
             <Target className="h-8 w-8 text-primary-foreground" />

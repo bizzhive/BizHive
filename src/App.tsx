@@ -7,10 +7,8 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Analytics } from "@vercel/analytics/react";
-import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import Layout from "./components/Layout";
-import PageTransition from "./components/PageTransition";
 import CookieConsent from "./components/CookieConsent";
 import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
@@ -56,50 +54,45 @@ const ScrollToTop = () => {
 };
 
 const AppRoutes = () => {
-  const location = useLocation();
   return (
-    <AnimatePresence mode="wait">
-      <PageTransition key={location.pathname}>
-        <Routes location={location}>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/plan" element={<Plan />} />
-          <Route path="/plan/market-research" element={<MarketResearch />} />
-          <Route path="/plan/business-plan" element={<BusinessPlan />} />
-          <Route path="/plan/learn" element={<PlanLearn />} />
-          <Route path="/launch" element={<Launch />} />
-          <Route path="/launch/learn" element={<LaunchLearn />} />
-          <Route path="/manage" element={<Manage />} />
-          <Route path="/manage/learn" element={<ManageLearn />} />
-          <Route path="/legal" element={<Legal />} />
-          <Route path="/incubators" element={<Incubators />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/documents" element={<Documents />} />
-          <Route path="/tools" element={<Tools />} />
-          <Route path="/tools/business-canvas" element={<BusinessCanvas />} />
-          <Route path="/tools/swot-analysis" element={<SwotAnalysis />} />
-          <Route path="/tools/startup-calculator" element={<StartupCalculator />} />
-          <Route path="/tools/financial-calculator" element={<FinancialCalculator />} />
-          <Route path="/tools/pitch-deck-builder" element={<PitchDeckBuilder />} />
-          <Route path="/taxation" element={<Taxation />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:id" element={<BlogPost />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/subscribe" element={<Contact />} />
-          <Route path="/admin" element={<AdminPanel />} />
-          <Route path="/ai-assistant" element={<AIAssistant />} />
-          <Route path="/resources/learn" element={<ResourcesLearn />} />
-          <Route path="/email-verification" element={<EmailVerification />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </PageTransition>
-    </AnimatePresence>
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/plan" element={<Plan />} />
+      <Route path="/plan/market-research" element={<MarketResearch />} />
+      <Route path="/plan/business-plan" element={<BusinessPlan />} />
+      <Route path="/plan/learn" element={<PlanLearn />} />
+      <Route path="/launch" element={<Launch />} />
+      <Route path="/launch/learn" element={<LaunchLearn />} />
+      <Route path="/manage" element={<Manage />} />
+      <Route path="/manage/learn" element={<ManageLearn />} />
+      <Route path="/legal" element={<Legal />} />
+      <Route path="/incubators" element={<Incubators />} />
+      <Route path="/community" element={<Community />} />
+      <Route path="/documents" element={<Documents />} />
+      <Route path="/tools" element={<Tools />} />
+      <Route path="/tools/business-canvas" element={<BusinessCanvas />} />
+      <Route path="/tools/swot-analysis" element={<SwotAnalysis />} />
+      <Route path="/tools/startup-calculator" element={<StartupCalculator />} />
+      <Route path="/tools/financial-calculator" element={<FinancialCalculator />} />
+      <Route path="/tools/pitch-deck-builder" element={<PitchDeckBuilder />} />
+      <Route path="/taxation" element={<Taxation />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/blog/:id" element={<BlogPost />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/subscribe" element={<Contact />} />
+      <Route path="/admin" element={<AdminPanel />} />
+      <Route path="/ai-assistant" element={<AIAssistant />} />
+      <Route path="/resources/learn" element={<ResourcesLearn />} />
+      <Route path="/email-verification" element={<EmailVerification />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 };
 

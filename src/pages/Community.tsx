@@ -43,6 +43,21 @@ const Community = () => {
 
   useEffect(() => {
     fetchCommunity();
+
+    // Real-time subscription for new posts and messages
+    const channel = supabase
+      .channel('public:community')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_messages' }, (payload) => {
+        setMessages((prev) => [...prev, payload.new]);
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_posts' }, (payload) => {
+        setPosts((prev) => [payload.new, ...prev]);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const filteredPosts = useMemo(() => {
@@ -173,7 +188,12 @@ const Community = () => {
                     <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{post.content}</p>
                   </button>
                 ))}
-                {filteredPosts.length === 0 && <p className="text-sm text-muted-foreground">No discussions in this group yet.</p>}
+                {filteredPosts.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <MessageSquare className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                    <p>No discussions yet. Be the first!</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Download, FileText, Shield, Building, Users, DollarSign, Bookmark, Filter, Loader2 } from "lucide-react";
+import { Search, Download, FileText, Shield, Building, Users, DollarSign, Bookmark, Filter, Loader2, Home, ChevronRight, FolderOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const categoryIcons: Record<string, any> = {
   legal: Shield, business: Building, financial: DollarSign, hr: Users, contracts: FileText,
@@ -79,6 +80,15 @@ const Documents = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="flex items-center text-sm text-muted-foreground mb-8">
+          <Link to="/" className="hover:text-primary flex items-center"><Home className="h-4 w-4 mr-1" />Home</Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <Link to="/resources/learn" className="hover:text-primary">Resources</Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <span className="text-foreground font-medium">Documents</span>
+        </div>
+
         <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
             <FileText className="h-8 w-8 text-white" />
@@ -126,7 +136,7 @@ const Documents = () => {
           <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
         ) : filteredDocuments.length === 0 ? (
           <div className="text-center py-12">
-            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <FolderOpen className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">No documents found</h3>
             <p className="text-muted-foreground">Try adjusting your search or category filter.</p>
           </div>

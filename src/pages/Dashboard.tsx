@@ -4,11 +4,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, PlusCircle, Activity, FileText, ArrowRight, Copy } from "lucide-react";
+import { PlusCircle, Activity, FileText, ArrowRight, Copy } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 const Dashboard = () => {
   const { user, isLoading: authLoading } = useAuth();
@@ -45,6 +48,28 @@ const Dashboard = () => {
         supabase.from("saved_tools").select("id", { count: "exact" }).eq("user_id", user.id),
       ]);
       
+      // Trigger Onboarding Tour if it's the first visit
+      const hasSeenTour = localStorage.getItem("hasSeenDashboardTour");
+      if (!hasSeenTour && profileRes.data) {
+        const driverObj = driver({
+          showProgress: true,
+          steps: [
+            { element: '#dashboard-header', popover: { title: 'Welcome!', description: 'This is your BizHive Dashboard. Let\'s show you around.' } },
+            { element: '#business-stage-card', popover: { title: 'Track Progress', description: 'See your current business stage and saved tools here.' } },
+            { element: '#quick-actions', popover: { title: 'Quick Actions', description: 'Jump straight into our most popular tools.' } },
+            { element: '#new-plan-btn', popover: { title: 'Create Plan', description: 'Start a new business plan from scratch here.' } },
+          ],
+          onDestroyStarted: () => {
+            if (!driverObj.hasNextStep() || confirm("Are you sure?")) {
+              driverObj.destroy();
+              localStorage.setItem("hasSeenDashboardTour", "true");
+            }
+          },
+        });
+        // Small delay to ensure render
+        setTimeout(() => driverObj.drive(), 1000);
+      }
+
       setProfile(profileRes.data);
       setBusiness(businessRes.data?.[0] || null);
       setSavedToolsCount(toolsRes.count || 0);
@@ -115,8 +140,20 @@ const Dashboard = () => {
 
   if (authLoading || loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
+        <div className="flex justify-between items-center">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <Skeleton className="h-10 w-40" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full" />)}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-40 w-full" />)}
+        </div>
       </div>
     );
   }
@@ -162,21 +199,21 @@ const Dashboard = () => {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div id="dashboard-header" className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">{profile?.full_name || "My Profile"}</h1>
           <p className="text-muted-foreground mt-1">
             Welcome back! Here's your business overview.
           </p>
         </div>
-        <Button onClick={() => navigate("/plan")} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+        <Button id="new-plan-btn" onClick={() => navigate("/plan")} className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <PlusCircle className="mr-2 h-4 w-4" />
           New Business Plan
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <Card>
+        <Card id="business-stage-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Business Stage</CardTitle>
           </CardHeader>
@@ -230,7 +267,7 @@ const Dashboard = () => {
       </div>
 
       <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div id="quick-actions" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { title: "Market Research", path: "/plan/market-research", color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
           { title: "Business Canvas", path: "/tools/business-canvas", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
