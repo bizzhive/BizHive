@@ -110,13 +110,11 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <Layout>
-              <AppRoutes />
-            </Layout>
-            <CookieConsent />
-          </BrowserRouter>
+          <ScrollToTop />
+          <Layout>
+            <AppRoutes />
+          </Layout>
+          <CookieConsent />
           <Analytics />
         </TooltipProvider>
       </ThemeProvider>
