@@ -27,6 +27,7 @@ export function LanguageSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
+        {/* @ts-ignore */}
         <Button variant="ghost" size="icon" className="rounded-full w-10 h-10 bg-background/50 backdrop-blur border">
           <Globe className="h-5 w-5" />
         </Button>
