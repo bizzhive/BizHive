@@ -67,7 +67,7 @@ const AdminPanel = () => {
       supabase.from("community_posts").select("*").order("created_at", { ascending: false }),
       supabase.from("community_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase.from("profiles").select('user_id, full_name, users(email)' as any),
+      (supabase.from("profiles").select('user_id, full_name, users(email)') as any),
       supabase.from("user_roles").select("*"),
       supabase.from("user_bans").select("*"),
     ]);
@@ -235,8 +235,7 @@ const AdminPanel = () => {
                           <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</TableCell>
                           <TableCell className="font-medium">{c.name}</TableCell>
                           <TableCell>{c.email}</TableCell>
-                          {/* @ts-ignore */}
-                          <TableCell><Badge variant="secondary">{c.category}</Badge></TableCell>
+                          <TableCell><Badge className="bg-secondary text-secondary-foreground hover:bg-secondary/80 border-transparent">{c.category}</Badge></TableCell>
                           <TableCell>{c.subject}</TableCell>
                           <TableCell className="max-w-[360px] truncate text-sm">{c.message}</TableCell>
                         </TableRow>
