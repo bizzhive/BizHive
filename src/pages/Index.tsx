@@ -110,7 +110,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <div className="fixed top-4 right-4 z-50"><LanguageSelector /></div>
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center py-20 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]">
@@ -156,7 +155,7 @@ const Index = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild className="h-11 px-8 text-lg py-6 rounded-xl hover:-translate-y-0.5 transition-all duration-300 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+              <Button asChild className="h-11 px-8 text-lg py-6 rounded-xl hover:-translate-y-0.5 transition-all duration-300 border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground">
                 <Link to="/tools">
                   <Zap className="mr-2 h-5 w-5 text-amber-500" />
                   {t("Explore Tools")}
