@@ -23,6 +23,9 @@ const resources = {
       "nav.login": "Login",
       "nav.beeAi": "Bee AI",
       "nav.contact": "Contact",
+      "cookies.accept": "Accept",
+      "cookies.decline": "Decline",
+      "cookies.message": "We use cookies to enhance your user experience.",
     },
   },
   hi: {
@@ -65,6 +68,9 @@ const resources = {
       "nav.login": "लॉग इन",
       "nav.beeAi": "Bee AI",
       "nav.contact": "संपर्क",
+      "cookies.accept": "स्वीकार करें",
+      "cookies.decline": "अस्वीकार करें",
+      "cookies.message": "हम आपके अनुभव को बेहतर बनाने के लिए कुकीज़ का उपयोग करते हैं।",
     },
   },
   es: {
@@ -91,6 +97,9 @@ const resources = {
       "nav.login": "Acceso",
       "nav.beeAi": "Bee IA",
       "nav.contact": "Contacto",
+      "cookies.accept": "Aceptar",
+      "cookies.decline": "Rechazar",
+      "cookies.message": "Utilizamos cookies para mejorar su experiencia de usuario.",
     },
   },
   fr: {
@@ -109,6 +118,9 @@ const resources = {
       "nav.login": "Connexion",
       "nav.beeAi": "Bee IA",
       "nav.contact": "Contact",
+      "cookies.accept": "Accepter",
+      "cookies.decline": "Refuser",
+      "cookies.message": "Nous utilisons des cookies pour améliorer votre expérience utilisateur.",
     },
   },
 };

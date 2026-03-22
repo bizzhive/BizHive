@@ -40,6 +40,7 @@ const AdminPanel = () => {
   const [currentUserId, setCurrentUserId] = useState<string | undefined>();
   // Hardcoded allowed emails for demo security. Use RLS in production.
   const ALLOWED_ADMINS = ["admin@bizhive.com", "bizzhive.support@gmail.com"];
+  const ADMIN_PASSWORD = "admin#Tushar07"; // Restored for manual access
 
   useEffect(() => {
     const getSupabaseUser = async () => {
@@ -140,14 +141,28 @@ const AdminPanel = () => {
     }
   };
 
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordInput === ADMIN_PASSWORD) {
+      sessionStorage.setItem("bizhive_admin", "true");
+      setAuthenticated(true);
+      toast({ title: "Welcome", description: "Admin access granted." });
+    } else {
+      toast({ title: "Access Denied", description: "Incorrect password.", variant: "destructive" });
+    }
+    setPasswordInput("");
+  };
+
   if (!authenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Access</CardTitle></CardHeader>
           <CardContent>
-             <p className="text-center text-muted-foreground mb-4">You are not authorized to view this page.</p>
-             <Button className="w-full" onClick={() => window.location.href = '/'}>Go Home</Button>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <div className="relative"><Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input type="password" placeholder="Enter admin password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} className="pl-10" required autoFocus/></div>
+              <Button type="submit" className="w-full">Access Panel</Button>
+            </form>
           </CardContent>
         </Card>
       </div>
