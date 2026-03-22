@@ -22,7 +22,15 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      await signInWithGoogle();
+      // Use direct Supabase call to ensure the redirect URL matches the current domain (Vercel or Localhost)
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          // This ensures the user is sent back to the dashboard on the SAME site they logged in from
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) throw error;
     } catch (error: any) {
       toast({ title: "Error", description: error.message || "Failed to log in with Google", variant: "destructive" });
       setIsLoading(false);
