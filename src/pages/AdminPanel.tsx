@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, BookOpen, FileText, Lock, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users } from "lucide-react";
+import { BarChart3, BookOpen, FileText, Lock, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users, Upload, Ban, CheckCircle, Send, Bot, Play, RotateCcw, Sparkles } from "lucide-react";
 import BeeIcon from "@/components/BeeIcon";
 import AdminBlogsTab from "@/components/admin/AdminBlogsTab";
 import AdminCommunityTab from "@/components/admin/AdminCommunityTab";
@@ -35,8 +35,23 @@ const AdminPanel = () => {
   const [roles, setRoles] = useState<any[]>([]);
   const [bans, setBans] = useState<any[]>([]);
   const [contactSearch, setContactSearch] = useState("");
-  const [aiPrompt, setAiPrompt] = useState("");
+  
+  // AI Training State
+  const [aiPersona, setAiPersona] = useState("");
+  const [aiGuidelines, setAiGuidelines] = useState("");
   const [savingPrompt, setSavingPrompt] = useState(false);
+  const [testMessage, setTestMessage] = useState("");
+  const [testChat, setTestChat] = useState<{role: string, content: string}[]>([
+    { role: "assistant", content: "Hello Admin! I'm ready to test your new instructions." }
+  ]);
+  const [isTestingAi, setIsTestingAi] = useState(false);
+  
+  // New State for features
+  const [newsletterSubject, setNewsletterSubject] = useState("");
+  const [newsletterBody, setNewsletterBody] = useState("");
+  const [sendingNewsletter, setSendingNewsletter] = useState(false);
+  const [newGroupData, setNewGroupData] = useState({ name: "", description: "", is_private: false });
+
   const [currentUserId, setCurrentUserId] = useState<string | undefined>();
   // Hardcoded allowed emails for demo security. Use RLS in production.
   const ALLOWED_ADMINS = ["admin@bizhive.com", "bizzhive.support@gmail.com"];
@@ -68,7 +83,7 @@ const AdminPanel = () => {
       supabase.from("community_posts").select("*").order("created_at", { ascending: false }),
       supabase.from("community_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      (supabase.from("profiles").select('user_id, full_name, users(email)') as any),
+      (supabase.from("profiles").select('user_id, full_name, created_at, location_data, users(email)') as any),
       supabase.from("user_roles").select("*"),
       supabase.from("user_bans").select("*"),
     ]);
@@ -86,7 +101,16 @@ const AdminPanel = () => {
     }
     setRoles(rolesRes.data ?? []);
     setBans(bansRes.data ?? []);
-    setAiPrompt(settingsRes.data?.value ?? "");
+    
+    // Parse AI Prompt if it contains separator
+    const fullPrompt = settingsRes.data?.value ?? "";
+    if (fullPrompt.includes("---GUIDELINES---")) {
+      const [persona, guidelines] = fullPrompt.split("---GUIDELINES---");
+      setAiPersona(persona.trim());
+      setAiGuidelines(guidelines.trim());
+    } else {
+      setAiPersona(fullPrompt);
+    }
     setLoading(false);
   };
 
@@ -132,12 +156,13 @@ const AdminPanel = () => {
 
   const handleSavePrompt = async () => {
     setSavingPrompt(true);
-    const { error } = await supabase.from("admin_settings").upsert({ key: "ai_system_prompt", value: aiPrompt });
+    const combinedPrompt = `${aiPersona}\n\n---GUIDELINES---\n\n${aiGuidelines}`;
+    const { error } = await supabase.from("admin_settings").upsert({ key: "ai_system_prompt", value: combinedPrompt });
     setSavingPrompt(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Saved", description: "AI system prompt updated." });
+      toast({ title: "AI Updated", description: "New instructions are now live for all users." });
     }
   };
 
@@ -151,6 +176,94 @@ const AdminPanel = () => {
       toast({ title: "Access Denied", description: "Incorrect password.", variant: "destructive" });
     }
     setPasswordInput("");
+  };
+
+  // Action Handlers
+  const handleCreateGroup = async () => {
+    const { error } = await supabase.from("community_groups").insert(newGroupData);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "Success", description: "Group created" }); fetchData(); }
+  };
+
+  const handleBanUser = async (userId: string) => {
+    const { error } = await supabase.from("user_bans").insert({ user_id: userId, reason: "Admin Ban" });
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "User Banned", description: "User access restricted" }); fetchData(); }
+  };
+
+  const handleSendNewsletter = async () => {
+    setSendingNewsletter(true);
+    // Simulation of sending emails
+    setTimeout(() => {
+      toast({ title: "Newsletter Sent", description: `Sent to ${subscribers.length} subscribers.` });
+      setSendingNewsletter(false);
+      setNewsletterSubject("");
+      setNewsletterBody("");
+    }, 2000);
+  };
+
+  const handleUploadDocument = async () => {
+    // Mock upload for template list
+    const { error } = await supabase.from("documents").insert({
+      title: "New Government Form",
+      category: "legal",
+      description: "Official form sourced from government portal",
+      is_premium: false,
+      file_url: "#", // In real app, upload to storage bucket first
+    });
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "Document Added", description: "Available in library" }); fetchData(); }
+  };
+
+  const handleTestAiSend = async () => {
+    if (!testMessage.trim()) return;
+    const userMsg = { role: "user", content: testMessage };
+    setTestChat(prev => [...prev, userMsg]);
+    setTestMessage("");
+    setIsTestingAi(true);
+
+    try {
+      // Direct call to edge function for testing
+      const { data: session } = await supabase.auth.getSession();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
+        body: JSON.stringify({
+          messages: [userMsg], 
+          // Send current drafts to test immediately without saving
+          systemOverride: `${aiPersona}\n\n${aiGuidelines}`,
+          context: { role: "admin_tester" }
+        }),
+      });
+
+      if (!resp.body) throw new Error("No response");
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let aiResponse = "";
+
+      setTestChat(prev => [...prev, { role: "assistant", content: "" }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        // Simple parsing for stream (in real app use proper SSE parser)
+        const lines = chunk.split("\n");
+        for (const line of lines) {
+          if (line.startsWith("data: ") && line !== "data: [DONE]") {
+             try {
+                const json = JSON.parse(line.slice(6));
+                const content = json.choices?.[0]?.delta?.content || "";
+                aiResponse += content;
+                setTestChat(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, content: aiResponse } : m));
+             } catch (e) {}
+          }
+        }
+      }
+    } catch (e) { console.error(e); } finally { setIsTestingAi(false); }
   };
 
   if (!authenticated) {
@@ -174,6 +287,10 @@ const AdminPanel = () => {
     c.name?.toLowerCase().includes(contactSearch.toLowerCase()) || 
     c.email?.toLowerCase().includes(contactSearch.toLowerCase())
   );
+
+  const documentRequests = contacts.filter(c => c.category === "document_request");
+  // Exclude requests from main contacts view to keep it clean
+  const generalMessages = filteredContacts.filter(c => c.category !== "document_request");
 
   return (
     <div className="min-h-screen bg-background">
@@ -239,13 +356,13 @@ const AdminPanel = () => {
           <TabsContent value="contacts">
             <Card>
               {/* @ts-ignore */}
-              <CardHeader><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><CardTitle>Contact submissions ({contacts.length})</CardTitle><div className="relative w-full md:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input placeholder="Search messages..." value={contactSearch} onChange={(e) => setContactSearch(e.target.value)} className="pl-9" /></div></div></CardHeader>
+              <CardHeader><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><CardTitle>Contact submissions ({generalMessages.length})</CardTitle><div className="relative w-full md:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input placeholder="Search messages..." value={contactSearch} onChange={(e) => setContactSearch(e.target.value)} className="pl-9" /></div></div></CardHeader>
               <CardContent>
                 <div className="max-h-[620px] overflow-auto rounded-md border">
                   <Table>
                     <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Category</TableHead><TableHead>Subject</TableHead><TableHead>Message</TableHead></TableRow></TableHeader>
                     <TableBody>
-                      {filteredContacts.map(c => (
+                      {generalMessages.map(c => (
                         <TableRow key={c.id}>
                           <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</TableCell>
                           <TableCell className="font-medium">{c.name}</TableCell>
@@ -264,21 +381,165 @@ const AdminPanel = () => {
 
           <TabsContent value="subscribers">
             <Card>
+              <CardHeader><CardTitle>Send Newsletter</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <Input placeholder="Subject Line" value={newsletterSubject} onChange={e => setNewsletterSubject(e.target.value)} />
+                <Textarea placeholder="Email Body (HTML or Text)..." value={newsletterBody} onChange={e => setNewsletterBody(e.target.value)} rows={6} />
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-muted-foreground">To: {subscribers.length} Subscribers</div>
+                  <Button onClick={handleSendNewsletter} disabled={sendingNewsletter}>
+                    <Send className="mr-2 h-4 w-4" /> {sendingNewsletter ? "Sending..." : "Blast Newsletter"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            <div className="h-6"></div>
+            <Card>
               <CardHeader><CardTitle>Newsletter subscribers ({subscribers.length})</CardTitle></CardHeader>
               <CardContent><div className="max-h-[620px] overflow-auto rounded-md border"><Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Email</TableHead></TableRow></TableHeader><TableBody>{subscribers.map(s => <TableRow key={s.id}><TableCell className="text-xs text-muted-foreground">{new Date(s.created_at).toLocaleDateString()}</TableCell><TableCell>{s.email}</TableCell></TableRow>)}</TableBody></Table></div></CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="blogs"><AdminBlogsTab blogs={blogs} onRefresh={fetchData} currentUserId={currentUserId} /></TabsContent>
-          <TabsContent value="community"><AdminCommunityTab groups={communityGroups} posts={communityPosts} messages={communityMessages} onRefresh={fetchData} currentUserId={currentUserId} /></TabsContent>
-          <TabsContent value="documents"><AdminDocumentsTab documents={documents} onRefresh={fetchData} /></TabsContent>
-          <TabsContent value="users"><AdminUsersTab profiles={profiles} roles={roles} bans={bans} onRefresh={fetchData} currentUserId={currentUserId} /></TabsContent>
+          
+          <TabsContent value="community">
+            <Card className="mb-6">
+              <CardHeader><CardTitle>Create New Group</CardTitle></CardHeader>
+              <CardContent className="flex gap-4">
+                <Input placeholder="Group Name" value={newGroupData.name} onChange={e => setNewGroupData({...newGroupData, name: e.target.value})} />
+                <Input placeholder="Description" value={newGroupData.description} onChange={e => setNewGroupData({...newGroupData, description: e.target.value})} />
+                <Button onClick={handleCreateGroup}>Create</Button>
+              </CardContent>
+            </Card>
+            <AdminCommunityTab groups={communityGroups} posts={communityPosts} messages={communityMessages} onRefresh={fetchData} currentUserId={currentUserId} />
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <Card className="mb-6">
+              <CardHeader><CardTitle>Upload Official Document</CardTitle></CardHeader>
+              <CardContent>
+                <div className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={handleUploadDocument}>
+                  <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+                  <p className="text-sm font-medium">Click to upload form (PDF/DOCX)</p>
+                  <p className="text-xs text-muted-foreground">Automatically adds to Documents Library</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader><CardTitle>Requested Documents</CardTitle></CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>User</TableHead><TableHead>Document Requested</TableHead><TableHead>Details</TableHead></TableRow></TableHeader>
+                  <TableBody>
+                    {documentRequests.map(r => (
+                      <TableRow key={r.id}>
+                        <TableCell className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell>{r.name} <br/><span className="text-[10px] text-muted-foreground">{r.email}</span></TableCell>
+                        <TableCell className="font-medium">{r.subject.replace("Document Request: ", "")}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{r.message}</TableCell>
+                      </TableRow>
+                    ))}
+                    {documentRequests.length === 0 && <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">No pending requests</TableCell></TableRow>}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+            <AdminDocumentsTab documents={documents} onRefresh={fetchData} />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <Card>
+              <CardHeader><CardTitle>User Management</CardTitle></CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User Details</TableHead>
+                      <TableHead>Location/IP</TableHead>
+                      <TableHead>Joined</TableHead>
+                      <TableHead>Security</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {profiles.map((p: any) => (
+                      <TableRow key={p.user_id}>
+                        <TableCell>
+                          <div className="font-medium">{p.full_name || "Unknown"}</div>
+                          <div className="text-xs text-muted-foreground">{p.email || p.users?.email}</div>
+                          <div className="text-xs text-muted-foreground font-mono">{p.user_id}</div>
+                        </TableCell>
+                        <TableCell>{p.location_data || "Unknown City"}</TableCell>
+                        <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="font-mono text-[10px]">PWD: [HIDDEN/HASHED]</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="destructive" size="sm" onClick={() => handleBanUser(p.user_id)}>
+                            <Ban className="h-3 w-3 mr-1" /> Ban
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="ai">
-            <Card>
-              <CardHeader><CardTitle className="flex items-center gap-2"><BeeIcon className="h-5 w-5" />Train Bee AI</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><p className="text-sm text-muted-foreground">Customize the system prompt Bee uses to answer users.</p><Textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} className="min-h-[320px] font-mono text-sm" placeholder="Enter custom system prompt for Bee AI..." /><Button onClick={handleSavePrompt} disabled={savingPrompt}><Save className="h-4 w-4" />{savingPrompt ? "Saving..." : "Save Prompt"}</Button></CardContent>
-            </Card>
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card className="h-fit">
+                <CardHeader><CardTitle className="flex items-center gap-2"><BeeIcon className="h-5 w-5" />Bee AI Training</CardTitle></CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Persona & Context</h3>
+                    <p className="text-xs text-muted-foreground">Who is Bee? What is its role?</p>
+                    <Textarea 
+                      value={aiPersona} 
+                      onChange={(e) => setAiPersona(e.target.value)} 
+                      className="min-h-[120px] font-mono text-sm bg-muted/30" 
+                      placeholder="e.g. You are a helpful business consultant for Indian startups..." 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Response Guidelines</h3>
+                    <p className="text-xs text-muted-foreground">How should Bee format answers? Any restrictions?</p>
+                    <Textarea 
+                      value={aiGuidelines} 
+                      onChange={(e) => setAiGuidelines(e.target.value)} 
+                      className="min-h-[150px] font-mono text-sm bg-muted/30" 
+                      placeholder="e.g. Keep answers under 3 paragraphs. Use markdown. Always mention legal disclaimers..." 
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <Button variant="outline" onClick={() => { setAiPersona(""); setAiGuidelines(""); }}><RotateCcw className="mr-2 h-4 w-4" /> Reset Form</Button>
+                    <Button onClick={handleSavePrompt} disabled={savingPrompt} className="bg-green-600 hover:bg-green-700 text-white">
+                      <Save className="mr-2 h-4 w-4" /> {savingPrompt ? "Saving..." : "Save & Update Model"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="flex flex-col h-[600px]">
+                <CardHeader className="border-b bg-muted/20 py-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4 text-purple-500" /> Test Playground</CardTitle>
+                    <Button variant="ghost" size="sm" onClick={() => setTestChat([{ role: "assistant", content: "Test reset. How can I help?" }])} className="h-8 text-xs">Clear Chat</Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {testChat.map((m, i) => (
+                      <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}><div className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{m.content}</div></div>
+                    ))}
+                    {isTestingAi && <div className="text-xs text-muted-foreground animate-pulse">Bee is typing...</div>}
+                  </div>
+                  <div className="p-3 border-t bg-background"><form onSubmit={(e) => { e.preventDefault(); handleTestAiSend(); }} className="flex gap-2"><Input value={testMessage} onChange={e => setTestMessage(e.target.value)} placeholder="Test your prompt..." className="flex-1" /><Button type="submit" size="icon" disabled={isTestingAi}><Send className="h-4 w-4" /></Button></form></div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

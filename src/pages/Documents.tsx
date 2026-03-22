@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Search, Download, FileText, Shield, Building, Users, DollarSign, Bookmark, Filter, Loader2, Home, ChevronRight, FolderOpen } from "lucide-react";
+import { Search, Download, FileText, Shield, Building, Users, DollarSign, Bookmark, Filter, Loader2, Home, ChevronRight, FolderOpen, PlusCircle, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const categoryIcons: Record<string, any> = {
   legal: Shield, business: Building, financial: DollarSign, hr: Users, contracts: FileText,
@@ -18,6 +21,10 @@ const Documents = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRequestOpen, setIsRequestOpen] = useState(false);
+  const [requestTitle, setRequestTitle] = useState("");
+  const [requestDesc, setRequestDesc] = useState("");
+  const [isRequesting, setIsRequesting] = useState(false);
   const { user } = useAuth() as any;
   const { toast } = useToast();
 
@@ -77,6 +84,33 @@ const Documents = () => {
     }
   };
 
+  const handleRequestDocument = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast({ title: "Login Required", description: "Please log in to request documents.", variant: "destructive" });
+      return;
+    }
+    setIsRequesting(true);
+    try {
+      const { error } = await supabase.from("contact_submissions").insert({
+        name: user.user_metadata?.full_name || "User",
+        email: user.email,
+        subject: `Document Request: ${requestTitle}`,
+        message: requestDesc,
+        category: "document_request"
+      });
+      if (error) throw error;
+      toast({ title: "Request Sent", description: "We'll try to add this document soon." });
+      setIsRequestOpen(false);
+      setRequestTitle("");
+      setRequestDesc("");
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsRequesting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -97,6 +131,25 @@ const Documents = () => {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Access legal templates, business forms, and compliance documents.
           </p>
+        </div>
+
+        <div className="flex justify-end mb-6">
+          <Dialog open={isRequestOpen} onOpenChange={setIsRequestOpen}>
+            <DialogTrigger asChild>
+              <Button><PlusCircle className="mr-2 h-4 w-4" /> Request a Document</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Request a Document</DialogTitle>
+                <DialogDescription>Can't find what you're looking for? Let us know.</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleRequestDocument} className="space-y-4 mt-4">
+                <div className="space-y-2"><Label>Document Name/Type</Label><Input placeholder="e.g. Non-Disclosure Agreement" value={requestTitle} onChange={e => setRequestTitle(e.target.value)} required /></div>
+                <div className="space-y-2"><Label>Details (Optional)</Label><Textarea placeholder="Specific clauses or requirements..." value={requestDesc} onChange={e => setRequestDesc(e.target.value)} /></div>
+                <Button type="submit" className="w-full" disabled={isRequesting}>{isRequesting ? "Sending..." : "Submit Request"}</Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Search */}

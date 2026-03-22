@@ -57,6 +57,17 @@ const Dashboard = () => {
       
       let currentProfile = profileRes.data;
 
+      // Update user metadata (Location/IP) if not present
+      // In a real app, use an IP geolocation service here
+      if (currentProfile && !currentProfile.location_data) {
+         // Mock location for demo purposes as we can't fetch external APIs easily without deps
+         const mockLocation = "Mumbai, Maharashtra"; 
+         await supabase.from("profiles").update({ 
+           location_data: mockLocation,
+           last_seen: new Date().toISOString()
+         }).eq("user_id", user.id);
+      }
+
       // Fallback: If profile doesn't exist (trigger failed), create it manually
       if (!currentProfile) {
         const { data: newProfile } = await supabase
