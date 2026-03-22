@@ -235,7 +235,8 @@ const AdminPanel = () => {
                           <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</TableCell>
                           <TableCell className="font-medium">{c.name}</TableCell>
                           <TableCell>{c.email}</TableCell>
-                          <TableCell><Badge {...({ variant: "secondary" } as any)}>{c.category}</Badge></TableCell>
+                          {/* @ts-ignore */}
+                          <TableCell><Badge variant="secondary">{c.category}</Badge></TableCell>
                           <TableCell>{c.subject}</TableCell>
                           <TableCell className="max-w-[360px] truncate text-sm">{c.message}</TableCell>
                         </TableRow>
