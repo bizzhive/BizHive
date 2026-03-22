@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import BeeIcon from "./BeeIcon";
-import LanguageSelector from "./LanguageSelector";
+import { LanguageSelector } from "./LanguageSelector";
 
 const navGroups = [
   {
