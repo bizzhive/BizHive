@@ -149,14 +149,11 @@ const Documents = () => {
                     <div className="flex-1">
                       <CardTitle className="text-lg leading-tight mb-2">{doc.title}</CardTitle>
                       <div className="flex items-center space-x-2 mb-2">
-                        {/* @ts-ignore */}
-                        <Badge variant={doc.is_premium ? "default" : "secondary"}>{doc.is_premium ? "Premium" : "Free"}</Badge>
-                        {/* @ts-ignore */}
-                        <Badge variant="outline">{doc.category}</Badge>
+                        <Badge className={doc.is_premium ? "bg-primary text-primary-foreground hover:bg-primary/80 border-transparent" : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-transparent"}>{doc.is_premium ? "Premium" : "Free"}</Badge>
+                        <Badge className="text-foreground">{doc.category}</Badge>
                       </div>
                     </div>
-                    {/* @ts-ignore */}
-                    <Button variant="ghost" size="sm" onClick={() => handleSave(doc)}><Bookmark className="h-4 w-4" /></Button>
+                    <Button className="h-9 px-3 hover:bg-accent hover:text-accent-foreground" onClick={() => handleSave(doc)}><Bookmark className="h-4 w-4" /></Button>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">{doc.description}</p>
                 </CardHeader>
@@ -165,8 +162,7 @@ const Documents = () => {
                     <span>{(doc.download_count || 0).toLocaleString()} downloads</span>
                     {doc.tags?.length > 0 && <span className="text-xs">{doc.tags.slice(0, 2).join(", ")}</span>}
                   </div>
-                  {/* @ts-ignore */}
-                  <Button size="sm" className="w-full" onClick={() => handleDownload(doc)}>
+                  <Button className="w-full h-9 px-3" onClick={() => handleDownload(doc)}>
                     <Download className="h-4 w-4 mr-2" /> Download
                   </Button>
                 </CardContent>

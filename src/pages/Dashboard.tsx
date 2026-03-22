@@ -276,8 +276,7 @@ const Dashboard = () => {
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium text-muted-foreground">User ID</CardTitle>
-            {/* @ts-ignore */}
-            <Button variant="ghost" size="icon" onClick={copyToClipboard} className="h-6 w-6">
+            <Button onClick={copyToClipboard} className="h-6 w-6 hover:bg-accent hover:text-accent-foreground">
               <Copy className="h-4 w-4 text-muted-foreground" />
             </Button>
           </CardHeader>

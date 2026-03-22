@@ -150,15 +150,13 @@ const Index = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {/* @ts-ignore */}
-              <Button asChild size="lg" className="text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
+              <Button asChild className="h-11 px-8 text-lg py-6 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
                 <Link to="/plan">
                   {t("Start Planning Free")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              {/* @ts-ignore */}
-              <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 rounded-xl hover:-translate-y-0.5 transition-all duration-300">
+              <Button asChild className="h-11 px-8 text-lg py-6 rounded-xl hover:-translate-y-0.5 transition-all duration-300 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
                 <Link to="/tools">
                   <Zap className="mr-2 h-5 w-5 text-amber-500" />
                   {t("Explore Tools")}
@@ -445,8 +443,7 @@ const Index = () => {
               </div>
 
               <div className="pt-4">
-                {/* @ts-ignore */}
-                <Button asChild size="lg" className="rounded-xl px-8 bg-foreground text-background hover:bg-foreground/90">
+                <Button asChild className="h-11 px-8 rounded-xl bg-foreground text-background hover:bg-foreground/90">
                   <Link to="/ai-assistant">
                     Try Bee AI Now <ArrowRight className="ml-2 w-4 h-4" />
                   </Link>
@@ -506,8 +503,7 @@ const Index = () => {
             <p className="text-xl mb-10 text-white/90 max-w-2xl mx-auto">
               Join the community of makers and founders shaping the future of India's startup ecosystem.
             </p>
-            {/* @ts-ignore */}
-            <Button asChild size="lg" className="bg-white text-orange-600 hover:bg-white/90 text-lg px-10 py-6 rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
+            <Button asChild className="h-11 px-10 bg-white text-orange-600 hover:bg-white/90 text-lg py-6 rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
               <Link to="/login">
                 Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
