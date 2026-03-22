@@ -343,6 +343,113 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Bee AI Capabilities Section */}
+      <section className="py-24 bg-gradient-to-b from-amber-50/50 to-white dark:from-background dark:to-background relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-amber-500/5 blur-3xl rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-1/3 h-full bg-orange-500/5 blur-3xl rounded-full pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16 reveal-on-scroll">
+            <div className="inline-flex items-center justify-center p-3 mb-6 bg-amber-100 dark:bg-amber-900/30 rounded-2xl animate-bounce">
+              <BeeIcon className="w-10 h-10" />
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+              Meet <span className="text-amber-600">Bee AI</span>, Your Co-Founder
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Smart, context-aware, and built for Indian business.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Visual Demo of Selection Feature */}
+            <div className="reveal-on-scroll order-2 lg:order-1">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl blur opacity-20 animate-pulse"></div>
+                <Card className="relative bg-background/80 backdrop-blur-sm border-amber-200/50 dark:border-amber-800/50 shadow-2xl overflow-hidden">
+                  <CardHeader className="bg-muted/50 border-b border-border/50 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-400/80" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
+                      <div className="w-3 h-3 rounded-full bg-green-400/80" />
+                      <span className="ml-2 text-xs text-muted-foreground font-mono">Select any text to ask Bee</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-8">
+                    <div className="space-y-6">
+                      <p className="text-xl text-foreground/80 leading-relaxed font-serif">
+                        "Starting a business involves choosing between a Sole Proprietorship, LLP, or a <span className="bg-amber-200/50 dark:bg-amber-500/30 px-1 rounded relative cursor-text selection:bg-amber-300 selection:text-amber-900">Private Limited Company<div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20"><div className="bg-foreground text-background text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2 cursor-pointer hover:scale-105 transition-transform"><BeeIcon className="w-3 h-3" /> Ask Bee</div></div></span>."
+                      </p>
+                      
+                      <div className="relative pl-4 border-l-2 border-amber-400">
+                        <div className="flex gap-3">
+                          <div className="p-1.5 bg-amber-100 rounded-lg h-fit">
+                            <BeeIcon className="w-4 h-4 text-amber-600" />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm font-semibold text-foreground">Bee AI Explanation:</p>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              A <strong>Private Limited Company</strong> is a separate legal entity from its owners. It protects your personal assets (house, car) if the business faces losses. In India, it's the preferred structure for startups raising funding.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Features List */}
+            <div className="reveal-on-scroll order-1 lg:order-2 space-y-8">
+              <div className="flex gap-5">
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center">
+                  <Search className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Instant Contextual Help</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Stuck on a confusing term while reading a guide? Just highlight it. Bee pops up instantly to explain jargon, legal terms, or financial concepts in simple language.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-5">
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Draft Contracts & Plans</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Need an employment offer letter or a co-founder agreement? Bee can draft legally-sound templates tailored to your specific needs in seconds.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-5">
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Strategic Advice</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Not sure which government scheme applies to you? Ask Bee. It knows about Startup India, MSME benefits, and local subsidies.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <Button asChild size="lg" className="rounded-xl px-8 bg-foreground text-background hover:bg-foreground/90">
+                  <Link to="/ai-assistant">
+                    Try Bee AI Now <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Stats */}
       <section id="stats-section" ref={statsRef} className="py-20 bg-foreground text-background relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-orange-500/10" />
