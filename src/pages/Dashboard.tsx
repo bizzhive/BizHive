@@ -34,7 +34,13 @@ const Dashboard = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    // Check for auth redirect params to avoid premature redirect
+    // Supabase places tokens in the hash (implicit) or query (PKCE code)
+    const isAuthRedirect = window.location.hash.includes("access_token") || 
+                           window.location.hash.includes("type=recovery") || 
+                           window.location.search.includes("code=");
+
+    if (!authLoading && !user && !isAuthRedirect) {
       navigate("/login");
     }
   }, [user, authLoading, navigate]);
@@ -48,9 +54,24 @@ const Dashboard = () => {
         supabase.from("saved_tools").select("id", { count: "exact" }).eq("user_id", user.id),
       ]);
       
+      let currentProfile = profileRes.data;
+
+      // Fallback: If profile doesn't exist (trigger failed), create it manually
+      if (!currentProfile) {
+        const { data: newProfile } = await supabase
+          .from("profiles")
+          .insert([{ 
+            user_id: user.id, 
+            full_name: user.user_metadata?.full_name || "Entrepreneur" 
+          }])
+          .select()
+          .single();
+        if (newProfile) currentProfile = newProfile;
+      }
+
       // Trigger Onboarding Tour if it's the first visit
       const hasSeenTour = localStorage.getItem("hasSeenDashboardTour");
-      if (!hasSeenTour && profileRes.data) {
+      if (!hasSeenTour && currentProfile) {
         const driverObj = driver({
           showProgress: true,
           steps: [
@@ -70,14 +91,14 @@ const Dashboard = () => {
         setTimeout(() => driverObj.drive(), 1000);
       }
 
-      setProfile(profileRes.data);
+      setProfile(currentProfile);
       setBusiness(businessRes.data?.[0] || null);
       setSavedToolsCount(toolsRes.count || 0);
       
-      if (profileRes.data && !profileRes.data.onboarding_completed) {
+      if (currentProfile && !currentProfile.onboarding_completed) {
         setOnboardingData(prev => ({
           ...prev,
-          full_name: profileRes.data.full_name || user.user_metadata?.full_name || "",
+          full_name: currentProfile.full_name || user.user_metadata?.full_name || "",
         }));
         setShowOnboarding(true);
       }

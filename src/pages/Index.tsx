@@ -4,8 +4,11 @@ import { ArrowRight, BookOpen, FileText, Building, Users, TrendingUp, Scale, Sea
 import { Link } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import BeeIcon from "@/components/BeeIcon";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 const Index = () => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [counters, setCounters] = useState({ templates: 0, schemes: 0, incubators: 0, stories: 0 });
   const statsRef = useRef<HTMLElement>(null);
@@ -107,6 +110,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="fixed top-4 right-4 z-50"><LanguageSelector /></div>
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center py-20 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]">
@@ -129,33 +133,33 @@ const Index = () => {
             <div className="mb-8 flex justify-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border bg-background/60 backdrop-blur-sm shadow-sm">
                 <BeeIcon className="w-5 h-5" />
-                <span className="text-sm font-semibold bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">India's Business Growth Platform</span>
+                <span className="text-sm font-semibold bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">{t("India's Business Growth Platform")}</span>
               </div>
             </div>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-foreground mb-6 leading-[0.95] tracking-tight">
-              Build Your
+              {t("Build Your")}
               <br />
               <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 bg-clip-text text-transparent">
-                Business Empire
+                {t("Business Empire")}
               </span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              India is a land of business. Here, no idea is small and no business is unscalable. From a general store to a global app — we are here for all.
+              {t("India is a land of business. Here, no idea is small and no business is unscalable. From a general store to a global app — we are here for all.")}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button asChild size="lg" className="text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
                 <Link to="/plan">
-                  Start Planning Free
+                  {t("Start Planning Free")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 rounded-xl hover:-translate-y-0.5 transition-all duration-300">
                 <Link to="/tools">
                   <Zap className="mr-2 h-5 w-5 text-amber-500" />
-                  Explore Tools
+                  {t("Explore Tools")}
                 </Link>
               </Button>
             </div>

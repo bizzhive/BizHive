@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,8 @@ import BeeIcon from "@/components/BeeIcon";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,8 +18,16 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { toast } = useToast();
-  const { signInWithGoogle } = useAuth();
+  // Extract user and loading state to auto-redirect if already logged in
+  const { signInWithGoogle, user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    if (user && !authLoading) {
+      navigate("/dashboard");
+    }
+  }, [user, authLoading, navigate]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -66,17 +76,20 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background py-12">
       <div className="container mx-auto px-4">
+        <div className="absolute top-4 right-4">
+          <LanguageSelector />
+        </div>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <BeeIcon className="w-14 h-14 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold text-foreground mb-4">Welcome to BizHive</h1>
-            <p className="text-muted-foreground text-lg">Join thousands of entrepreneurs building successful businesses</p>
+            <h1 className="text-4xl font-bold text-foreground mb-4">{t("Welcome to BizHive")}</h1>
+            <p className="text-muted-foreground text-lg">{t("Join thousands of entrepreneurs building successful businesses")}</p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-6">Why Join BizHive?</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-6">{t("Why Join BizHive?")}</h2>
                 <div className="space-y-4">
                   {[
                     { icon: Shield, color: "text-primary", bg: "bg-primary/10", title: "Premium Document Access", desc: "Access 500+ legal templates and business documents" },
@@ -88,8 +101,8 @@ const Login = () => {
                         <item.icon className={`h-5 w-5 ${item.color}`} />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-foreground">{item.title}</h3>
-                        <p className="text-muted-foreground text-sm">{item.desc}</p>
+                        <h3 className="font-semibold text-foreground">{t(item.title)}</h3>
+                        <p className="text-muted-foreground text-sm">{t(item.desc)}</p>
                       </div>
                     </div>
                   ))}
@@ -100,15 +113,15 @@ const Login = () => {
             <div>
               <Card className="w-full max-w-md mx-auto">
                 <CardHeader className="text-center">
-                  <CardTitle>{isSignUp ? "Create an Account" : "Welcome Back"}</CardTitle>
+                  <CardTitle>{isSignUp ? t("Create an Account") : t("Welcome Back")}</CardTitle>
                   <CardDescription>
-                    {isSignUp ? "Enter your details to get started" : "Enter your credentials to access your account"}
+                    {isSignUp ? t("Enter your details to get started") : t("Enter your credentials to access your account")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleEmailAuth} className="space-y-4 mb-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">{t("Email")}</Label>
                       <Input 
                         id="email" 
                         type="email" 
@@ -119,7 +132,7 @@ const Login = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="password">{t("Password")}</Label>
                       <Input 
                         id="password" 
                         type="password" 
@@ -130,7 +143,7 @@ const Login = () => {
                       />
                     </div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? "Loading..." : (isSignUp ? "Sign Up" : "Sign In")}
+                      {isLoading ? "Loading..." : (isSignUp ? t("Sign Up") : t("Sign In"))}
                     </Button>
                   </form>
                   
@@ -139,7 +152,7 @@ const Login = () => {
                       <span className="w-full border-t" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                      <span className="bg-background px-2 text-muted-foreground">{t("Or continue with")}</span>
                     </div>
                   </div>
 
@@ -150,19 +163,19 @@ const Login = () => {
                       <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                     </svg>
-                    {isLoading ? "Redirecting..." : "Continue with Google"}
+                    {isLoading ? "Redirecting..." : t("Continue with Google")}
                   </Button>
 
                   <div className="mt-4 text-center text-sm">
                     <span className="text-muted-foreground">
-                      {isSignUp ? "Already have an account? " : "Don't have an account? "}
+                      {isSignUp ? t("Already have an account? ") : t("Don't have an account? ")}
                     </span>
                     <button 
                       type="button"
                       onClick={() => setIsSignUp(!isSignUp)}
                       className="text-primary hover:underline font-medium"
                     >
-                      {isSignUp ? "Sign In" : "Sign Up"}
+                      {isSignUp ? t("Sign In") : t("Sign Up")}
                     </button>
                   </div>
                 </CardContent>
