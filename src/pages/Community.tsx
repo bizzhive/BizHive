@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 const Community = () => {
   const { user } = useAuth() as any;
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [groups, setGroups] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
@@ -164,7 +165,7 @@ const Community = () => {
               <CardContent className="space-y-4">
                 <Input placeholder="Discussion title" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
                 <Textarea placeholder="What do you want to discuss with the group?" className="min-h-[140px]" value={postContent} onChange={(e) => setPostContent(e.target.value)} />
-                <Button onClick={createPost}>Post to group</Button>
+                <Button onClick={createPost}>{t("Post to group")}</Button>
               </CardContent>
             </Card>
 
@@ -224,7 +225,7 @@ const Community = () => {
                   </div>
 
                   <Textarea placeholder="Add a reply" className="min-h-[120px]" value={replyContent} onChange={(e) => setReplyContent(e.target.value)} />
-                  <Button onClick={sendReply}>Send reply</Button>
+                  <Button onClick={sendReply}>{t("Send reply")}</Button>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">Choose a discussion to see the chat.</p>
@@ -237,7 +238,7 @@ const Community = () => {
           <CardContent className="flex flex-col items-center gap-4 py-8 text-center">
             <h2 className="text-2xl font-bold text-foreground">Need direct guidance?</h2>
             <p className="max-w-2xl text-muted-foreground">Use Bee for faster answers, then bring the best ideas back into the community groups.</p>
-            <Button asChild className="border border-input bg-background hover:bg-accent hover:text-accent-foreground"><Link to="/ai-assistant">Open Bee AI <ArrowRight className="h-4 w-4" /></Link></Button>
+            <Button asChild className="border border-input bg-background hover:bg-accent hover:text-accent-foreground"><Link to="/ai-assistant">{t("Open Bee AI")} <ArrowRight className="h-4 w-4" /></Link></Button>
           </CardContent>
         </Card>
       </div>

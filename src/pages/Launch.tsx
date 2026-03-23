@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import FAQSection from "@/components/FAQSection";
 
 const launchFAQs = [
-  { question: "When is the right time to launch?", answer: "Launch when you have a Minimum Viable Product (MVP) that solves a core problem. Don't wait for perfection — early feedback is invaluable. Most successful startups launch with 60-70% of planned features and iterate based on customer feedback." },
+  { question: "When is the right time to launch?", answer: "Launch when you have a Minimum Viable Product (MVP) that solves a core problem. Don't wait for perfection - early feedback is invaluable. Most successful startups launch with 60-70% of planned features and iterate based on customer feedback." },
   { question: "What licenses do I need before launching?", answer: "It depends on your industry. At minimum: GST registration (if turnover exceeds ₹20L), Shop & Establishment license, PAN card. Industry-specific licenses like FSSAI (food), Drug License (pharma), or RERA (real estate) may also be needed." },
   { question: "How much should I spend on my initial launch?", answer: "Follow the lean startup approach — spend minimally on launch marketing (10-15% of your initial budget). Focus on organic channels, social media, and word-of-mouth. Paid advertising should come after you've validated product-market fit." },
   { question: "Should I soft launch or go all-in?", answer: "Always soft launch first. Test with a small, friendly audience (100-500 users), collect feedback, fix critical issues, then scale. This reduces risk and helps you refine your offering before spending on broad marketing." },
@@ -135,7 +135,7 @@ const Launch = () => {
                   <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
                   {t("Pre-Launch Checklist")}
                 </CardTitle>
-                <CardDescription>{t("Track your progress")} — {completedCount}/{launchChecklist.length} {t("completed")}</CardDescription>
+                <CardDescription>{t("Track your progress")} - {completedCount}/{launchChecklist.length} {t("completed")}</CardDescription>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-bold text-primary">{progress}%</span>

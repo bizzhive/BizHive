@@ -39,7 +39,7 @@ const Plan = () => {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-2">{t("Why Planning Matters")}</h2>
-              <p className="text-muted-foreground">{t("Planning isn't just paperwork — it's the foundation of every successful business. Here's why:")}</p>
+              <p className="text-muted-foreground">{t("Planning isn't just paperwork - it's the foundation of every successful business. Here's why:")}</p>
             </div>
           </div>
           <div className="grid md:grid-cols-3 gap-6">

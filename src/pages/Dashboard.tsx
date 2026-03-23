@@ -228,7 +228,7 @@ const Dashboard = () => {
               <Input value={onboardingData.business_name} onChange={(e) => setOnboardingData({ ...onboardingData, business_name: e.target.value })} placeholder="Your business name" />
             </div>
             <Button type="submit" className="w-full" disabled={saving}>
-              {saving ? "Saving..." : "Get Started"}
+              {saving ? t("Saving...") : t("Get Started")}
             </Button>
           </form>
         </DialogContent>

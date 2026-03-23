@@ -216,7 +216,7 @@ const Documents = () => {
                     {doc.tags?.length > 0 && <span className="text-xs">{doc.tags.slice(0, 2).join(", ")}</span>}
                   </div>
                   <Button className="w-full h-9 px-3" onClick={() => handleDownload(doc)}>
-                    <Download className="h-4 w-4 mr-2" /> Download
+                    <Download className="h-4 w-4 mr-2" /> {t("Download")}
                   </Button>
                 </CardContent>
               </Card>

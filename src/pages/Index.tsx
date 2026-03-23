@@ -145,7 +145,7 @@ const Index = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              {t("India is a land of business. Here, no idea is small and no business is unscalable. From a general store to a global app — we are here for all.")}
+              {t("India is a land of business. Here, no idea is small and no business is unscalable. From a general store to a global app - we are here for all.")}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -174,7 +174,7 @@ const Index = () => {
               {t("What is BizHive?")}
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              {t("BizHive is India's comprehensive business growth platform — a single destination where entrepreneurs, freelancers, and small business owners find everything they need to start, run, and scale a business. Whether you're filing your first GST return, writing a pitch deck for investors, or figuring out FSSAI licensing for your cloud kitchen, BizHive has you covered with step-by-step guides, interactive tools, legal templates, and an AI assistant that understands Indian business regulations.")}
+              {t("BizHive is India's comprehensive business growth platform - a single destination where entrepreneurs, freelancers, and small business owners find everything they need to start, run, and scale a business. Whether you're filing your first GST return, writing a pitch deck for investors, or figuring out FSSAI licensing for your cloud kitchen, BizHive has you covered with step-by-step guides, interactive tools, legal templates, and an AI assistant that understands Indian business regulations.")}
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {useCases.map((uc, i) => {
