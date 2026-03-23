@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users, DollarSign, Target, BarChart3, Cog, Rocket, Shield, Award, ArrowRight, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import FAQSection from "@/components/FAQSection";
 
 const manageFAQs = [
@@ -14,6 +15,7 @@ const manageFAQs = [
 ];
 const Manage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const managementAreas = [
     { icon: TrendingUp, title: "Scale Operations", description: "Expand your team, enhance efficiency", color: "text-blue-600 dark:text-blue-400", bgColor: "bg-blue-50 dark:bg-blue-900/20", features: ["Team Expansion", "Process Optimization", "Service Diversification", "Quality Control"], path: "/tools" },
@@ -37,9 +39,9 @@ const Manage = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
             <TrendingUp className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-5xl font-bold text-foreground mb-6">Manage & Scale Your Business</h1>
+          <h1 className="text-5xl font-bold text-foreground mb-6">{t("Manage & Scale Your Business")}</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Grow your business with advanced management strategies and proven scaling techniques
+            {t("Grow your business with advanced management strategies and proven scaling techniques")}
           </p>
         </div>
 
@@ -50,20 +52,20 @@ const Manage = () => {
                 <div className={`w-14 h-14 ${area.bgColor} rounded-lg flex items-center justify-center mb-4`}>
                   <area.icon className={`h-7 w-7 ${area.color}`} />
                 </div>
-                <CardTitle className="text-xl">{area.title}</CardTitle>
-                <CardDescription>{area.description}</CardDescription>
+                <CardTitle className="text-xl">{t(area.title)}</CardTitle>
+                <CardDescription>{t(area.description)}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 mb-6">
                   {area.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-muted-foreground">{feature}</span>
+                      <span className="text-sm text-muted-foreground">{t(feature)}</span>
                     </div>
                   ))}
                 </div>
                 <Button className="w-full" variant="outline" onClick={() => navigate(area.path)}>
-                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                  {t("Get Started")} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>
@@ -72,8 +74,8 @@ const Manage = () => {
 
         <div className="mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Advanced Scaling Strategies</h2>
-            <p className="text-lg text-muted-foreground">Proven methodologies to accelerate growth</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">{t("Advanced Scaling Strategies")}</h2>
+            <p className="text-lg text-muted-foreground">{t("Proven methodologies to accelerate growth")}</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {scalingStrategies.map((strategy, index) => (
@@ -83,9 +85,9 @@ const Manage = () => {
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                       <strategy.icon className="h-5 w-5 text-white" />
                     </div>
-                    <CardTitle className="text-lg">{strategy.title}</CardTitle>
+                    <CardTitle className="text-lg">{t(strategy.title)}</CardTitle>
                   </div>
-                  <CardDescription>{strategy.description}</CardDescription>
+                  <CardDescription>{t(strategy.description)}</CardDescription>
                 </CardHeader>
               </Card>
             ))}
@@ -94,24 +96,24 @@ const Manage = () => {
 
         {/* Why Growth Management Matters */}
         <div className="bg-muted/50 rounded-2xl p-8 mb-8 border">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Why Strategic Growth Management is Critical</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">{t("Why Strategic Growth Management is Critical")}</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <p className="text-muted-foreground mb-3">90% of startups fail, and a leading cause is premature scaling — growing faster than your operations, team, or finances can support. Strategic growth management helps you scale sustainably.</p>
-              <p className="text-muted-foreground">Focus on building strong foundations: efficient processes, reliable team, and healthy cash flow before pursuing aggressive growth.</p>
+              <p className="text-muted-foreground mb-3">{t("90% of startups fail, and a leading cause is premature scaling — growing faster than your operations, team, or finances can support. Strategic growth management helps you scale sustainably.")}</p>
+              <p className="text-muted-foreground">{t("Focus on building strong foundations: efficient processes, reliable team, and healthy cash flow before pursuing aggressive growth.")}</p>
             </div>
             <div className="space-y-3">
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
-                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Unit Economics First:</strong> Ensure each sale is profitable before scaling volume</p>
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">{t("Unit Economics First")}:</strong> {t("Ensure each sale is profitable before scaling volume")}</p>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
-                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Systems Before People:</strong> Document processes so new hires can onboard quickly</p>
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">{t("Systems Before People")}:</strong> {t("Document processes so new hires can onboard quickly")}</p>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
-                <p className="text-sm text-muted-foreground"><strong className="text-foreground">Customer Retention:</strong> It costs 5x more to acquire a new customer than retain one</p>
+                <p className="text-sm text-muted-foreground"><strong className="text-foreground">{t("Customer Retention")}:</strong> {t("It costs 5x more to acquire a new customer than retain one")}</p>
               </div>
             </div>
           </div>

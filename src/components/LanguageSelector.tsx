@@ -27,8 +27,9 @@ export function LanguageSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="rounded-full w-10 h-10 bg-background/50 backdrop-blur border hover:bg-accent hover:text-accent-foreground">
+        <Button className="rounded-full h-10 px-3 bg-background/50 backdrop-blur border text-foreground hover:bg-accent hover:text-accent-foreground gap-2">
           <Globe className="h-5 w-5" />
+          <span className="text-sm font-bold">{i18n.language.toUpperCase()}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

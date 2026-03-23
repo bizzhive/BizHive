@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
 // @ts-ignore
 import { driver } from "driver.js";
@@ -18,6 +19,7 @@ const Dashboard = () => {
   const { user, isLoading: authLoading } = useAuth() as any;
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [profile, setProfile] = useState<any>(null);
   const [business, setBusiness] = useState<any>(null);
@@ -234,21 +236,21 @@ const Dashboard = () => {
 
       <div id="dashboard-header" className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">{profile?.full_name || "My Profile"}</h1>
+          <h1 className="text-3xl font-bold text-foreground">{profile?.full_name || t("My Profile")}</h1>
           <p className="text-muted-foreground mt-1">
-            Welcome back! Here's your business overview.
+            {t("Welcome back! Here's your business overview.")}
           </p>
         </div>
         <Button id="new-plan-btn" onClick={() => navigate("/plan")} className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <PlusCircle className="mr-2 h-4 w-4" />
-          New Business Plan
+          {t("New Business Plan")}
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card id="business-stage-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Business Stage</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t("Business Stage")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground flex items-center">
@@ -264,7 +266,7 @@ const Dashboard = () => {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Saved Tools</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t("Saved Tools")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground flex items-center">
@@ -275,7 +277,7 @@ const Dashboard = () => {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Profile Completion</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t("Profile Completion")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{completion}%</div>
@@ -286,7 +288,7 @@ const Dashboard = () => {
         </Card>
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">User ID</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t("User ID")}</CardTitle>
             <Button onClick={copyToClipboard} className="h-6 w-6 hover:bg-accent hover:text-accent-foreground">
               <Copy className="h-4 w-4 text-muted-foreground" />
             </Button>
@@ -299,7 +301,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
+      <h2 className="text-xl font-bold text-foreground mb-4">{t("Quick Actions")}</h2>
       <div id="quick-actions" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { title: "Market Research", path: "/plan/market-research", color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
@@ -312,9 +314,9 @@ const Dashboard = () => {
               <div className={`p-3 rounded-full mb-4 ${action.color}`}>
                 <Activity className="h-6 w-6" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">{action.title}</h3>
+              <h3 className="font-semibold text-foreground mb-2">{t(action.title)}</h3>
               <div className="text-sm text-primary flex items-center">
-                Start <ArrowRight className="ml-1 h-3 w-3" />
+                {t("Start")} <ArrowRight className="ml-1 h-3 w-3" />
               </div>
             </CardContent>
           </Card>

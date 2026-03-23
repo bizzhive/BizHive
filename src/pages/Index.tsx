@@ -171,10 +171,10 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center reveal-on-scroll">
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              What is BizHive?
+              {t("What is BizHive?")}
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              BizHive is India's comprehensive business growth platform — a single destination where entrepreneurs, freelancers, and small business owners find everything they need to start, run, and scale a business. Whether you're filing your first GST return, writing a pitch deck for investors, or figuring out FSSAI licensing for your cloud kitchen, BizHive has you covered with step-by-step guides, interactive tools, legal templates, and an AI assistant that understands Indian business regulations.
+              {t("BizHive is India's comprehensive business growth platform — a single destination where entrepreneurs, freelancers, and small business owners find everything they need to start, run, and scale a business. Whether you're filing your first GST return, writing a pitch deck for investors, or figuring out FSSAI licensing for your cloud kitchen, BizHive has you covered with step-by-step guides, interactive tools, legal templates, and an AI assistant that understands Indian business regulations.")}
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {useCases.map((uc, i) => {
@@ -182,8 +182,8 @@ const Index = () => {
                 return (
                   <div key={i} className="p-4 rounded-xl bg-background border hover:shadow-md transition-shadow text-left">
                     <Icon className="h-6 w-6 text-primary mb-2" />
-                    <h4 className="font-semibold text-foreground text-sm mb-1">{uc.title}</h4>
-                    <p className="text-xs text-muted-foreground">{uc.desc}</p>
+                    <h4 className="font-semibold text-foreground text-sm mb-1">{t(uc.title)}</h4>
+                    <p className="text-xs text-muted-foreground">{t(uc.desc)}</p>
                   </div>
                 );
               })}
@@ -196,8 +196,8 @@ const Index = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 reveal-on-scroll">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">How We Help You Succeed</h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Your four-stage journey from idea to empire.</p>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">{t("How We Help You Succeed")}</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t("Your four-stage journey from idea to empire.")}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -209,9 +209,9 @@ const Index = () => {
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                       <Icon className="h-6 w-6 text-white" />
                     </div>
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Step {s.step}</span>
-                    <h3 className="text-xl font-bold text-foreground mt-1 mb-2">{s.title}</h3>
-                    <p className="text-sm text-muted-foreground">{s.desc}</p>
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t("Step")} {s.step}</span>
+                    <h3 className="text-xl font-bold text-foreground mt-1 mb-2">{t(s.title)}</h3>
+                    <p className="text-sm text-muted-foreground">{t(s.desc)}</p>
                   </div>
                 </div>
               );
@@ -222,7 +222,7 @@ const Index = () => {
 
       {/* Social Proof Marquee */}
       <section className="py-10 bg-muted/50 border-y overflow-hidden">
-        <p className="text-center text-sm font-medium text-muted-foreground mb-6 uppercase tracking-wider">Trusted by 10,000+ Creators & Founders</p>
+        <p className="text-center text-sm font-medium text-muted-foreground mb-6 uppercase tracking-wider">{t("Trusted by 10,000+ Creators & Founders")}</p>
         <div className="flex overflow-hidden relative group">
           <div className="flex space-x-6 animate-marquee group-hover:[animation-play-state:paused] whitespace-nowrap px-4">
             {[...testimonials, ...testimonials].map((t, i) => (
@@ -248,10 +248,10 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 reveal-on-scroll">
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-              Supercharge Your Workflow
+              {t("Supercharge Your Workflow")}
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Everything you need to build faster, smarter, and better.
+              {t("Everything you need to build faster, smarter, and better.")}
             </p>
           </div>
 
@@ -266,13 +266,13 @@ const Index = () => {
                         <div className={`p-3 rounded-xl ${tool.bg} group-hover:scale-110 transition-transform duration-300`}>
                           <Icon className={`h-5 w-5 ${tool.color}`} />
                         </div>
-                        <CardTitle className="text-lg">{tool.name}</CardTitle>
+                        <CardTitle className="text-lg">{t(tool.name)}</CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <CardDescription className="text-sm mb-3">{tool.description}</CardDescription>
+                      <CardDescription className="text-sm mb-3">{t(tool.description)}</CardDescription>
                       <span className="text-sm font-medium text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
-                        Launch Tool <ArrowRight className="h-3.5 w-3.5" />
+                        {t("Launch Tool")} <ArrowRight className="h-3.5 w-3.5" />
                       </span>
                     </CardContent>
                   </Card>
@@ -287,7 +287,7 @@ const Index = () => {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 reveal-on-scroll">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">Why BizHive?</h2>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">{t("Why BizHive?")}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {[
@@ -302,8 +302,8 @@ const Index = () => {
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <Icon className="h-7 w-7 text-primary" />
                   </div>
-                  <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                  <h3 className="font-bold text-foreground mb-2">{t(item.title)}</h3>
+                  <p className="text-sm text-muted-foreground">{t(item.desc)}</p>
                 </div>
               );
             })}
@@ -315,7 +315,7 @@ const Index = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 reveal-on-scroll">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">Your Complete Playbook</h2>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">{t("Your Complete Playbook")}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 auto-rows-[240px]">
@@ -334,10 +334,10 @@ const Index = () => {
                       <Icon className="h-6 w-6" />
                     </div>
                     <h3 className="text-xl font-bold mb-1.5 flex items-center gap-2">
-                      {feature.title}
+                      {t(feature.title)}
                       <ArrowRight className="h-4 w-4 opacity-0 -translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                     </h3>
-                    <p className="text-white/80 text-sm">{feature.description}</p>
+                    <p className="text-white/80 text-sm">{t(feature.description)}</p>
                   </div>
                 </Link>
               );
@@ -357,10 +357,10 @@ const Index = () => {
               <BeeIcon className="w-10 h-10" />
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-              Meet <span className="text-amber-600">Bee AI</span>, Your Co-Founder
+              {t("Meet")} <span className="text-amber-600">{t("Bee AI")}</span>, {t("Your Co-Founder")}
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Smart, context-aware, and built for Indian business.
+              {t("Smart, context-aware, and built for Indian business.")}
             </p>
           </div>
 
@@ -375,7 +375,7 @@ const Index = () => {
                       <div className="w-3 h-3 rounded-full bg-red-400/80" />
                       <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
                       <div className="w-3 h-3 rounded-full bg-green-400/80" />
-                      <span className="ml-2 text-xs text-muted-foreground font-mono">Select any text to ask Bee</span>
+                      <span className="ml-2 text-xs text-muted-foreground font-mono">{t("Select any text to ask Bee")}</span>
                     </div>
                   </CardHeader>
                   <CardContent className="p-8">
@@ -410,9 +410,9 @@ const Index = () => {
                   <Search className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Instant Contextual Help</h3>
+                  <h3 className="text-xl font-bold mb-2">{t("Instant Contextual Help")}</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Stuck on a confusing term while reading a guide? Just highlight it. Bee pops up instantly to explain jargon, legal terms, or financial concepts in simple language.
+                    {t("Stuck on a confusing term while reading a guide? Just highlight it. Bee pops up instantly to explain jargon, legal terms, or financial concepts in simple language.")}
                   </p>
                 </div>
               </div>
@@ -422,9 +422,9 @@ const Index = () => {
                   <FileText className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Draft Contracts & Plans</h3>
+                  <h3 className="text-xl font-bold mb-2">{t("Draft Contracts & Plans")}</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Need an employment offer letter or a co-founder agreement? Bee can draft legally-sound templates tailored to your specific needs in seconds.
+                    {t("Need an employment offer letter or a co-founder agreement? Bee can draft legally-sound templates tailored to your specific needs in seconds.")}
                   </p>
                 </div>
               </div>
@@ -434,9 +434,9 @@ const Index = () => {
                   <TrendingUp className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Strategic Advice</h3>
+                  <h3 className="text-xl font-bold mb-2">{t("Strategic Advice")}</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Not sure which government scheme applies to you? Ask Bee. It knows about Startup India, MSME benefits, and local subsidies.
+                    {t("Not sure which government scheme applies to you? Ask Bee. It knows about Startup India, MSME benefits, and local subsidies.")}
                   </p>
                 </div>
               </div>
@@ -444,7 +444,7 @@ const Index = () => {
               <div className="pt-4">
                 <Button asChild className="h-11 px-8 rounded-xl bg-foreground text-background hover:bg-foreground/90">
                   <Link to="/ai-assistant">
-                    Try Bee AI Now <ArrowRight className="ml-2 w-4 h-4" />
+                    {t("Try Bee AI Now")} <ArrowRight className="ml-2 w-4 h-4" />
                   </Link>
                 </Button>
               </div>
@@ -467,7 +467,7 @@ const Index = () => {
               <div key={i} className="p-6 rounded-2xl border border-background/10 hover:border-background/25 transition-colors bg-background/5 backdrop-blur">
                 <stat.icon className="h-7 w-7 text-amber-400 mx-auto mb-3" />
                 <div className="text-3xl md:text-4xl font-black mb-1">{stat.count.toLocaleString()}+</div>
-                <div className="text-background/60 text-sm font-medium">{stat.label}</div>
+                <div className="text-background/60 text-sm font-medium">{t(stat.label)}</div>
               </div>
             ))}
           </div>
@@ -478,8 +478,8 @@ const Index = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10 reveal-on-scroll">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Our Sources</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto text-sm">All information is sourced from official Indian government portals and regulatory bodies.</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t("Our Sources")}</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto text-sm">{t("All information is sourced from official Indian government portals and regulatory bodies.")}</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto reveal-on-scroll">
             {sources.map((s, i) => (
@@ -497,10 +497,10 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-black mb-6 text-white tracking-tight">
-              Stop Dreaming, Start Building
+              {t("Stop Dreaming, Start Building")}
             </h2>
             <p className="text-xl mb-10 text-white/90 max-w-2xl mx-auto">
-              Join the community of makers and founders shaping the future of India's startup ecosystem.
+              {t("Join the community of makers and founders shaping the future of India's startup ecosystem.")}
             </p>
             <Button asChild className="h-11 px-10 bg-white text-orange-600 hover:bg-white/90 text-lg py-6 rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
               <Link to="/login">

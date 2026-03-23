@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Search, Target, TrendingUp, DollarSign, FileCheck, CheckCircle, Lightbulb, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import FAQSection from "@/components/FAQSection";
 
 const planFAQs = [
@@ -15,6 +16,7 @@ const planFAQs = [
 ];
 
 const Plan = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12">
@@ -23,9 +25,9 @@ const Plan = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl mb-6">
             <Target className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Plan Your Business</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t("Plan Your Business")}</h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Turn your business idea into a comprehensive plan with our step-by-step guides and interactive tools
+            {t("Turn your business idea into a comprehensive plan with our step-by-step guides and interactive tools")}
           </p>
         </div>
 
@@ -36,22 +38,22 @@ const Plan = () => {
               <Lightbulb className="h-6 w-6 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Why Planning Matters</h2>
-              <p className="text-muted-foreground">Planning isn't just paperwork — it's the foundation of every successful business. Here's why:</p>
+              <h2 className="text-2xl font-bold text-foreground mb-2">{t("Why Planning Matters")}</h2>
+              <p className="text-muted-foreground">{t("Planning isn't just paperwork — it's the foundation of every successful business. Here's why:")}</p>
             </div>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Clarity & Direction</h3>
-              <p className="text-sm text-muted-foreground">A plan forces you to think through your business model, revenue streams, and competitive advantages before investing time and money.</p>
+              <h3 className="font-semibold text-foreground">{t("Clarity & Direction")}</h3>
+              <p className="text-sm text-muted-foreground">{t("A plan forces you to think through your business model, revenue streams, and competitive advantages before investing time and money.")}</p>
             </div>
             <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Attract Investors</h3>
-              <p className="text-sm text-muted-foreground">No investor funds a pitch without a plan. Banks, VCs, and angel investors all require a well-structured business plan before committing capital.</p>
+              <h3 className="font-semibold text-foreground">{t("Attract Investors")}</h3>
+              <p className="text-sm text-muted-foreground">{t("No investor funds a pitch without a plan. Banks, VCs, and angel investors all require a well-structured business plan before committing capital.")}</p>
             </div>
             <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Reduce Risk</h3>
-              <p className="text-sm text-muted-foreground">Market research and financial projections help you identify potential pitfalls early, saving you from costly mistakes down the road.</p>
+              <h3 className="font-semibold text-foreground">{t("Reduce Risk")}</h3>
+              <p className="text-sm text-muted-foreground">{t("Market research and financial projections help you identify potential pitfalls early, saving you from costly mistakes down the road.")}</p>
             </div>
           </div>
         </div>
@@ -68,16 +70,16 @@ const Plan = () => {
                 <div className={`p-3 rounded-xl ${card.bg} w-fit mb-2`}>
                   <card.icon className={`h-6 w-6 ${card.color}`} />
                 </div>
-                <CardTitle>{card.title}</CardTitle>
-                <CardDescription>{card.desc}</CardDescription>
+                <CardTitle>{t(card.title)}</CardTitle>
+                <CardDescription>{t(card.desc)}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-1.5 mb-4">
                   {card.items.map((item, j) => (
-                    <li key={j} className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-500 shrink-0" />{item}</li>
+                    <li key={j} className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-500 shrink-0" />{t(item)}</li>
                   ))}
                 </ul>
-                <Button asChild className="w-full"><Link to={card.href}>Get Started</Link></Button>
+                <Button asChild className="w-full"><Link to={card.href}>{t("Get Started")}</Link></Button>
               </CardContent>
             </Card>
           ))}
@@ -85,7 +87,7 @@ const Plan = () => {
 
         {/* Planning Process */}
         <div className="bg-card rounded-2xl p-8 mb-12 border">
-          <h2 className="text-2xl font-bold mb-6 text-foreground">5-Step Planning Process</h2>
+          <h2 className="text-2xl font-bold mb-6 text-foreground">{t("5-Step Planning Process")}</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[
               { step: "1", title: "Research", desc: "Market & Competition", color: "bg-blue-500" },
@@ -96,8 +98,8 @@ const Plan = () => {
             ].map((s) => (
               <div key={s.step} className="text-center">
                 <div className={`w-10 h-10 ${s.color} rounded-full flex items-center justify-center mx-auto mb-2 text-white font-bold text-sm`}>{s.step}</div>
-                <h3 className="font-semibold text-sm text-foreground">{s.title}</h3>
-                <p className="text-xs text-muted-foreground">{s.desc}</p>
+                <h3 className="font-semibold text-sm text-foreground">{t(s.title)}</h3>
+                <p className="text-xs text-muted-foreground">{t(s.desc)}</p>
               </div>
             ))}
           </div>
@@ -105,7 +107,7 @@ const Plan = () => {
 
         {/* Quick Tools */}
         <div className="bg-muted/30 rounded-2xl p-8 mb-4 border">
-          <h2 className="text-2xl font-bold mb-6 text-foreground">Quick Planning Tools</h2>
+          <h2 className="text-2xl font-bold mb-6 text-foreground">{t("Quick Planning Tools")}</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { icon: Target, label: "Business Canvas", href: "/tools/business-canvas" },
@@ -114,7 +116,7 @@ const Plan = () => {
               { icon: CheckCircle, label: "Launch Checklist", href: "/launch" },
             ].map((t, i) => (
               <Button key={i} asChild variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
-                <Link to={t.href}><t.icon className="h-5 w-5" /><span className="text-sm">{t.label}</span></Link>
+                <Link to={t.href}><t.icon className="h-5 w-5" /><span className="text-sm">{t(t.label)}</span></Link>
               </Button>
             ))}
           </div>

@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 import FAQSection from "@/components/FAQSection";
 
 const launchFAQs = [
@@ -41,6 +42,7 @@ const launchChecklist = [
 const Launch = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -101,11 +103,11 @@ const Launch = () => {
                     <div className={`p-3 rounded-lg ${colors[phase.color]}`}><Icon className="h-6 w-6" /></div>
                     <div>
                       <div className="flex items-center space-x-2 mb-1">
-                        <Badge variant="outline">{phase.phase}</Badge>
-                        <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />{phase.timeframe}</Badge>
+                        <Badge variant="outline">{t(phase.phase)}</Badge>
+                        <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />{t(phase.timeframe)}</Badge>
                       </div>
-                      <CardTitle className="text-xl">{phase.title}</CardTitle>
-                      <CardDescription>{phase.description}</CardDescription>
+                      <CardTitle className="text-xl">{t(phase.title)}</CardTitle>
+                      <CardDescription>{t(phase.description)}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
@@ -114,7 +116,7 @@ const Launch = () => {
                     {phase.tasks.map((task, i) => (
                       <div key={i} className="flex items-center space-x-2">
                         <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground">{task}</span>
+                        <span className="text-sm text-muted-foreground">{t(task)}</span>
                       </div>
                     ))}
                   </div>
@@ -131,9 +133,9 @@ const Launch = () => {
               <div>
                 <CardTitle className="flex items-center">
                   <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
-                  Pre-Launch Checklist
+                  {t("Pre-Launch Checklist")}
                 </CardTitle>
-                <CardDescription>Track your progress — {completedCount}/{launchChecklist.length} completed</CardDescription>
+                <CardDescription>{t("Track your progress")} — {completedCount}/{launchChecklist.length} {t("completed")}</CardDescription>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-bold text-primary">{progress}%</span>
@@ -153,35 +155,35 @@ const Launch = () => {
                     onChange={() => toggleItem(item)}
                     className="mt-1 h-4 w-4 text-primary border-input rounded focus:ring-primary"
                   />
-                  <span className={`text-sm ${checkedItems[item] ? "line-through text-muted-foreground" : "text-foreground"}`}>{item}</span>
+                  <span className={`text-sm ${checkedItems[item] ? "line-through text-muted-foreground" : "text-foreground"}`}>{t(item)}</span>
                 </label>
               ))}
             </div>
-            {!user && <p className="text-sm text-muted-foreground mt-4 text-center">Log in to save your checklist progress.</p>}
+            {!user && <p className="text-sm text-muted-foreground mt-4 text-center">{t("Log in to save your checklist progress.")}</p>}
           </CardContent>
         </Card>
 
         {/* Launch Resources */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           <Card className="border-l-4 border-l-blue-500">
-            <CardHeader><div className="flex items-center space-x-2"><FileText className="h-5 w-5 text-primary" /><CardTitle className="text-lg">Document Templates</CardTitle></div></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground mb-4">Download ready-to-use templates</p><Button asChild className="w-full"><Link to="/documents">Access Templates</Link></Button></CardContent>
+            <CardHeader><div className="flex items-center space-x-2"><FileText className="h-5 w-5 text-primary" /><CardTitle className="text-lg">{t("Document Templates")}</CardTitle></div></CardHeader>
+            <CardContent><p className="text-sm text-muted-foreground mb-4">{t("Download ready-to-use templates")}</p><Button asChild className="w-full"><Link to="/documents">{t("Access Templates")}</Link></Button></CardContent>
           </Card>
           <Card className="border-l-4 border-l-green-500">
-            <CardHeader><div className="flex items-center space-x-2"><Shield className="h-5 w-5 text-green-600" /><CardTitle className="text-lg">Legal Compliance</CardTitle></div></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground mb-4">Ensure legal requirements are met</p><Button asChild className="w-full"><Link to="/legal">Check Compliance</Link></Button></CardContent>
+            <CardHeader><div className="flex items-center space-x-2"><Shield className="h-5 w-5 text-green-600" /><CardTitle className="text-lg">{t("Legal Compliance")}</CardTitle></div></CardHeader>
+            <CardContent><p className="text-sm text-muted-foreground mb-4">{t("Ensure legal requirements are met")}</p><Button asChild className="w-full"><Link to="/legal">{t("Check Compliance")}</Link></Button></CardContent>
           </Card>
           <Card className="border-l-4 border-l-purple-500">
-            <CardHeader><div className="flex items-center space-x-2"><DollarSign className="h-5 w-5 text-purple-600" /><CardTitle className="text-lg">Funding Support</CardTitle></div></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground mb-4">Explore funding options</p><Button asChild className="w-full"><Link to="/incubators">Find Funding</Link></Button></CardContent>
+            <CardHeader><div className="flex items-center space-x-2"><DollarSign className="h-5 w-5 text-purple-600" /><CardTitle className="text-lg">{t("Funding Support")}</CardTitle></div></CardHeader>
+            <CardContent><p className="text-sm text-muted-foreground mb-4">{t("Explore funding options")}</p><Button asChild className="w-full"><Link to="/incubators">{t("Find Funding")}</Link></Button></CardContent>
           </Card>
         </div>
 
         {/* Why Launch Right */}
         <div className="bg-muted/50 rounded-2xl p-8 mb-8 border">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Why Getting Your Launch Right Matters</h2>
-          <p className="text-muted-foreground mb-4">Your launch sets the tone for everything that follows. A well-executed launch builds momentum, attracts early customers, and establishes credibility in the market. According to research, startups that follow a structured launch process are 2.7x more likely to succeed in their first year.</p>
-          <p className="text-muted-foreground">Use the checklist above to track every critical step, from legal compliance to marketing readiness. Each item represents a common failure point that can be avoided with proper preparation.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-4">{t("Why Getting Your Launch Right Matters")}</h2>
+          <p className="text-muted-foreground mb-4">{t("Your launch sets the tone for everything that follows. A well-executed launch builds momentum, attracts early customers, and establishes credibility in the market. According to research, startups that follow a structured launch process are 2.7x more likely to succeed in their first year.")}</p>
+          <p className="text-muted-foreground">{t("Use the checklist above to track every critical step, from legal compliance to marketing readiness. Each item represents a common failure point that can be avoided with proper preparation.")}</p>
         </div>
 
         {/* FAQ */}
