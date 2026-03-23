@@ -12,11 +12,6 @@ import BeeIcon from "./BeeIcon";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-const INITIAL_MSG: Msg = {
-  role: "assistant",
-  content: "Hey! I'm **Bee**, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or whatever you see on this page!"
-};
-
 interface BeePanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,13 +22,22 @@ interface BeePanelProps {
 const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([INITIAL_MSG]);
+  const [messages, setMessages] = useState<Msg[]>([]);
   const [userContext, setUserContext] = useState<Record<string, unknown> | null>(null);
   const { session, user } = useAuth();
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([{
+        role: "assistant",
+        content: t("ai.welcome", "Hey! I'm **Bee**, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or whatever you see on this page!")
+      }]);
+    }
+  }, []);
 
   useEffect(() => {
     if (prefillMessage && open) {
@@ -72,7 +76,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          messages: chatMessages.filter((m) => m !== INITIAL_MSG),
+          messages: chatMessages,
           context: { ...userContext, currentPage: location.pathname, language: i18n.language },
         }),
       });

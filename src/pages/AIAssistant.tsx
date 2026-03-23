@@ -9,24 +9,31 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import BeeIcon from "@/components/BeeIcon";
+import { useTranslation } from "react-i18next";
 
 type Msg = { role: "user" | "assistant"; content: string };
-
-const INITIAL_MSG: Msg = {
-  role: "assistant",
-  content: "Hey! I'm **Bee**, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or strategies!"
-};
 
 const AIAssistant = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([INITIAL_MSG]);
+  const [messages, setMessages] = useState<Msg[]>([]);
   const [userContext, setUserContext] = useState<any>(null);
   const [chatSessions, setChatSessions] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const { session, user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Set initial message on mount (localized)
+    if (messages.length === 0) {
+      setMessages([{
+        role: "assistant",
+        content: t("ai.welcome", "Hey! I'm **Bee**, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or strategies!")
+      }]);
+    }
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -82,13 +89,13 @@ const AIAssistant = () => {
       .order("created_at", { ascending: true });
     
     if (data && data.length > 0) {
-      setMessages([INITIAL_MSG, ...data.map((m) => ({ role: m.role as "user" | "assistant", content: m.content }))]);
+      setMessages([...data.map((m) => ({ role: m.role as "user" | "assistant", content: m.content }))]);
       setCurrentSessionId(sessionId);
     }
   };
 
   const newChat = () => {
-    setMessages([INITIAL_MSG]);
+    setMessages([{ role: "assistant", content: t("ai.welcome") }]);
     setCurrentSessionId(null);
   };
 
@@ -106,7 +113,7 @@ const AIAssistant = () => {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          messages: chatMessages.filter((m) => m !== INITIAL_MSG),
+          messages: chatMessages,
           context: { ...userContext, currentPage: "/ai-assistant" },
         }),
       });
@@ -127,7 +134,7 @@ const AIAssistant = () => {
         full += chunk;
         setMessages((prev) => {
           const last = prev[prev.length - 1];
-          if (last?.role === "assistant" && last !== INITIAL_MSG) return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: full } : m));
+          if (last?.role === "assistant" && last.content !== t("ai.welcome")) return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: full } : m));
           return [...prev, { role: "assistant", content: full }];
         });
       };

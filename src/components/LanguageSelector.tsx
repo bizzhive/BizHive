@@ -37,19 +37,25 @@ export const languages = [
 export function LanguageSelector() {
   const { i18n } = useTranslation();
 
+  const handleLanguageChange = (code: string) => {
+    i18n.changeLanguage(code).then(() => {
+      window.location.reload();
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="rounded-full h-10 px-3 bg-background/50 backdrop-blur border text-foreground hover:bg-accent hover:text-accent-foreground gap-2">
           <Globe className="h-5 w-5" />
-          <span className="text-sm font-bold">{i18n.language.toUpperCase()}</span>
+          <span className="text-sm font-bold">{i18n.language?.toUpperCase() || "EN"}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => i18n.changeLanguage(lang.code)}
+            onClick={() => handleLanguageChange(lang.code)}
             className={i18n.language === lang.code ? "bg-accent font-medium" : ""}
           >
             {lang.name}
