@@ -17,6 +17,9 @@ const categoryIcons: Record<string, any> = {
   legal: Shield, business: Building, financial: DollarSign, hr: Users, contracts: FileText,
 };
 
+const getTemplateSlug = (tags: string[] | null | undefined) =>
+  tags?.find((tag) => tag.startsWith("template:"))?.replace("template:", "") || null;
+
 const Documents = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -57,13 +60,13 @@ const Documents = () => {
 
   const handleDownload = async (doc: any) => {
     if (doc.is_premium && !user) {
-      toast({ title: "Premium Document", description: "Please log in and upgrade to access premium documents.", variant: "destructive" });
+      toast({ title: t("Premium Document"), description: t("Please log in and upgrade to access premium documents."), variant: "destructive" });
       return;
     }
     if (doc.file_url) {
       window.open(doc.file_url, "_blank");
     } else {
-      toast({ title: "Coming Soon", description: "This document will be available for download shortly." });
+      toast({ title: t("Coming Soon"), description: t("This document will be available for download shortly.") });
     }
     // Increment download count
     await supabase.from("documents").update({ download_count: (doc.download_count || 0) + 1 }).eq("id", doc.id);
@@ -71,7 +74,7 @@ const Documents = () => {
 
   const handleSave = async (doc: any) => {
     if (!user) {
-      toast({ title: "Login Required", description: "Please log in to save documents.", variant: "destructive" });
+      toast({ title: t("Login Required"), description: t("Please log in to save documents."), variant: "destructive" });
       return;
     }
     const { error } = await supabase.from("user_documents").insert({
@@ -80,16 +83,16 @@ const Documents = () => {
       title: doc.title,
     });
     if (error) {
-      toast({ title: "Error", description: "Failed to save document", variant: "destructive" });
+      toast({ title: t("Error"), description: t("Failed to save document"), variant: "destructive" });
     } else {
-      toast({ title: "Saved!", description: `${doc.title} saved to your library.` });
+      toast({ title: t("Saved!"), description: `${doc.title} ${t("saved to your library.")}` });
     }
   };
 
   const handleRequestDocument = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      toast({ title: "Login Required", description: "Please log in to request documents.", variant: "destructive" });
+      toast({ title: t("Login Required"), description: t("Please log in to request documents."), variant: "destructive" });
       return;
     }
     setIsRequesting(true);
@@ -102,12 +105,12 @@ const Documents = () => {
         category: "document_request"
       });
       if (error) throw error;
-      toast({ title: "Request Sent", description: "We'll try to add this document soon." });
+      toast({ title: t("Request Sent"), description: t("We'll try to add this document soon.") });
       setIsRequestOpen(false);
       setRequestTitle("");
       setRequestDesc("");
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: t("Error"), description: error.message, variant: "destructive" });
     } finally {
       setIsRequesting(false);
     }
@@ -118,37 +121,37 @@ const Documents = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center text-sm text-muted-foreground mb-8">
-          <Link to="/" className="hover:text-primary flex items-center"><Home className="h-4 w-4 mr-1" />Home</Link>
+          <Link to="/" className="hover:text-primary flex items-center"><Home className="h-4 w-4 mr-1" />{t("Home")}</Link>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <Link to="/resources/learn" className="hover:text-primary">Resources</Link>
+          <Link to="/resources/learn" className="hover:text-primary">{t("Resources")}</Link>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <span className="text-foreground font-medium">Documents</span>
+          <span className="text-foreground font-medium">{t("Documents")}</span>
         </div>
 
         <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
             <FileText className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-5xl font-bold text-foreground mb-6">Document Library</h1>
+          <h1 className="text-5xl font-bold text-foreground mb-6">{t("Document Library")}</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Access legal templates, business forms, and compliance documents.
+            {t("Access legal templates, business forms, and compliance documents.")}
           </p>
         </div>
 
         <div className="flex justify-end mb-6">
           <Dialog open={isRequestOpen} onOpenChange={setIsRequestOpen}>
             <DialogTrigger asChild>
-              <Button><PlusCircle className="mr-2 h-4 w-4" /> Request a Document</Button>
+              <Button><PlusCircle className="mr-2 h-4 w-4" /> {t("Request a Document")}</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Request a Document</DialogTitle>
-                <DialogDescription>Can't find what you're looking for? Let us know.</DialogDescription>
+                <DialogTitle>{t("Request a Document")}</DialogTitle>
+                <DialogDescription>{t("Can't find what you're looking for? Let us know.")}</DialogDescription>
               </DialogHeader>
               <form onSubmit={handleRequestDocument} className="space-y-4 mt-4">
-                <div className="space-y-2"><Label>Document Name/Type</Label><Input placeholder="e.g. Non-Disclosure Agreement" value={requestTitle} onChange={e => setRequestTitle(e.target.value)} required /></div>
-                <div className="space-y-2"><Label>Details (Optional)</Label><Textarea placeholder="Specific clauses or requirements..." value={requestDesc} onChange={e => setRequestDesc(e.target.value)} /></div>
-                <Button type="submit" className="w-full" disabled={isRequesting}>{isRequesting ? "Sending..." : "Submit Request"}</Button>
+                <div className="space-y-2"><Label>{t("Document Name/Type")}</Label><Input placeholder={t("e.g. Non-Disclosure Agreement")} value={requestTitle} onChange={e => setRequestTitle(e.target.value)} required /></div>
+                <div className="space-y-2"><Label>{t("Details (Optional)")}</Label><Textarea placeholder={t("Specific clauses or requirements...")} value={requestDesc} onChange={e => setRequestDesc(e.target.value)} /></div>
+                <Button type="submit" className="w-full" disabled={isRequesting}>{isRequesting ? t("Sending...") : t("Submit Request")}</Button>
               </form>
             </DialogContent>
           </Dialog>
@@ -159,13 +162,13 @@ const Documents = () => {
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-              <Input placeholder="Search documents..." className="pl-10 text-lg h-12" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <Input placeholder={t("Search documents...")} className="pl-10 text-lg h-12" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className="flex items-center space-x-2">
               <Filter className="h-5 w-5 text-muted-foreground" />
               <select className="px-4 py-2 border rounded-md bg-background text-foreground border-input" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
                 {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                  <option key={c.id} value={c.id}>{t(c.name)}</option>
                 ))}
               </select>
             </div>
@@ -180,7 +183,7 @@ const Documents = () => {
               <Card key={cat.id} className={`cursor-pointer transition-all hover:shadow-md ${selectedCategory === cat.id ? "ring-2 ring-primary bg-primary/5" : ""}`} onClick={() => setSelectedCategory(cat.id)}>
                 <CardContent className="p-4 text-center">
                   <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
-                  <div className="font-medium text-sm text-foreground">{cat.name}</div>
+                  <div className="font-medium text-sm text-foreground">{t(cat.name)}</div>
                 </CardContent>
               </Card>
             );
@@ -192,8 +195,8 @@ const Documents = () => {
         ) : filteredDocuments.length === 0 ? (
           <div className="text-center py-12">
             <FolderOpen className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No documents found</h3>
-            <p className="text-muted-foreground">Try adjusting your search or category filter.</p>
+            <h3 className="text-lg font-semibold text-foreground mb-2">{t("No documents found")}</h3>
+            <p className="text-muted-foreground">{t("Try adjusting your search or category filter.")}</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -204,7 +207,7 @@ const Documents = () => {
                     <div className="flex-1">
                       <CardTitle className="text-lg leading-tight mb-2">{doc.title}</CardTitle>
                       <div className="flex items-center space-x-2 mb-2">
-                        <Badge className={doc.is_premium ? "bg-primary text-primary-foreground hover:bg-primary/80 border-transparent" : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-transparent"}>{doc.is_premium ? "Premium" : "Free"}</Badge>
+                        <Badge className={doc.is_premium ? "bg-primary text-primary-foreground hover:bg-primary/80 border-transparent" : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-transparent"}>{doc.is_premium ? t("Premium") : t("Free")}</Badge>
                         <Badge className="text-foreground">{doc.category}</Badge>
                       </div>
                     </div>
@@ -213,13 +216,31 @@ const Documents = () => {
                   <p className="text-sm text-muted-foreground leading-relaxed">{doc.description}</p>
                 </CardHeader>
                 <CardContent className="pt-0">
+                  {(() => {
+                    const templateSlug = getTemplateSlug(doc.tags);
+                    const opensOfficialSource = doc.tags?.includes("official-source");
+
+                    return (
+                      <>
                   <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                     <span>{(doc.download_count || 0).toLocaleString()} downloads</span>
                     {doc.tags?.length > 0 && <span className="text-xs">{doc.tags.slice(0, 2).join(", ")}</span>}
                   </div>
-                  <Button className="w-full h-9 px-3" onClick={() => handleDownload(doc)}>
-                    <Download className="h-4 w-4 mr-2" /> {t("Download")}
-                  </Button>
+                        <div className="space-y-2">
+                          <Button className="w-full h-9 px-3" onClick={() => handleDownload(doc)}>
+                            <Download className="h-4 w-4 mr-2" /> {opensOfficialSource ? t("Open Official Source") : t("Download")}
+                          </Button>
+                          {templateSlug && (
+                            <Button asChild variant="outline" className="w-full h-9 px-3">
+                              <Link to={`/legal?template=${encodeURIComponent(templateSlug)}`}>
+                                <Send className="h-4 w-4 mr-2" /> {t("Edit Worksheet")}
+                              </Link>
+                            </Button>
+                          )}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </CardContent>
               </Card>
             ))}

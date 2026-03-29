@@ -144,6 +144,32 @@ const chapters = [
       "> Not every exit is about billions. A ₹5Cr exit from a bootstrapped company you built in 3 years is an extraordinary outcome. Define success on your own terms.",
     ],
   },
+  {
+    title: "Building Scalable Systems",
+    content: [
+      "Growth eventually breaks everything that depends on founder memory. Scalable systems turn repeated founder effort into repeatable team execution.",
+      "## Systems Worth Building Early",
+      "- Sales qualification and follow-up workflows\n- Hiring scorecards and onboarding checklists\n- Weekly finance review and cash controls\n- Customer support response standards\n- Escalation paths for operations and product incidents",
+      "## Principles for Good Systems",
+      "- Keep them simple enough to follow under pressure\n- Document the owner for each workflow\n- Review exceptions, not just outputs\n- Update the system when reality changes\n- Measure system health with a small set of metrics",
+      "## Avoid Over-Engineering",
+      "Do not install enterprise-grade process for a five-person team. Build the lightest structure that reduces mistakes, speeds execution, and helps new people succeed.",
+      "> If the business only works when you are present, you have a job, not a scalable company.",
+    ],
+  },
+  {
+    title: "Partnerships & Strategic Alliances",
+    content: [
+      "Partnerships can unlock distribution, trust, and speed that would take years to build alone. The best ones create value for both sides and are easy to explain.",
+      "## Common Partnership Models",
+      "- Referral partnerships\n- Channel sales or reseller agreements\n- Co-marketing campaigns\n- Distribution alliances\n- Technology integrations\n- White-label delivery partnerships",
+      "## What Makes a Partnership Work",
+      "- Clear commercial incentive for both sides\n- Shared target audience or use case\n- Defined owner and operating rhythm\n- Simple first pilot before a long contract\n- Success metrics agreed in advance",
+      "## Red Flags",
+      "- The deal only works if one side does all the execution\n- No decision-maker is directly involved\n- Legal complexity is high before commercial validation\n- Expectations are vague or too broad",
+      "> A strong partnership should accelerate revenue or trust within weeks, not remain a slide-deck idea for months.",
+    ],
+  },
 ];
 
 const ManageLearn = () => (

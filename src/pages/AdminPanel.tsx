@@ -19,6 +19,9 @@ import AdminDocumentsTab from "@/components/admin/AdminDocumentsTab";
 import { Link } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 
+const TEMP_ADMIN_OVERRIDE_KEY = "bizhive-temp-admin-override";
+const TEMP_ADMIN_OVERRIDE_TTL_MS = 1000 * 60 * 60 * 12;
+
 const createGroupSlug = (value: string) =>
   value
     .toLowerCase()
@@ -26,11 +29,53 @@ const createGroupSlug = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+const hasValidTempAdminOverride = (userId?: string) => {
+  if (!userId) {
+    return false;
+  }
+
+  try {
+    const rawValue = sessionStorage.getItem(TEMP_ADMIN_OVERRIDE_KEY);
+
+    if (!rawValue) {
+      return false;
+    }
+
+    const parsedValue = JSON.parse(rawValue) as { userId?: string; verifiedAt?: string };
+    const verifiedAt = parsedValue.verifiedAt ? new Date(parsedValue.verifiedAt).getTime() : Number.NaN;
+
+    return (
+      parsedValue.userId === userId &&
+      Number.isFinite(verifiedAt) &&
+      Date.now() - verifiedAt < TEMP_ADMIN_OVERRIDE_TTL_MS
+    );
+  } catch {
+    sessionStorage.removeItem(TEMP_ADMIN_OVERRIDE_KEY);
+    return false;
+  }
+};
+
+const persistTempAdminOverride = (userId: string) => {
+  sessionStorage.setItem(
+    TEMP_ADMIN_OVERRIDE_KEY,
+    JSON.stringify({
+      userId,
+      verifiedAt: new Date().toISOString(),
+    })
+  );
+};
+
+const clearTempAdminOverride = () => {
+  sessionStorage.removeItem(TEMP_ADMIN_OVERRIDE_KEY);
+};
+
 const AdminPanel = () => {
   const { toast } = useToast();
   const { user, session, isLoading: authLoading, signOut } = useAuth();
   const [hasAdminAccess, setHasAdminAccess] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
+  const [tempAdminPassword, setTempAdminPassword] = useState("");
+  const [verifyingTempAccess, setVerifyingTempAccess] = useState(false);
 
   const [contacts, setContacts] = useState<any[]>([]);
   const [subscribers, setSubscribers] = useState<any[]>([]);
@@ -71,6 +116,11 @@ const AdminPanel = () => {
         return;
       }
 
+      if (hasValidTempAdminOverride(user.id)) {
+        setHasAdminAccess(true);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
@@ -87,6 +137,66 @@ const AdminPanel = () => {
     };
     void checkAdminAccess();
   }, [authLoading, toast, user]);
+
+  const handleTemporaryAccessUnlock = async () => {
+    if (!user || !session?.access_token) {
+      toast({
+        title: "Sign in required",
+        description: "Log in before unlocking temporary admin access.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!tempAdminPassword.trim()) {
+      toast({
+        title: "Password required",
+        description: "Enter the temporary admin password to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setVerifyingTempAccess(true);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-access`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ password: tempAdminPassword }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok || !payload.authorized) {
+        throw new Error(payload.error || "Incorrect temporary admin password.");
+      }
+
+      persistTempAdminOverride(user.id);
+      setTempAdminPassword("");
+      setHasAdminAccess(true);
+      toast({
+        title: "Temporary access unlocked",
+        description: "You can now use the admin panel for this signed-in session.",
+      });
+    } catch (error) {
+      toast({
+        title: "Access denied",
+        description: error instanceof Error ? error.message : "Unable to verify temporary admin access.",
+        variant: "destructive",
+      });
+    } finally {
+      setVerifyingTempAccess(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    clearTempAdminOverride();
+    await signOut();
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -331,7 +441,19 @@ const AdminPanel = () => {
           <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Access Required</CardTitle></CardHeader>
           <CardContent className="space-y-4 text-center">
             <p className="text-sm text-muted-foreground">This account does not currently have an admin or moderator role.</p>
-            <Button variant="outline" className="w-full" onClick={signOut}>Sign Out</Button>
+            <div className="space-y-2 text-left">
+              <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Temporary test access</label>
+              <Input
+                type="password"
+                value={tempAdminPassword}
+                onChange={(event) => setTempAdminPassword(event.target.value)}
+                placeholder="Enter temporary admin password"
+              />
+              <Button className="w-full" onClick={handleTemporaryAccessUnlock} disabled={verifyingTempAccess}>
+                {verifyingTempAccess ? "Verifying..." : "Unlock Admin Panel"}
+              </Button>
+            </div>
+            <Button variant="outline" className="w-full" onClick={handleLogout}>Sign Out</Button>
           </CardContent>
         </Card>
       </div>
@@ -358,7 +480,7 @@ const AdminPanel = () => {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={fetchData} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />Refresh</Button>
-            <Button variant="ghost" onClick={signOut}>Logout</Button>
+            <Button variant="ghost" onClick={handleLogout}>Logout</Button>
           </div>
         </div>
 

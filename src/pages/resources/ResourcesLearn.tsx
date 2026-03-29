@@ -49,6 +49,32 @@ const chapters = [
       "> The best mentors are 2-3 stages ahead of you, not 10. They remember the challenges you face because they recently overcame them.",
     ],
   },
+  {
+    title: "Using Public Data & Government Portals",
+    content: [
+      "Public datasets and official portals can save founders time, money, and bad assumptions when used well.",
+      "## High-Value Government Sources",
+      "- RBI for macro and lending context\n- MCA for company filings and incorporation guidance\n- GST resources for indirect tax compliance\n- MSME and Udyam portals for registration support\n- Startup India for schemes and recognition benefits",
+      "## How to Use Them Well",
+      "- Save official links in one workspace\n- Note update dates and download references you rely on\n- Cross-check old PDFs against the latest portal flow\n- Treat unofficial summaries as secondary, not primary, sources",
+      "## Team Workflow",
+      "When one founder finds a useful official source, turn it into a reusable note or checklist so the entire team benefits next time.",
+      "> A founder who knows where the official answer lives moves faster and makes fewer expensive mistakes.",
+    ],
+  },
+  {
+    title: "Creating Your Founder Knowledge Base",
+    content: [
+      "A knowledge base turns scattered bookmarks, chats, PDFs, and founder memory into a system the team can actually use.",
+      "## What to Capture",
+      "- Registration steps and deadlines\n- Vendor comparisons\n- Investor feedback patterns\n- Customer objections and winning responses\n- Financial assumptions and key ratios\n- Document renewal calendars",
+      "## A Simple Structure",
+      "- Playbooks for repeatable tasks\n- Decision logs for major choices\n- Source library for official links and PDFs\n- Templates for email, proposals, and forms\n- Review notes from experiments and launches",
+      "## Make It Useful",
+      "Keep entries short, dated, and searchable. If a page has not helped someone act faster, rewrite it until it does.",
+      "> Knowledge compounds when it is captured clearly enough for the next person to execute without guessing.",
+    ],
+  },
 ];
 
 const ResourcesLearn = () => (

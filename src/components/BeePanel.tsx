@@ -63,7 +63,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage }: BeePanelProps) => {
 
   const streamChat = useCallback(async (chatMessages: Msg[]) => {
     if (!session?.access_token) {
-      toast({ title: "Login Required", description: "Please log in to chat with Bee.", variant: "destructive" });
+      toast({ title: t("Login Required"), description: t("Please log in to chat with Bee."), variant: "destructive" });
       return;
     }
 
@@ -81,9 +81,9 @@ const BeePanel = ({ open, onOpenChange, prefillMessage }: BeePanelProps) => {
       });
 
       if (!resp.ok) {
-        if (resp.status === 429) throw new Error("Rate limit exceeded. Try again later.");
-        if (resp.status === 402) throw new Error("AI credits needed.");
-        throw new Error("Failed to connect to Bee.");
+        if (resp.status === 429) throw new Error(t("Rate limit exceeded. Try again later."));
+        if (resp.status === 402) throw new Error(t("AI credits needed."));
+        throw new Error(t("Failed to connect to Bee."));
       }
 
       if (!resp.body) throw new Error("No response body");
@@ -122,7 +122,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage }: BeePanelProps) => {
         }
       }
     } catch (e) {
-      toast({ title: "Error", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
+      toast({ title: t("Error"), description: e instanceof Error ? e.message : t("Unknown error"), variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +145,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage }: BeePanelProps) => {
       <div className="px-4 py-3 border-b flex-shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BeeIcon className="w-6 h-6" />
-          <span className="font-semibold text-sm">Bee Assistant</span>
+          <span className="font-semibold text-sm">{t("Bee Assistant")}</span>
           <span className="text-xs text-muted-foreground">{location.pathname}</span>
         </div>
         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onOpenChange(false)}>
@@ -192,7 +192,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage }: BeePanelProps) => {
       <div className="px-4 py-3 border-t flex-shrink-0">
         <div className="flex gap-2">
           <Textarea
-            placeholder="Ask Bee anything..."
+            placeholder={t("Ask Bee anything...")}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             disabled={isLoading}

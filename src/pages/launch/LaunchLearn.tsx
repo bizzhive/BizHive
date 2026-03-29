@@ -154,6 +154,34 @@ const chapters = [
       "> The cheapest customer acquisition channel is a delighted existing customer. Word of mouth in India is still the most powerful force in business.",
     ],
   },
+  {
+    title: "Launch Day Operations Playbook",
+    content: [
+      "Launch day is not just about going live. It is about handling traffic, questions, payments, bugs, and founder energy without slipping into chaos.",
+      "## Launch Command Center",
+      "- Assign one owner for customer support\n- Assign one owner for product or tech issues\n- Assign one owner for marketing and announcements\n- Keep one founder free for escalation and decision-making\n- Track issues in a shared checklist or Slack channel",
+      "## Critical Checks Before You Publish",
+      "- Forms and payments work end to end\n- Contact email and WhatsApp are active\n- Refund, delivery, and support policies are visible\n- Analytics and ad tracking are firing correctly\n- Inventory or service capacity matches expected demand",
+      "## During the First 24 Hours",
+      "Respond fast, log every complaint, and watch where users drop off. A smooth response to early issues builds more trust than a perfect silent launch.",
+      "## After the Rush",
+      "- Review top support queries\n- Fix the 3 biggest friction points\n- Thank your early customers personally\n- Publish learnings internally\n- Turn positive feedback into testimonials",
+      "> Launch day is the start of feedback collection, not the finish line.",
+    ],
+  },
+  {
+    title: "Post-Launch Feedback Loops",
+    content: [
+      "The first version of your launch creates data. What you do with that data determines whether traction compounds or stalls.",
+      "## Build a Weekly Feedback Rhythm",
+      "- Collect direct customer calls and chat logs\n- Group issues into onboarding, product, pricing, and trust\n- Prioritize fixes by frequency and revenue impact\n- Share feedback with the whole team every week",
+      "## Signals That Matter Most",
+      "- Time to first value\n- Payment drop-off reasons\n- Repeat usage after the first week\n- Support questions that repeat more than 3 times\n- Customer language you can reuse in copy and ads",
+      "## Closing the Loop",
+      "When you ship an improvement based on user feedback, tell the users who raised it. That creates trust, stronger retention, and more useful feedback in the future.",
+      "> A launch becomes momentum when customers feel heard quickly and consistently.",
+    ],
+  },
 ];
 
 const LaunchLearn = () => (

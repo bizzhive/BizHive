@@ -117,7 +117,7 @@ const Navigation = () => {
             <BeeIcon className="w-9 h-9 group-hover:scale-110 transition-transform duration-300" />
             <div className="flex flex-col">
               <span className="font-bold text-lg text-foreground leading-tight">BizHive</span>
-              <span className="text-[10px] text-primary -mt-0.5 hidden sm:block font-medium">Business Growth Platform</span>
+              <span className="text-[10px] text-primary -mt-0.5 hidden sm:block font-medium">{t("Business Growth Platform")}</span>
             </div>
           </Link>
 
@@ -144,8 +144,8 @@ const Navigation = () => {
                                     isActive(item.href) && "bg-accent text-accent-foreground"
                                   )}
                                 >
-                                  <div className="text-sm font-medium leading-none mb-1">{item.name}</div>
-                                  <p className="text-xs leading-snug text-muted-foreground">{item.desc}</p>
+                                  <div className="text-sm font-medium leading-none mb-1">{t(item.name)}</div>
+                                  <p className="text-xs leading-snug text-muted-foreground">{t(item.desc)}</p>
                                 </Link>
                               </NavigationMenuLink>
                             </li>
@@ -239,7 +239,7 @@ const Navigation = () => {
                                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                 )}
                               >
-                                {item.name}
+                                {t(item.name)}
                               </Link>
                             ))}
                           </div>

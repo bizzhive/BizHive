@@ -7,6 +7,7 @@ import { Lock, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -15,6 +16,7 @@ const ResetPassword = () => {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Check for recovery token in URL hash
@@ -32,11 +34,11 @@ const ResetPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
+      toast({ title: t("Error"), description: t("Passwords do not match"), variant: "destructive" });
       return;
     }
     if (password.length < 6) {
-      toast({ title: "Error", description: "Password must be at least 6 characters", variant: "destructive" });
+      toast({ title: t("Error"), description: t("Password must be at least 6 characters"), variant: "destructive" });
       return;
     }
 
@@ -48,8 +50,8 @@ const ResetPassword = () => {
       setTimeout(() => navigate("/dashboard"), 3000);
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to reset password",
+        title: t("Error"),
+        description: error.message || t("Failed to reset password"),
         variant: "destructive",
       });
     } finally {
@@ -62,28 +64,28 @@ const ResetPassword = () => {
       <Card className="w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl dark:text-white">
-            {success ? "Password Reset!" : "Set New Password"}
+            {success ? t("Password Reset!") : t("Set New Password")}
           </CardTitle>
           <CardDescription className="dark:text-gray-300">
-            {success ? "Redirecting to dashboard..." : "Enter your new password below"}
+            {success ? t("Redirecting...") : t("Enter your new password below")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {success ? (
             <div className="text-center">
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <p className="text-sm text-muted-foreground">Your password has been updated successfully.</p>
+              <p className="text-sm text-muted-foreground">{t("Your password has been updated successfully.")}</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="password" className="dark:text-gray-200">New Password</Label>
+                <Label htmlFor="password" className="dark:text-gray-200">{t("New Password")}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type="password"
-                    placeholder="At least 6 characters"
+                    placeholder={t("At least 6 characters")}
                     className="pl-10"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -93,13 +95,13 @@ const ResetPassword = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm" className="dark:text-gray-200">Confirm Password</Label>
+                <Label htmlFor="confirm" className="dark:text-gray-200">{t("Confirm Password")}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="confirm"
                     type="password"
-                    placeholder="Repeat your password"
+                    placeholder={t("Repeat your password")}
                     className="pl-10"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -109,7 +111,7 @@ const ResetPassword = () => {
                 </div>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Updating..." : "Update Password"}
+                {isLoading ? t("Updating...") : t("Update Password")}
               </Button>
             </form>
           )}

@@ -107,7 +107,7 @@ const AIAssistant = () => {
 
   const streamChat = async (chatMessages: Msg[]) => {
     if (!session?.access_token) {
-      toast({ title: "Login Required", description: "Please log in to chat with Bee.", variant: "destructive" });
+      toast({ title: t("Login Required"), description: t("Please log in to chat with Bee."), variant: "destructive" });
       return;
     }
 
@@ -125,9 +125,9 @@ const AIAssistant = () => {
       });
 
       if (!resp.ok) {
-        if (resp.status === 429) throw new Error("Rate limit exceeded.");
-        if (resp.status === 402) throw new Error("AI credits needed.");
-        throw new Error("Failed to connect to Bee.");
+        if (resp.status === 429) throw new Error(t("Rate limit exceeded. Try again later."));
+        if (resp.status === 402) throw new Error(t("AI credits needed."));
+        throw new Error(t("Failed to connect to Bee."));
       }
 
       if (!resp.body) throw new Error("No response body");
@@ -177,7 +177,7 @@ const AIAssistant = () => {
         ]);
       }
     } catch (e) {
-      toast({ title: "Error", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
+      toast({ title: t("Error"), description: e instanceof Error ? e.message : t("Unknown error"), variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -207,8 +207,8 @@ const AIAssistant = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl mb-4">
             <BeeIcon className="w-9 h-9" />
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">Bee AI Assistant</h1>
-          <p className="text-muted-foreground">Your personal business advisor powered by AI</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2">{t("Bee AI Assistant")}</h1>
+          <p className="text-muted-foreground">{t("Your personal business advisor powered by AI")}</p>
         </div>
 
         <div className="max-w-6xl mx-auto flex gap-6">
@@ -218,7 +218,7 @@ const AIAssistant = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <History className="h-4 w-4" /> Chat History
+                    <History className="h-4 w-4" /> {t("Chat History")}
                   </CardTitle>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={newChat}>
                     <Plus className="h-4 w-4" />
@@ -227,7 +227,7 @@ const AIAssistant = () => {
               </CardHeader>
               <CardContent className="space-y-1 max-h-[400px] overflow-y-auto">
                 {chatSessions.length === 0 ? (
-                  <p className="text-xs text-muted-foreground text-center py-4">No previous chats</p>
+                  <p className="text-xs text-muted-foreground text-center py-4">{t("No previous chats")}</p>
                 ) : (
                   chatSessions.map((s) => (
                     <button
@@ -254,10 +254,10 @@ const AIAssistant = () => {
                     key={i}
                     variant="outline"
                     className="h-auto p-4 flex flex-col items-center gap-2"
-                    onClick={() => setMessage(action.prompt)}
+                    onClick={() => setMessage(t(action.prompt))}
                   >
                     <action.icon className="h-5 w-5 text-primary" />
-                    <span className="text-xs">{action.title}</span>
+                    <span className="text-xs">{t(action.title)}</span>
                   </Button>
                 ))}
               </div>
@@ -305,7 +305,7 @@ const AIAssistant = () => {
                 <div className="px-4 py-3 border-t">
                   <div className="flex gap-2">
                     <Textarea
-                      placeholder="Ask Bee anything about your business..."
+                      placeholder={t("Ask Bee anything about your business...")}
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       disabled={isLoading}
@@ -321,7 +321,7 @@ const AIAssistant = () => {
                       <Send className="h-4 w-4" />
                     </Button>
                   </div>
-                  {!user && <p className="text-xs text-muted-foreground mt-2 text-center">Please log in to use the AI assistant.</p>}
+                  {!user && <p className="text-xs text-muted-foreground mt-2 text-center">{t("Please log in to use the AI assistant.")}</p>}
                 </div>
               </CardContent>
             </Card>

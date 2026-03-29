@@ -149,6 +149,34 @@ const chapters = [
       "> The goal isn't to eliminate risk — that's impossible. The goal is to take calculated risks with eyes wide open.",
     ],
   },
+  {
+    title: "Customer Discovery Interviews",
+    content: [
+      "Great planning starts with listening, not guessing. Customer discovery interviews help you understand what people actually do, what frustrates them, and what they are willing to pay to improve.",
+      "## Before the Interview",
+      "- Define your target persona clearly\n- Prepare 8-10 open-ended questions\n- Focus on past behavior, not hypothetical opinions\n- Avoid pitching your solution too early\n- Record notes with permission",
+      "## Questions That Work",
+      "- Walk me through how you currently solve this problem\n- What is the most frustrating part of that process\n- How often does this issue happen\n- What have you already tried\n- What does this problem cost you in money, time, or stress",
+      "## What to Look For",
+      "- Emotional intensity: do they sound frustrated or just mildly interested\n- Workarounds: strong workarounds often signal real demand\n- Budget clues: mention of current spending or team hours\n- Urgency: is this a 'nice to have' or a 'must fix'\n- Repeat patterns across interviews",
+      "> Ten honest conversations beat a hundred assumptions. If the same pain shows up repeatedly, you're onto something real.",
+    ],
+  },
+  {
+    title: "MVP Scope & Validation Plan",
+    content: [
+      "A Minimum Viable Product is not a low-quality product. It is the smallest version that lets you test whether customers care enough to engage, sign up, or pay.",
+      "## Scope Your MVP Around One Core Promise",
+      "Pick a single high-value promise and build only what is necessary to deliver that promise. Remove dashboards, edge cases, and advanced settings until users prove they matter.",
+      "## Define Success Signals",
+      "- Demo requests booked\n- Waitlist conversions\n- First paid pilots\n- Repeat usage in the first 30 days\n- Referral or word-of-mouth behavior",
+      "## Fast Validation Channels",
+      "- Landing page + waitlist\n- WhatsApp pilot group\n- Concierge service delivered manually\n- Clickable prototype for feedback\n- Limited cohort beta with direct founder support",
+      "## Decision Rules",
+      "Set thresholds before launch. For example: if at least 20% of demo users ask for a paid pilot, continue. If engagement is weak and no one feels urgency, revise the problem or audience.",
+      "> The MVP is a learning machine. Its job is to reduce uncertainty quickly, not to impress everyone on day one.",
+    ],
+  },
 ];
 
 const PlanLearn = () => (
