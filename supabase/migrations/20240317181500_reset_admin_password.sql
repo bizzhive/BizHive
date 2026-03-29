@@ -1,2 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
-UPDATE auth.users SET encrypted_password = extensions.crypt('admin#Tushar07', extensions.gen_salt('bf')) WHERE email = 'kaleidis.official@gmail.com';
+-- Intentionally left blank.
+-- The previous hardcoded password reset was removed because credentials must never
+-- be embedded in source-controlled migrations.

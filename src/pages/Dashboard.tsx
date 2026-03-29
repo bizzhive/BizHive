@@ -16,7 +16,7 @@ import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 
 const Dashboard = () => {
-  const { user, isLoading: authLoading } = useAuth() as any;
+  const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();

@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 const categoryIcons: Record<string, any> = {
   legal: Shield, business: Building, financial: DollarSign, hr: Users, contracts: FileText,
@@ -25,8 +26,9 @@ const Documents = () => {
   const [requestTitle, setRequestTitle] = useState("");
   const [requestDesc, setRequestDesc] = useState("");
   const [isRequesting, setIsRequesting] = useState(false);
-  const { user } = useAuth() as any;
+  const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchDocs = async () => {

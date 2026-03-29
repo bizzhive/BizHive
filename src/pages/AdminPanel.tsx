@@ -9,19 +9,27 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, BookOpen, FileText, Lock, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users, Upload, Ban, CheckCircle, Send, Bot, Play, RotateCcw, Sparkles } from "lucide-react";
+import { BarChart3, BookOpen, FileText, Loader2, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users, Upload, Ban, Send, RotateCcw, Sparkles } from "lucide-react";
 import BeeIcon from "@/components/BeeIcon";
 import AdminBlogsTab from "@/components/admin/AdminBlogsTab";
 import AdminCommunityTab from "@/components/admin/AdminCommunityTab";
 import AdminDocumentsTab from "@/components/admin/AdminDocumentsTab";
-import AdminUsersTab from "@/components/admin/AdminUsersTab";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { Link } from "react-router-dom";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
+
+const createGroupSlug = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const AdminPanel = () => {
   const { toast } = useToast();
-  const [authenticated, setAuthenticated] = useState(false);
-  const [passwordInput, setPasswordInput] = useState("");
+  const { user, session, isLoading: authLoading, signOut } = useAuth();
+  const [hasAdminAccess, setHasAdminAccess] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
 
   const [contacts, setContacts] = useState<any[]>([]);
@@ -32,8 +40,6 @@ const AdminPanel = () => {
   const [communityMessages, setCommunityMessages] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
-  const [bans, setBans] = useState<any[]>([]);
   const [contactSearch, setContactSearch] = useState("");
   
   // AI Training State
@@ -52,28 +58,42 @@ const AdminPanel = () => {
   const [sendingNewsletter, setSendingNewsletter] = useState(false);
   const [newGroupData, setNewGroupData] = useState({ name: "", description: "", is_private: false });
 
-  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
-  // Hardcoded allowed emails for demo security. Use RLS in production.
-  const ALLOWED_ADMINS = ["admin@bizhive.com", "bizzhive.support@gmail.com"];
-  const ADMIN_PASSWORD = "admin#Tushar07"; // Restored for manual access
+  const currentUserId = user?.id;
 
   useEffect(() => {
-    const getSupabaseUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setCurrentUserId(data.user?.id);
-      if (data.user?.email && ALLOWED_ADMINS.includes(data.user.email)) {
-        setAuthenticated(true);
+    const checkAdminAccess = async () => {
+      if (authLoading) {
+        return;
       }
+
+      if (!user) {
+        setHasAdminAccess(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .in("role", ["admin", "moderator"]);
+
+      if (error) {
+        toast({ title: "Access check failed", description: error.message, variant: "destructive" });
+        setHasAdminAccess(false);
+        return;
+      }
+
+      setHasAdminAccess((data?.length ?? 0) > 0);
     };
-    getSupabaseUser();
-  }, []);
+    void checkAdminAccess();
+  }, [authLoading, toast, user]);
 
   const fetchData = async () => {
     setLoading(true);
     const [
       contactsRes, subscribersRes, settingsRes, blogsRes,
       groupsRes, postsRes, messagesRes, documentsRes,
-      profilesRes, rolesRes, bansRes,
+      profilesRes,
     ] = await Promise.all([
       supabase.from("contact_submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
@@ -84,8 +104,6 @@ const AdminPanel = () => {
       supabase.from("community_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
       (supabase.from("profiles").select('user_id, full_name, created_at, location_data, users(email)') as any),
-      supabase.from("user_roles").select("*"),
-      supabase.from("user_bans").select("*"),
     ]);
 
     setContacts(contactsRes.data ?? []);
@@ -99,8 +117,6 @@ const AdminPanel = () => {
         const formattedProfiles = (profilesRes.data as any[]).map(p => ({ ...p, email: p.users?.email, users: undefined }));
         setProfiles(formattedProfiles);
     }
-    setRoles(rolesRes.data ?? []);
-    setBans(bansRes.data ?? []);
     
     // Parse AI Prompt if it contains separator
     const fullPrompt = settingsRes.data?.value ?? "";
@@ -115,7 +131,7 @@ const AdminPanel = () => {
   };
 
   useEffect(() => {
-    if (authenticated) {
+    if (hasAdminAccess) {
       fetchData();
       const channel = supabase
         .channel('admin-realtime-all')
@@ -128,7 +144,7 @@ const AdminPanel = () => {
 
       return () => { supabase.removeChannel(channel); };
     }
-  }, [authenticated]);
+  }, [hasAdminAccess, toast]);
 
   // Analytics Data Preparation
   const contactStats = contacts.reduce((acc: any, curr) => {
@@ -166,23 +182,24 @@ const AdminPanel = () => {
     }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwordInput === ADMIN_PASSWORD) {
-      sessionStorage.setItem("bizhive_admin", "true");
-      setAuthenticated(true);
-      toast({ title: "Welcome", description: "Admin access granted." });
-    } else {
-      toast({ title: "Access Denied", description: "Incorrect password.", variant: "destructive" });
-    }
-    setPasswordInput("");
-  };
-
   // Action Handlers
   const handleCreateGroup = async () => {
-    const { error } = await supabase.from("community_groups").insert(newGroupData);
+    const slug = createGroupSlug(newGroupData.name);
+    if (!slug) {
+      toast({ title: "Invalid group name", description: "Enter a valid group name to create a slug.", variant: "destructive" });
+      return;
+    }
+
+    const { error } = await supabase.from("community_groups").insert({
+      ...newGroupData,
+      slug,
+    });
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Success", description: "Group created" }); fetchData(); }
+    else {
+      setNewGroupData({ name: "", description: "", is_private: false });
+      toast({ title: "Success", description: "Group created" });
+      fetchData();
+    }
   };
 
   const handleBanUser = async (userId: string) => {
@@ -217,28 +234,32 @@ const AdminPanel = () => {
 
   const handleTestAiSend = async () => {
     if (!testMessage.trim()) return;
+    if (!session?.access_token) {
+      toast({ title: "Login required", description: "Sign in with an admin account to test Bee.", variant: "destructive" });
+      return;
+    }
+
     const userMsg = { role: "user", content: testMessage };
     setTestChat(prev => [...prev, userMsg]);
     setTestMessage("");
     setIsTestingAi(true);
 
     try {
-      // Direct call to edge function for testing
-      const { data: session } = await supabase.auth.getSession();
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.session?.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           messages: [userMsg], 
           // Send current drafts to test immediately without saving
-          systemOverride: `${aiPersona}\n\n${aiGuidelines}`,
+          systemOverride: `${aiPersona}\n\n${aiGuidelines}`.trim(),
           context: { role: "admin_tester" }
         }),
       });
 
+      if (!resp.ok) throw new Error("Bee test request failed.");
       if (!resp.body) throw new Error("No response");
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
@@ -259,23 +280,58 @@ const AdminPanel = () => {
                 const content = json.choices?.[0]?.delta?.content || "";
                 aiResponse += content;
                 setTestChat(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, content: aiResponse } : m));
-             } catch (e) {}
+             } catch {
+               // Ignore malformed chunks while the response stream is still in flight.
+             }
           }
         }
       }
-    } catch (e) { console.error(e); } finally { setIsTestingAi(false); }
+    } catch (error) {
+      toast({
+        title: "Bee test failed",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+    } finally { setIsTestingAi(false); }
   };
 
-  if (!authenticated) {
+  if (authLoading || hasAdminAccess === null) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Card className="w-full max-w-sm">
-          <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Access</CardTitle></CardHeader>
-          <CardContent>
-            <form onSubmit={handlePasswordSubmit} className="space-y-4">
-              <div className="relative"><Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input type="password" placeholder="Enter admin password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} className="pl-10" required autoFocus/></div>
-              <Button type="submit" className="w-full">Access Panel</Button>
-            </form>
+          <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Checking Admin Access</CardTitle></CardHeader>
+          <CardContent className="flex justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Card className="w-full max-w-sm">
+          <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Sign In Required</CardTitle></CardHeader>
+          <CardContent className="space-y-4 text-center">
+            <p className="text-sm text-muted-foreground">Sign in with an authorized account to access the admin panel.</p>
+            <Button asChild className="w-full">
+              <Link to="/login">Go to Login</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!hasAdminAccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Card className="w-full max-w-sm">
+          <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Access Required</CardTitle></CardHeader>
+          <CardContent className="space-y-4 text-center">
+            <p className="text-sm text-muted-foreground">This account does not currently have an admin or moderator role.</p>
+            <Button variant="outline" className="w-full" onClick={signOut}>Sign Out</Button>
           </CardContent>
         </Card>
       </div>
@@ -301,10 +357,8 @@ const AdminPanel = () => {
             <div><h1 className="text-3xl font-bold text-foreground">Admin Panel</h1><p className="text-sm text-muted-foreground">Manage content, users, and system settings.</p></div>
           </div>
           <div className="flex gap-2">
-            {/* @ts-ignore */}
             <Button variant="outline" onClick={fetchData} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />Refresh</Button>
-            {/* @ts-ignore */}
-            <Button variant="ghost" onClick={() => { sessionStorage.removeItem("bizhive_admin"); setAuthenticated(false); }}>Logout</Button>
+            <Button variant="ghost" onClick={signOut}>Logout</Button>
           </div>
         </div>
 
@@ -355,7 +409,6 @@ const AdminPanel = () => {
 
           <TabsContent value="contacts">
             <Card>
-              {/* @ts-ignore */}
               <CardHeader><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><CardTitle>Contact submissions ({generalMessages.length})</CardTitle><div className="relative w-full md:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input placeholder="Search messages..." value={contactSearch} onChange={(e) => setContactSearch(e.target.value)} className="pl-9" /></div></div></CardHeader>
               <CardContent>
                 <div className="max-h-[620px] overflow-auto rounded-md border">

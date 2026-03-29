@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, User, Lightbulb, TrendingUp, FileText, Calculator, History, Plus, Trash2 } from "lucide-react";
+import { Send, User, Lightbulb, TrendingUp, FileText, Calculator, History, Plus } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,17 +12,23 @@ import BeeIcon from "@/components/BeeIcon";
 import { useTranslation } from "react-i18next";
 
 type Msg = { role: "user" | "assistant"; content: string };
+type ChatSessionSummary = { id: string; firstMsg: string; date: string };
+type UserContext = {
+  profile: unknown;
+  businesses: unknown[] | null;
+  saved_tools: unknown[] | null;
+} | null;
 
 const AIAssistant = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
-  const [userContext, setUserContext] = useState<any>(null);
-  const [chatSessions, setChatSessions] = useState<any[]>([]);
+  const [userContext, setUserContext] = useState<UserContext>(null);
+  const [chatSessions, setChatSessions] = useState<ChatSessionSummary[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const { session, user } = useAuth();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,7 +39,7 @@ const AIAssistant = () => {
         content: t("ai.welcome", "Hey! I'm **Bee**, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or strategies!")
       }]);
     }
-  }, []);
+  }, [messages.length, t]);
 
   useEffect(() => {
     if (!user) return;
@@ -114,7 +120,7 @@ const AIAssistant = () => {
         },
         body: JSON.stringify({
           messages: chatMessages,
-          context: { ...userContext, currentPage: "/ai-assistant" },
+          context: { ...userContext, currentPage: "/ai-assistant", language: i18n.language },
         }),
       });
 
@@ -154,7 +160,9 @@ const AIAssistant = () => {
           try {
             const c = JSON.parse(json).choices?.[0]?.delta?.content;
             if (c) upsert(c);
-          } catch {}
+          } catch {
+            // Ignore malformed chunks while the response stream is still in flight.
+          }
         }
       }
 

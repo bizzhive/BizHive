@@ -2,6 +2,11 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+type ChatMessage = {
+  role: string;
+  content: string;
+};
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
@@ -13,7 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, context } = await req.json();
+    const { messages, context, systemOverride } = await req.json();
     const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
     
     if (!GOOGLE_API_KEY) {
@@ -28,7 +33,9 @@ serve(async (req) => {
       const sb = createClient(supabaseUrl, supabaseKey);
       const { data } = await sb.from('admin_settings').select('value').eq('key', 'ai_system_prompt').single();
       if (data?.value) customPrompt = data.value;
-    } catch {}
+    } catch {
+      // Fall back to the default prompt when admin settings are unavailable.
+    }
 
     const userLang = context?.language || 'en';
     const langInstruction = userLang !== 'en' ? `\nIMPORTANT: Respond in the language with code "${userLang}". Always respond in this language unless the user explicitly asks otherwise.` : '';
@@ -46,13 +53,13 @@ Guidelines:
 
 - Use markdown formatting for clarity${langInstruction}`;
 
-    const systemPrompt = customPrompt || defaultPrompt;
+    const systemPrompt = systemOverride?.trim() || customPrompt || defaultPrompt;
 
     // Add system instruction as first user message context
     const allMessages = [
       { role: 'user', parts: [{ text: `System instructions: ${systemPrompt}` }] },
       { role: 'model', parts: [{ text: 'Understood. I will follow these instructions.' }] },
-      ...messages.map((msg: any) => ({
+      ...messages.map((msg: ChatMessage) => ({
         role: msg.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: msg.content }],
       })),
@@ -112,7 +119,9 @@ Guidelines:
                 };
                 await writer.write(encoder.encode(`data: ${JSON.stringify(openaiChunk)}\n\n`));
               }
-            } catch {}
+            } catch {
+              // Ignore malformed Gemini chunks and keep the stream alive.
+            }
           }
         }
 

@@ -19,8 +19,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { toast } = useToast();
-  // Extract user and loading state to auto-redirect if already logged in
-  const { signInWithGoogle, user, isLoading: authLoading } = useAuth() as any;
+  const { signInWithGoogle, signUp, user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -33,15 +32,7 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      // Use direct Supabase call to ensure the redirect URL matches the current domain (Vercel or Localhost)
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          // This ensures the user is sent back to the dashboard on the SAME site they logged in from
-          redirectTo: `${window.location.origin}/dashboard`,
-        },
-      });
-      if (error) throw error;
+      await signInWithGoogle();
     } catch (error: any) {
       toast({ title: "Error", description: error.message || "Failed to log in with Google", variant: "destructive" });
       setIsLoading(false);
@@ -53,11 +44,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
+        await signUp(email, password);
         toast({ title: "Account created", description: "Please check your email to verify your account." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({

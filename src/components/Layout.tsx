@@ -38,14 +38,14 @@ const Layout = ({ children }: LayoutProps) => {
           
           {!isMobile && beeOpen && !isAIPage && (
             <div className="w-[380px] border-l bg-background flex-shrink-0 flex flex-col h-[calc(100vh-4rem)] sticky top-16">
-              <BeePanel open={true} onOpenChange={setBeeOpen} prefillMessage={beePrefill} inline />
+              <BeePanel open={true} onOpenChange={setBeeOpen} prefillMessage={beePrefill} />
             </div>
           )}
         </div>
 
         {isMobile && beeOpen && !isAIPage && (
           <div className="fixed bottom-0 left-0 right-0 z-50 h-[40vh] border-t bg-background shadow-2xl rounded-t-2xl flex flex-col animate-slide-up">
-            <BeePanel open={true} onOpenChange={setBeeOpen} prefillMessage={beePrefill} inline />
+            <BeePanel open={true} onOpenChange={setBeeOpen} prefillMessage={beePrefill} />
           </div>
         )}
       </div>

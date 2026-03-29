@@ -431,6 +431,8 @@ export type Database = {
           full_name: string | null
           id: string
           industry: string | null
+          last_seen: string | null
+          location_data: string | null
           onboarding_completed: boolean | null
           phone: string | null
           state: string | null
@@ -444,6 +446,8 @@ export type Database = {
           full_name?: string | null
           id?: string
           industry?: string | null
+          last_seen?: string | null
+          location_data?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
           state?: string | null
@@ -457,6 +461,8 @@ export type Database = {
           full_name?: string | null
           id?: string
           industry?: string | null
+          last_seen?: string | null
+          location_data?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
           state?: string | null
@@ -607,6 +613,7 @@ export type Database = {
           field_values: Json
           generated_content: string
           id: string
+          signature_url: string | null
           slug: string | null
           status: string
           template_id: string | null
@@ -619,6 +626,7 @@ export type Database = {
           field_values?: Json
           generated_content: string
           id?: string
+          signature_url?: string | null
           slug?: string | null
           status?: string
           template_id?: string | null
@@ -631,6 +639,7 @@ export type Database = {
           field_values?: Json
           generated_content?: string
           id?: string
+          signature_url?: string | null
           slug?: string | null
           status?: string
           template_id?: string | null

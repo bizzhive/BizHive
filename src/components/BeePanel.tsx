@@ -16,10 +16,9 @@ interface BeePanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   prefillMessage?: string;
-  inline?: boolean;
 }
 
-const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps) => {
+const BeePanel = ({ open, onOpenChange, prefillMessage }: BeePanelProps) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -37,7 +36,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
         content: t("ai.welcome", "Hey! I'm **Bee**, your BizHive assistant. Ask me anything about business planning, legal compliance, funding, or whatever you see on this page!")
       }]);
     }
-  }, []);
+  }, [messages.length, t]);
 
   useEffect(() => {
     if (prefillMessage && open) {
@@ -117,8 +116,8 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
           try {
             const c = JSON.parse(json).choices?.[0]?.delta?.content;
             if (c) upsert(c);
-          } catch (e) {
-            console.error(e);
+          } catch {
+            // Ignore malformed stream chunks and continue reading the response.
           }
         }
       }
@@ -127,7 +126,7 @@ const BeePanel = ({ open, onOpenChange, prefillMessage, inline }: BeePanelProps)
     } finally {
       setIsLoading(false);
     }
-  }, [session, userContext, location.pathname, toast]);
+  }, [i18n.language, location.pathname, session, toast, userContext]);
 
   const handleSend = async () => {
     if (!message.trim() || isLoading) return;

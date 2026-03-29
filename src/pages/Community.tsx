@@ -9,9 +9,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, MessageSquare, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Community = () => {
-  const { user } = useAuth() as any;
+  const { user } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
   const [groups, setGroups] = useState<any[]>([]);

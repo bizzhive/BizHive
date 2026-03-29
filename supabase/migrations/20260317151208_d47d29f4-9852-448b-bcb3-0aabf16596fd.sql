@@ -87,10 +87,14 @@ CREATE TABLE IF NOT EXISTS public.user_legal_documents (
   slug TEXT,
   field_values JSONB NOT NULL DEFAULT '{}'::jsonb,
   generated_content TEXT NOT NULL,
+  signature_url TEXT,
   status TEXT NOT NULL DEFAULT 'draft',
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
+
+ALTER TABLE public.user_legal_documents
+ADD COLUMN IF NOT EXISTS signature_url TEXT;
 
 ALTER TABLE public.user_legal_documents ENABLE ROW LEVEL SECURITY;
 

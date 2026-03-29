@@ -8,39 +8,37 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
 
-export const languages = [
+const languages = [
   { code: "en", name: "English" },
-  { code: "hi", name: "हिंदी (Hindi)" },
-  { code: "bn", name: "বাংলা (Bengali)" },
-  { code: "te", name: "తెలుగు (Telugu)" },
-  { code: "mr", name: "मराठी (Marathi)" },
-  { code: "ta", name: "தமிழ் (Tamil)" },
-  { code: "ur", name: "اردو (Urdu)" },
-  { code: "gu", name: "ગુજરાતી (Gujarati)" },
-  { code: "kn", name: "ಕನ್ನಡ (Kannada)" },
-  { code: "or", name: "ଓଡ଼ିଆ (Odia)" },
-  { code: "ml", name: "മലയാളം (Malayalam)" },
-  { code: "pa", name: "ਪੰਜਾਬੀ (Punjabi)" },
-  { code: "as", name: "অসমীয়া (Assamese)" },
-  { code: "kok", name: "कोंकणी (Konkani)" },
-  { code: "mni", name: "মৈতৈলোন্ (Manipuri)" },
-  { code: "sa", name: "संस्कृतम् (Sanskrit)" },
-  { code: "es", name: "Español (Spanish)" },
-  { code: "fr", name: "Français (French)" },
-  { code: "de", name: "Deutsch (German)" },
-  { code: "zh", name: "中文 (Chinese)" },
-  { code: "ar", name: "العربية (Arabic)" },
-  { code: "ru", name: "Русский (Russian)" },
-  { code: "pt", name: "Português (Portuguese)" },
+  { code: "hi", name: "Hindi" },
+  { code: "bn", name: "Bengali" },
+  { code: "te", name: "Telugu" },
+  { code: "mr", name: "Marathi" },
+  { code: "ta", name: "Tamil" },
+  { code: "ur", name: "Urdu" },
+  { code: "gu", name: "Gujarati" },
+  { code: "kn", name: "Kannada" },
+  { code: "or", name: "Odia" },
+  { code: "ml", name: "Malayalam" },
+  { code: "pa", name: "Punjabi" },
+  { code: "as", name: "Assamese" },
+  { code: "kok", name: "Konkani" },
+  { code: "mni", name: "Manipuri" },
+  { code: "sa", name: "Sanskrit" },
+  { code: "es", name: "Spanish" },
+  { code: "fr", name: "French" },
+  { code: "de", name: "German" },
+  { code: "zh", name: "Chinese" },
+  { code: "ar", name: "Arabic" },
+  { code: "ru", name: "Russian" },
+  { code: "pt", name: "Portuguese" },
 ];
 
 export function LanguageSelector() {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (code: string) => {
-    i18n.changeLanguage(code).then(() => {
-      window.location.reload();
-    });
+    void i18n.changeLanguage(code);
   };
 
   return (
@@ -48,7 +46,7 @@ export function LanguageSelector() {
       <DropdownMenuTrigger asChild>
         <Button className="rounded-full h-10 px-3 bg-background/50 backdrop-blur border text-foreground hover:bg-accent hover:text-accent-foreground gap-2">
           <Globe className="h-5 w-5" />
-          <span className="text-sm font-bold">{i18n.language?.toUpperCase() || "EN"}</span>
+          <span className="text-sm font-bold">{i18n.resolvedLanguage?.toUpperCase() || "EN"}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -56,7 +54,7 @@ export function LanguageSelector() {
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
-            className={i18n.language === lang.code ? "bg-accent font-medium" : ""}
+            className={i18n.resolvedLanguage === lang.code ? "bg-accent font-medium" : ""}
           >
             {lang.name}
           </DropdownMenuItem>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,7 @@ const Legal = () => {
   const [saving, setSaving] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
   const [useUpload, setUseUpload] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = async () => {
     const [templatesRes, docsRes] = await Promise.all([
@@ -83,7 +83,7 @@ const Legal = () => {
       field_values: values,
       generated_content: generatedContent,
       updated_at: new Date().toISOString(),
-      signature_url: signature // Assuming schema supports this or stored in metadata
+      signature_url: signature
     };
 
     const query = draftId

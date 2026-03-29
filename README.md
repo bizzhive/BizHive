@@ -1,102 +1,101 @@
-# Welcome to your Lovable project
+# BizHive
 
-## Project info
+BizHive is a React + Vite application for Indian business planning, launch, compliance, document workflows, community features, and the Bee AI assistant.
 
-**URL**: https://lovable.dev/projects/5a4dd085-bec8-491a-b650-4bbc1d540682
+## Stack
 
-## Setup & Configuration
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- Supabase
+- Vercel
 
-### 1. Connect Supabase
-Create a `.env` file in the root directory (already created) and fill in your Supabase credentials:
+## Local Setup
 
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+1. Install dependencies:
+
+```bash
+npm install
 ```
 
-### 2. Connect Google Gemini (AI)
-The AI chat feature runs on Supabase Edge Functions. You need to set the API key in your Supabase project:
-1. Go to Supabase Dashboard > Edge Functions.
-2. Add a new secret named `GOOGLE_API_KEY` with your Gemini API key.
-3. Deploy the function:
-   ```bash
-   supabase functions deploy chat --no-verify-jwt
-   ```
+2. Create a local environment file from the example:
 
-### 3. Connect GitHub & Vercel
-To deploy the frontend:
-1. Push this repository to your GitHub account.
-2. Log in to Vercel and "Add New Project".
-3. Import your BizHive repository.
-4. In Vercel Project Settings > Environment Variables, add:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_PUBLISHABLE_KEY`
-5. Deploy!
+```bash
+cp .env.example .env
+```
 
-## How can I edit this code?
+3. Start the app:
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/5a4dd085-bec8-491a-b650-4bbc1d540682) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Build for production:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run build
+```
 
-**Use GitHub Codespaces**
+## Environment Variables
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The frontend requires these variables:
 
-## What technologies are used for this project?
+```env
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+```
 
-This project is built with:
+Use the active Supabase project for this deployment:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Supabase project URL: `https://enpwztzdqkhzgzlhlimt.supabase.co`
+- Production site: `https://biz-hive-six.vercel.app`
 
-## How can I deploy this project?
+## Supabase
 
-Simply open [Lovable](https://lovable.dev/projects/5a4dd085-bec8-491a-b650-4bbc1d540682) and click on Share -> Publish.
+This repository already contains the Supabase project structure under [`supabase`](./supabase).
 
-## Can I connect a custom domain to my Lovable project?
+Useful commands:
 
-Yes, you can!
+```bash
+supabase login
+supabase link --project-ref enpwztzdqkhzgzlhlimt
+supabase db push
+supabase functions deploy chat --no-verify-jwt
+supabase functions deploy ai-tool-assist --no-verify-jwt
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Auth Requirements
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Google OAuth and email/password signup are handled by Supabase Auth.
+
+Required auth configuration:
+
+- Site URL: `https://biz-hive-six.vercel.app`
+- Allowed redirects should include local development and production routes used by login, signup verification, dashboard, and password reset
+- Google provider must be enabled in Supabase Auth
+
+## Bee AI
+
+Bee AI runs through the Supabase Edge Function at [`supabase/functions/chat`](./supabase/functions/chat).
+
+To make Bee AI answer requests, set this Supabase secret:
+
+```bash
+supabase secrets set GOOGLE_API_KEY=your_gemini_api_key
+```
+
+Without `GOOGLE_API_KEY`, the Bee AI function will deploy but return an error at runtime.
+
+## Deployment
+
+The frontend is designed to deploy on Vercel.
+
+Set the same frontend environment variables in Vercel Project Settings:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+## Ownership
+
+This project is fully operable from GitHub, Supabase, Vercel, and a local IDE. No Lovable subscription or Lovable-managed workflow is required to develop, deploy, or maintain BizHive.
