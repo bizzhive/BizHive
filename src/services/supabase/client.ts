@@ -22,6 +22,7 @@ export const getSupabaseFunctionUrl = (functionName: string) =>
   `${supabaseUrl}/functions/v1/${functionName}`;
 
 export const createSupabaseFunctionHeaders = (accessToken?: string) => ({
+  apikey: supabasePublishableKey,
   'Content-Type': 'application/json',
   ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
 });
