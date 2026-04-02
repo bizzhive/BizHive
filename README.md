@@ -63,6 +63,7 @@ supabase functions deploy chat --no-verify-jwt
 Required edge function secrets are managed in Supabase, not in this repo:
 
 - `GOOGLE_API_KEY`
+- `GEMINI_MODEL` (optional, defaults to `gemini-2.5-flash-lite`)
 - `ADMIN_ACCESS_PASSWORD`
 
 ## Auth

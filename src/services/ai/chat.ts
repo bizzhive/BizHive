@@ -8,6 +8,31 @@ export type ChatMessage = {
   content: string;
 };
 
+const prepareChatMessages = (messages: ChatMessage[]) => {
+  const cleanedMessages = messages
+    .map((message) => ({
+      role: message.role === 'assistant' ? 'assistant' : 'user',
+      content: message.content.trim(),
+    }))
+    .filter((message) => message.content.length > 0);
+
+  const firstUserIndex = cleanedMessages.findIndex((message) => message.role === 'user');
+  const conversation =
+    firstUserIndex === -1 ? [] : cleanedMessages.slice(firstUserIndex);
+
+  return conversation.reduce<ChatMessage[]>((accumulator, message) => {
+    const lastMessage = accumulator[accumulator.length - 1];
+
+    if (lastMessage?.role === message.role) {
+      lastMessage.content = `${lastMessage.content}\n\n${message.content}`;
+      return accumulator;
+    }
+
+    accumulator.push({ ...message });
+    return accumulator;
+  }, []);
+};
+
 type StreamBizHiveChatOptions = {
   accessToken: string;
   messages: ChatMessage[];
@@ -44,13 +69,18 @@ export const streamBizHiveChat = async ({
 }: StreamBizHiveChatOptions) => {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+  const preparedMessages = prepareChatMessages(messages);
 
   try {
+    if (preparedMessages.length === 0) {
+      throw new Error(errorMessages?.default ?? 'Failed to connect to Bee.');
+    }
+
     const response = await fetch(getSupabaseFunctionUrl('chat'), {
       method: 'POST',
       headers: createSupabaseFunctionHeaders(accessToken),
       body: JSON.stringify({
-        messages,
+        messages: preparedMessages,
         context,
         ...(systemOverride ? { systemOverride } : {}),
       }),

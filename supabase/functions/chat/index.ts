@@ -7,6 +7,16 @@ type ChatMessage = {
   content: string;
 };
 
+type GeminiMessage = {
+  role: "user" | "model";
+  parts: Array<{ text: string }>;
+};
+
+const MAX_HISTORY_MESSAGES = 8;
+const MAX_MESSAGE_LENGTH = 1200;
+const MAX_SYSTEM_PROMPT_LENGTH = 4000;
+const MAX_OUTPUT_TOKENS = 512;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -18,6 +28,152 @@ const jsonResponse = (body: Record<string, string>, status = 200) =>
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+
+const truncateText = (value: string, maxLength: number) => {
+  const trimmed = value.trim();
+  if (trimmed.length <= maxLength) {
+    return trimmed;
+  }
+
+  return `${trimmed.slice(0, maxLength - 3).trimEnd()}...`;
+};
+
+const pickFields = (value: unknown, keys: string[]) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const pickedEntries = keys
+    .map((key) => [key, (value as Record<string, unknown>)[key]] as const)
+    .filter(([, entryValue]) => {
+      if (entryValue === null || entryValue === undefined) {
+        return false;
+      }
+
+      if (typeof entryValue === "string") {
+        return entryValue.trim().length > 0;
+      }
+
+      return true;
+    })
+    .map(([key, entryValue]) => [
+      key,
+      typeof entryValue === "string" ? truncateText(entryValue, 120) : entryValue,
+    ]);
+
+  return pickedEntries.length > 0 ? Object.fromEntries(pickedEntries) : undefined;
+};
+
+const compactContext = (value: unknown) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  const context = value as Record<string, unknown>;
+  const profile = pickFields(context.profile, [
+    "full_name",
+    "industry",
+    "state",
+    "business_stage",
+    "location_data",
+    "preferred_language",
+    "onboarding_completed",
+  ]);
+  const businesses = Array.isArray(context.businesses)
+    ? context.businesses
+        .slice(0, 2)
+        .map((business) =>
+          pickFields(business, [
+            "name",
+            "industry",
+            "stage",
+            "structure",
+            "city",
+            "state",
+            "target_market",
+          ])
+        )
+        .filter(Boolean)
+    : [];
+  const generalEntries = Object.entries(context)
+    .filter(([key]) =>
+      ["language", "currentPage", "page", "industry", "state", "business_stage"].includes(key)
+    )
+    .map(([key, entryValue]) => [
+      key,
+      typeof entryValue === "string" ? truncateText(entryValue, 120) : entryValue,
+    ]);
+  const savedToolsCount = Array.isArray(context.saved_tools) ? context.saved_tools.length : undefined;
+
+  return Object.fromEntries(
+    [
+      ...generalEntries,
+      ["profile", profile],
+      ["businesses", businesses.length > 0 ? businesses : undefined],
+      ["saved_tools_count", savedToolsCount],
+    ].filter(([, entryValue]) => entryValue !== undefined)
+  );
+};
+
+const normalizeMessages = (messages: ChatMessage[]): GeminiMessage[] => {
+  const cleanedMessages = messages
+    .map((message) => ({
+      role: message.role === "assistant" ? "model" : "user",
+      content: truncateText(message.content, MAX_MESSAGE_LENGTH),
+    }))
+    .filter((message) => message.content.length > 0);
+
+  const firstUserIndex = cleanedMessages.findIndex((message) => message.role === "user");
+  const conversation =
+    firstUserIndex === -1 ? [] : cleanedMessages.slice(firstUserIndex).slice(-MAX_HISTORY_MESSAGES);
+
+  return conversation.reduce<GeminiMessage[]>((accumulator, message) => {
+    const lastMessage = accumulator[accumulator.length - 1];
+
+    if (lastMessage?.role === message.role) {
+      lastMessage.parts[0].text = `${lastMessage.parts[0].text}\n\n${message.content}`;
+      return accumulator;
+    }
+
+    accumulator.push({
+      role: message.role,
+      parts: [{ text: message.content }],
+    });
+
+    return accumulator;
+  }, []);
+};
+
+const extractGeminiText = (payload: any) =>
+  payload?.candidates?.[0]?.content?.parts
+    ?.map((part: { text?: string }) => part?.text ?? "")
+    .join("")
+    .trim() ?? "";
+
+const createSseResponse = (text: string) => {
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const encoder = new TextEncoder();
+
+  (async () => {
+    try {
+      if (text) {
+        const openaiChunk = {
+          choices: [{ delta: { content: text } }],
+        };
+        await writer.write(encoder.encode(`data: ${JSON.stringify(openaiChunk)}\n\n`));
+      }
+
+      await writer.write(encoder.encode("data: [DONE]\n\n"));
+    } finally {
+      await writer.close();
+    }
+  })();
+
+  return new Response(readable, {
+    headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+  });
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -64,7 +220,7 @@ serve(async (req) => {
         .single();
 
       if (data?.value) {
-        customPrompt = data.value;
+        customPrompt = truncateText(data.value, MAX_SYSTEM_PROMPT_LENGTH);
       }
     } catch {
       // Fall back to the default prompt when admin settings are unavailable.
@@ -76,10 +232,11 @@ serve(async (req) => {
         ? `\nIMPORTANT: Respond in the language with code "${userLang}". Always respond in this language unless the user explicitly asks otherwise.`
         : "";
 
+    const compactUserContext = compactContext(context);
     const defaultPrompt = `You are Bee, the friendly AI assistant for BizHive - India's business growth platform. You are an expert on Indian business startup, legal compliance, taxation, funding, and growth.
 
 User Context:
-${JSON.stringify(context, null, 2)}
+${JSON.stringify(compactUserContext)}
 
 Guidelines:
 - Be friendly, concise, and actionable
@@ -88,31 +245,58 @@ Guidelines:
 - If the user is on a specific page, relate your answers to that context
 - Use markdown formatting for clarity${langInstruction}`;
 
-    const systemPrompt = systemOverride.trim() || customPrompt || defaultPrompt;
+    const systemPrompt =
+      truncateText(systemOverride, MAX_SYSTEM_PROMPT_LENGTH) || customPrompt || defaultPrompt;
+    const allMessages = normalizeMessages(messages);
 
-    const allMessages = [
-      { role: "user", parts: [{ text: `System instructions: ${systemPrompt}` }] },
-      { role: "model", parts: [{ text: "Understood. I will follow these instructions." }] },
-      ...messages.map((message) => ({
-        role: message.role === "assistant" ? "model" : "user",
-        parts: [{ text: message.content }],
-      })),
-    ];
+    if (allMessages.length === 0) {
+      return jsonResponse({ error: "A user message is required to start the chat." }, 400);
+    }
 
     const modelName = Deno.env.get("GEMINI_MODEL")?.trim() || "gemini-2.5-flash-lite";
+    const requestBody = {
+      system_instruction: {
+        parts: [{ text: systemPrompt }],
+      },
+      contents: allMessages,
+      generationConfig: {
+        temperature: 0.4,
+        maxOutputTokens: MAX_OUTPUT_TOKENS,
+      },
+    };
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:streamGenerateContent?alt=sse&key=${GOOGLE_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: allMessages }),
+        body: JSON.stringify(requestBody),
       }
     );
 
     if (!response.ok) {
       const errText = await response.text();
       console.error("Gemini API error:", response.status, errText);
+
+      const fallbackResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GOOGLE_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (fallbackResponse.ok) {
+        const fallbackPayload = await fallbackResponse.json();
+        const fallbackText = extractGeminiText(fallbackPayload);
+
+        if (fallbackText) {
+          return createSseResponse(fallbackText);
+        }
+      } else {
+        console.error("Gemini fallback error:", fallbackResponse.status, await fallbackResponse.text());
+      }
 
       const isRateLimit = response.status === 429;
       return jsonResponse({ error: isRateLimit ? "Rate limits exceeded" : "AI API error" }, isRateLimit ? 429 : 500);
@@ -149,7 +333,7 @@ Guidelines:
 
             try {
               const parsed = JSON.parse(jsonStr);
-              const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+              const text = extractGeminiText(parsed);
 
               if (!text) {
                 continue;

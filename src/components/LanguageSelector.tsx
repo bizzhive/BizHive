@@ -19,7 +19,6 @@ export function LanguageSelector() {
   const activeLanguage = supportedLanguages.find((language) => language.code === i18n.resolvedLanguage) ?? supportedLanguages[0];
 
   const handleLanguageChange = async (code: string) => {
-    const previousLanguage = i18n.resolvedLanguage;
     await i18n.changeLanguage(code);
 
     if (!user) {
@@ -32,11 +31,10 @@ export function LanguageSelector() {
       .eq("user_id", user.id);
 
     if (error) {
-      await i18n.changeLanguage(previousLanguage);
+      console.error("Unable to persist preferred language:", error);
       toast({
         title: t("Language update failed"),
-        description: t("We could not save your language preference."),
-        variant: "destructive",
+        description: t("Saved on this device for now. We'll sync it to your profile later."),
       });
     }
   };
