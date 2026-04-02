@@ -177,6 +177,39 @@ const chapters = [
       "> The MVP is a learning machine. Its job is to reduce uncertainty quickly, not to impress everyone on day one.",
     ],
   },
+  {
+    title: "Problem-Solution Fit",
+    content: [
+      "Before you spend heavily on branding, scale, or fundraising, confirm that the problem is painful enough and your solution is meaningfully better than current alternatives.",
+      "## Signals you are solving a real problem",
+      "- Customers already spend time or money on workarounds\n- The problem happens often, not once a year\n- Buyers can explain the pain in their own words\n- Delays or errors create financial, operational, or emotional cost\n- People ask when they can try your solution",
+      "## What weak fit looks like",
+      "- People say the idea is interesting but not urgent\n- Buyers want many unrelated features before they would act\n- No one can explain success clearly after using it\n- You lead every conversation instead of hearing repeated pain",
+      "A founder's first job is not to prove the product is clever. It is to prove the problem is worth solving.",
+    ],
+  },
+  {
+    title: "Pricing Strategy Fundamentals",
+    content: [
+      "Pricing is not a cosmetic decision. It shapes margin, positioning, sales velocity, and customer quality from the beginning.",
+      "## Common pricing anchors",
+      "- Cost-plus for operational simplicity\n- Value-based when customer impact is large\n- Competitor-referenced when the market is familiar\n- Tiered pricing when customer sizes need different depth",
+      "## Mistakes to avoid",
+      "- Pricing too low to feel safe\n- Discounting before you understand objections\n- Offering too many plans too early\n- Ignoring onboarding and support cost in your pricing logic",
+      "A strong pricing strategy is one your team can explain clearly and defend confidently.",
+    ],
+  },
+  {
+    title: "Founder-Market Fit",
+    content: [
+      "Founder-market fit means your experience, curiosity, and network actually help you learn and win in the market you chose.",
+      "## Questions to ask yourself",
+      "- Do I understand the customer's workflow and language?\n- Can I reach early buyers without guessing?\n- Am I willing to stay close to this problem for years?\n- Does my background reduce execution risk in a meaningful way?",
+      "## Why it matters",
+      "When founder-market fit is strong, learning speed increases. When it is weak, every customer insight costs more time and energy.",
+      "You do not need a perfect background, but you do need a credible path to learn faster than the market changes.",
+    ],
+  },
 ];
 
 const PlanLearn = () => (

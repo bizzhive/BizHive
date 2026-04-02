@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#be185d"/>
+      <stop offset="1" stop-color="#f43f5e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="160" y1="120" x2="1040" y2="510" gradientUnits="userSpaceOnUse">
+      <stop stop-color="rgba(255,255,255,0.28)"/>
+      <stop offset="1" stop-color="rgba(255,255,255,0.05)"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#bg)"/>
+  <circle cx="1010" cy="118" r="168" fill="white" fill-opacity="0.08"/>
+  <circle cx="170" cy="535" r="140" fill="white" fill-opacity="0.08"/>
+  <rect x="68" y="68" width="1064" height="494" rx="28" fill="url(#glow)" stroke="rgba(255,255,255,0.18)"/>
+  <text x="108" y="138" fill="white" fill-opacity="0.92" font-family="Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="2">MARKETING ENGINE</text>
+  <text x="108" y="240" fill="white" font-family="Arial, sans-serif" font-size="60" font-weight="700">Designing a Founder</text>
+  <text x="108" y="312" fill="white" font-family="Arial, sans-serif" font-size="60" font-weight="700">Brand Content Engine</text>
+  <text x="108" y="384" fill="white" font-family="Arial, sans-serif" font-size="60" font-weight="700">That Actually Compounds</text>
+  <text x="108" y="508" fill="white" fill-opacity="0.88" font-family="Arial, sans-serif" font-size="30">Turn one weekly insight into repeatable content across channels without creating a content treadmill.</text>
+  <text x="108" y="566" fill="white" fill-opacity="0.72" font-family="Arial, sans-serif" font-size="24">BizHive Learnings ? Marketing</text>
+</svg>

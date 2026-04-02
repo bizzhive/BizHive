@@ -75,6 +75,28 @@ const chapters = [
       "> Knowledge compounds when it is captured clearly enough for the next person to execute without guessing.",
     ],
   },
+  {
+    title: "Official Filing Worksheets & Reusable Templates",
+    content: [
+      "Some of the most useful learning resources are the ones you can act on immediately. BizHive already includes public official filing links and editable preparation sheets so founders can move from theory to execution in one session.",
+      "## How to use them",
+      "- Open the official portal to understand the live process\n- Use the editable worksheet to gather required details before filing\n- Save your notes or draft so the team can reuse the work later\n- Re-check the portal before final submission",
+      "## Why these matter",
+      "A worksheet reduces portal friction and helps founders avoid last-minute scrambling when filing details, promoter information, or compliance documents are needed.",
+      "This is where education becomes execution. A reusable worksheet turns one founder's effort into team leverage.",
+    ],
+  },
+  {
+    title: "Building a Weekly Resource Review Rhythm",
+    content: [
+      "Resources only create value when they are reviewed, updated, and connected to the work your team is doing now.",
+      "## A practical weekly review",
+      "- Review one official filing or compliance area\n- Update one internal note or checklist\n- Archive outdated links or assumptions\n- Turn new lessons into reusable templates",
+      "## Keep the habit lightweight",
+      "A short weekly review is enough if someone owns it and the team acts on what changed.",
+      "A living resource library helps founders move faster because the answer has already been checked, captured, and shared.",
+    ],
+  },
 ];
 
 const ResourcesLearn = () => (

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Rocket, Building, FileText, Users, TrendingUp, Shield, CheckCircle, Clock, DollarSign, Target } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/services/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import FAQSection from "@/components/FAQSection";

@@ -6,24 +6,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, User, Lightbulb, TrendingUp, FileText, Calculator, History, Plus } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchUserAiContext } from "@/services/ai/context";
+import { type ChatMessage, streamBizHiveChat } from "@/services/ai/chat";
+import { supabase } from "@/services/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import BeeIcon from "@/components/BeeIcon";
 import { useTranslation } from "react-i18next";
 
-type Msg = { role: "user" | "assistant"; content: string };
 type ChatSessionSummary = { id: string; firstMsg: string; date: string };
-type UserContext = {
-  profile: unknown;
-  businesses: unknown[] | null;
-  saved_tools: unknown[] | null;
-} | null;
 
 const AIAssistant = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([]);
-  const [userContext, setUserContext] = useState<UserContext>(null);
+  const [isSlowResponse, setIsSlowResponse] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [userContext, setUserContext] = useState<Record<string, unknown> | null>(null);
   const [chatSessions, setChatSessions] = useState<ChatSessionSummary[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const { session, user } = useAuth();
@@ -44,14 +41,9 @@ const AIAssistant = () => {
   useEffect(() => {
     if (!user) return;
     const fetchContext = async () => {
-      const [{ data: profile }, { data: businesses }, { data: tools }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("user_id", user.id).single(),
-        supabase.from("businesses").select("*").eq("user_id", user.id),
-        supabase.from("saved_tools").select("tool_type, title, data").eq("user_id", user.id),
-      ]);
-      setUserContext({ profile, businesses, saved_tools: tools });
+      setUserContext(await fetchUserAiContext(user.id));
     };
-    fetchContext();
+    void fetchContext();
   }, [user]);
 
   // Load chat history
@@ -85,6 +77,20 @@ const AIAssistant = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    if (!isLoading) {
+      setIsSlowResponse(false);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => setIsSlowResponse(true), 4000);
+    return () => window.clearTimeout(timeoutId);
+  }, [isLoading]);
+
+  const appendAssistantMessage = (content: string) => {
+    setMessages((prev) => [...prev, { role: "assistant", content }]);
+  };
+
   const loadSession = async (sessionId: string) => {
     if (!user) return;
     const { data } = await supabase
@@ -105,79 +111,47 @@ const AIAssistant = () => {
     setCurrentSessionId(null);
   };
 
-  const streamChat = async (chatMessages: Msg[]) => {
-    if (!session?.access_token) {
-      toast({ title: t("Login Required"), description: t("Please log in to chat with Bee."), variant: "destructive" });
-      return;
-    }
-
+  const streamChat = async (chatMessages: ChatMessage[]) => {
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+      const fullResponse = await streamBizHiveChat({
+        accessToken: session!.access_token,
+        messages: chatMessages,
+        context: { ...userContext, currentPage: "/ai-assistant", language: i18n.language },
+        onChunk: (_chunk, nextContent) => {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant") {
+              return prev.map((message, index) =>
+                index === prev.length - 1 ? { ...message, content: nextContent } : message
+              );
+            }
+
+            return [...prev, { role: "assistant", content: nextContent }];
+          });
         },
-        body: JSON.stringify({
-          messages: chatMessages,
-          context: { ...userContext, currentPage: "/ai-assistant", language: i18n.language },
-        }),
+        errorMessages: {
+          rateLimit: t("Rate limit exceeded. Try again later."),
+          credits: t("AI credits needed."),
+          timeout: t("ai.responseDelayed"),
+          empty: t("ai.emptyResponse"),
+          default: t("Failed to connect to Bee."),
+        },
       });
 
-      if (!resp.ok) {
-        if (resp.status === 429) throw new Error(t("Rate limit exceeded. Try again later."));
-        if (resp.status === 402) throw new Error(t("AI credits needed."));
-        throw new Error(t("Failed to connect to Bee."));
-      }
-
-      if (!resp.body) throw new Error("No response body");
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
-      let full = "";
-
-      const upsert = (chunk: string) => {
-        full += chunk;
-        setMessages((prev) => {
-          const last = prev[prev.length - 1];
-          if (last?.role === "assistant" && last.content !== t("ai.welcome")) return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: full } : m));
-          return [...prev, { role: "assistant", content: full }];
-        });
-      };
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        let idx: number;
-        while ((idx = buf.indexOf("\n")) !== -1) {
-          let line = buf.slice(0, idx);
-          buf = buf.slice(idx + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const json = line.slice(6).trim();
-          if (json === "[DONE]") break;
-          try {
-            const c = JSON.parse(json).choices?.[0]?.delta?.content;
-            if (c) upsert(c);
-          } catch {
-            // Ignore malformed chunks while the response stream is still in flight.
-          }
-        }
-      }
-
       // Save messages to DB
-      if (user && full) {
+      if (user && fullResponse) {
         const sessionId = currentSessionId || crypto.randomUUID();
         if (!currentSessionId) setCurrentSessionId(sessionId);
         const userMsg = chatMessages[chatMessages.length - 1];
         await supabase.from("chat_messages").insert([
           { user_id: user.id, session_id: sessionId, role: "user", content: userMsg.content },
-          { user_id: user.id, session_id: sessionId, role: "assistant", content: full },
+          { user_id: user.id, session_id: sessionId, role: "assistant", content: fullResponse },
         ]);
       }
     } catch (e) {
-      toast({ title: t("Error"), description: e instanceof Error ? e.message : t("Unknown error"), variant: "destructive" });
+      const description = e instanceof Error ? e.message : t("Unknown error");
+      appendAssistantMessage(t("ai.unavailableDescription"));
+      toast({ title: t("ai.unavailable"), description, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -185,7 +159,12 @@ const AIAssistant = () => {
 
   const handleSend = async () => {
     if (!message.trim() || isLoading) return;
-    const userMsg: Msg = { role: "user", content: message.trim() };
+    if (!session?.access_token) {
+      toast({ title: t("Login Required"), description: t("Please log in to chat with Bee."), variant: "destructive" });
+      return;
+    }
+
+    const userMsg: ChatMessage = { role: "user", content: message.trim() };
     const newMsgs = [...messages, userMsg];
     setMessages(newMsgs);
     setMessage("");
@@ -287,14 +266,19 @@ const AIAssistant = () => {
                   ))}
                   {isLoading && messages[messages.length - 1]?.role === "user" && (
                     <div className="flex justify-start">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-start gap-2">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                           <BeeIcon className="w-5 h-5" />
                         </div>
-                        <div className="flex gap-1 px-4 py-3 bg-muted rounded-2xl">
-                          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" />
-                          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
-                          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
+                        <div className="space-y-2 px-4 py-3 bg-muted rounded-2xl">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" />
+                            <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
+                            <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
+                          </div>
+                          {isSlowResponse && (
+                            <p className="text-xs text-muted-foreground">{t("ai.responseDelayedDescription")}</p>
+                          )}
                         </div>
                       </div>
                     </div>

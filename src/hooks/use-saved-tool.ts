@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Database } from "@/integrations/supabase/types";
+import { supabase } from "@/services/supabase/client";
+import type { Database } from "@/services/supabase/database.types";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -48,7 +48,7 @@ export function useSavedTool<T>(toolType: ToolType, defaultData: T) {
         .insert({
           user_id: user.id,
           tool_type: toolType,
-          data: newData as any,
+          data: newData as never,
           title: `Saved ${toolType.replace('_', ' ')}`,
         });
 

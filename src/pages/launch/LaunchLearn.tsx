@@ -182,6 +182,39 @@ const chapters = [
       "> A launch becomes momentum when customers feel heard quickly and consistently.",
     ],
   },
+  {
+    title: "Sales Scripts & Objection Handling",
+    content: [
+      "A first sales script is not meant to sound robotic. It is meant to keep your team consistent about discovery, value, proof, and next steps.",
+      "## Build your script around",
+      "- Customer context\n- Pain clarification\n- Cost of the current way\n- Your value in plain language\n- Proof or examples\n- A simple next step",
+      "## Common early objections",
+      "- We are not ready yet\n- This is too expensive\n- We already have something in place\n- We need internal approval\n- Come back later",
+      "Treat objections as signals about trust, timing, or clarity rather than as personal rejection.",
+    ],
+  },
+  {
+    title: "Customer Support Setup",
+    content: [
+      "Support is part of the product in the first stage of a business. Fast, thoughtful support builds trust faster than marketing can.",
+      "## Launch support basics",
+      "- One clear support inbox or WhatsApp number\n- Defined owner for replies\n- A simple escalation path\n- A list of the most common expected questions\n- Response time expectations your team can actually meet",
+      "## Why support matters early",
+      "The first wave of questions tells you where buyers are confused, where trust is weak, and where onboarding is incomplete.",
+      "When customers feel heard quickly, they stay longer and teach you more.",
+    ],
+  },
+  {
+    title: "Vendor Contracts & Service Levels",
+    content: [
+      "Weak vendor expectations create expensive launch issues. Make delivery standards clear before you depend on them.",
+      "## What to define early",
+      "- Scope of delivery\n- Timelines\n- Quality expectations\n- Escalation process\n- Payment terms\n- What happens if service fails",
+      "## Keep the agreement practical",
+      "Short, clear agreements are often better than vague trust when your launch depends on another party performing on time.",
+      "If a launch depends on a vendor, service-level clarity is part of risk management, not legal decoration.",
+    ],
+  },
 ];
 
 const LaunchLearn = () => (

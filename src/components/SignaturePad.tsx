@@ -1,6 +1,6 @@
-import { useRef, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from "react";
 import { Eraser } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SignaturePadProps {
   onSave: (dataUrl: string) => void;
@@ -12,69 +12,109 @@ const SignaturePad = ({ onSave }: SignaturePadProps) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = 200;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.lineWidth = 2;
-        ctx.lineCap = "round";
-        ctx.strokeStyle = "black";
-      }
+    if (!canvas) {
+      return;
     }
+
+    canvas.width = canvas.offsetWidth;
+    canvas.height = 200;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return;
+    }
+
+    context.lineWidth = 2;
+    context.lineCap = "round";
+    context.strokeStyle = "#111827";
   }, []);
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    setIsDrawing(true);
+  const getPoint = (event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    
+    if (!canvas) {
+      return null;
+    }
+
     const rect = canvas.getBoundingClientRect();
-    const x = ('touches' in e) ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).nativeEvent.offsetX;
-    const y = ('touches' in e) ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).nativeEvent.offsetY;
-    
-    ctx.beginPath();
-    ctx.moveTo(x, y);
+
+    if ("touches" in event) {
+      const touch = event.touches[0] || event.changedTouches[0];
+      if (!touch) {
+        return null;
+      }
+
+      return {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
+      };
+    }
+
+    return {
+      x: event.nativeEvent.offsetX,
+      y: event.nativeEvent.offsetY,
+    };
   };
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
+  const startDrawing = (event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const context = canvas?.getContext("2d");
+    const point = getPoint(event);
 
-    const rect = canvas.getBoundingClientRect();
-    const x = ('touches' in e) ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).nativeEvent.offsetX;
-    const y = ('touches' in e) ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).nativeEvent.offsetY;
+    if (!context || !point) {
+      return;
+    }
 
-    ctx.lineTo(x, y);
-    ctx.stroke();
+    setIsDrawing(true);
+    context.beginPath();
+    context.moveTo(point.x, point.y);
+  };
+
+  const draw = (event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) {
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    const point = getPoint(event);
+
+    if (!context || !point) {
+      return;
+    }
+
+    context.lineTo(point.x, point.y);
+    context.stroke();
   };
 
   const stopDrawing = () => {
+    if (!isDrawing) {
+      return;
+    }
+
     setIsDrawing(false);
+
     if (canvasRef.current) {
-      onSave(canvasRef.current.toDataURL());
+      onSave(canvasRef.current.toDataURL("image/png"));
     }
   };
 
   const clear = () => {
     const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      ctx?.clearRect(0, 0, canvas.width, canvas.height);
-      onSave("");
+    const context = canvas?.getContext("2d");
+
+    if (!canvas || !context) {
+      return;
     }
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    onSave("");
   };
 
   return (
-    <div className="relative border rounded-md bg-white">
+    <div className="relative overflow-hidden rounded-md border bg-white">
       <canvas
         ref={canvasRef}
-        className="w-full h-[200px] cursor-crosshair touch-none"
+        className="h-[200px] w-full touch-none cursor-crosshair"
         onMouseDown={startDrawing}
         onMouseMove={draw}
         onMouseUp={stopDrawing}
@@ -83,7 +123,14 @@ const SignaturePad = ({ onSave }: SignaturePadProps) => {
         onTouchMove={draw}
         onTouchEnd={stopDrawing}
       />
-      <Button size="icon" variant="ghost" className="absolute top-2 right-2 h-8 w-8" onClick={clear} title="Clear Signature">
+      <Button
+        type="button"
+        size="icon"
+        variant="ghost"
+        className="absolute right-2 top-2 h-8 w-8"
+        onClick={clear}
+        title="Clear Signature"
+      >
         <Eraser className="h-4 w-4" />
       </Button>
     </div>

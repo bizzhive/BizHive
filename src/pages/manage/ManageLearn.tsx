@@ -170,6 +170,39 @@ const chapters = [
       "> A strong partnership should accelerate revenue or trust within weeks, not remain a slide-deck idea for months.",
     ],
   },
+  {
+    title: "Cash Conversion Cycle",
+    content: [
+      "A growing business can still become fragile if cash takes too long to come back after it goes out.",
+      "## What to watch",
+      "- How quickly customers pay\n- How long inventory sits\n- When vendors must be paid\n- How much cash gets trapped in operations",
+      "## Why it matters",
+      "Small improvements in collections, inventory discipline, or vendor terms can create more breathing room than a rushed fundraising process.",
+      "Great growth companies do not just grow revenue. They also shorten the time between effort and cash recovery.",
+    ],
+  },
+  {
+    title: "Process Audits & Continuous Improvement",
+    content: [
+      "Growth exposes weak process faster than founder intuition can catch it. Regular audits help you fix repeated friction before customers or margins suffer.",
+      "## What to audit regularly",
+      "- Sales handoff quality\n- Support response consistency\n- Finance controls\n- Hiring and onboarding flow\n- Delivery errors and rework",
+      "## Keep the audit simple",
+      "Use short monthly reviews that focus on repeated mistakes, unclear ownership, and where work slows down unnecessarily.",
+      "Continuous improvement compounds when teams review systems with curiosity instead of blame.",
+    ],
+  },
+  {
+    title: "Founder Governance & Reporting Rhythm",
+    content: [
+      "Governance is not just for large companies. Simple reporting habits protect decision quality as complexity increases.",
+      "## Core founder rhythms",
+      "- Weekly business review\n- Monthly financial review\n- Quarterly strategy reset\n- Decision log for major bets\n- Written updates for investors or advisors when relevant",
+      "## Why this matters",
+      "Once multiple teams, decisions, and stakeholders are involved, undocumented thinking becomes expensive and confusing.",
+      "Governance becomes valuable the moment the business is too complex to run on memory and verbal updates alone.",
+    ],
+  },
 ];
 
 const ManageLearn = () => (

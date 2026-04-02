@@ -7,14 +7,38 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/services/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { supportedLanguages } from "@/i18n";
 
 export function LanguageSelector() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const activeLanguage = supportedLanguages.find((language) => language.code === i18n.resolvedLanguage) ?? supportedLanguages[0];
 
-  const handleLanguageChange = (code: string) => {
-    void i18n.changeLanguage(code);
+  const handleLanguageChange = async (code: string) => {
+    const previousLanguage = i18n.resolvedLanguage;
+    await i18n.changeLanguage(code);
+
+    if (!user) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ preferred_language: code })
+      .eq("user_id", user.id);
+
+    if (error) {
+      await i18n.changeLanguage(previousLanguage);
+      toast({
+        title: t("Language update failed"),
+        description: t("We could not save your language preference."),
+        variant: "destructive",
+      });
+    }
   };
 
   return (

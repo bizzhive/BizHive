@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/services/supabase/client";
+import { fetchUserAiContext } from "@/services/ai/context";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface AIAssistButtonProps {
   field: string;
@@ -14,30 +16,18 @@ interface AIAssistButtonProps {
 export function AIAssistButton({ field, onSuggestion, context }: AIAssistButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const handleAssist = async () => {
     if (!user) {
-      toast.error("Please log in to use AI features.");
+      toast.error(t("Please log in to use the AI assistant."));
       return;
     }
 
     setIsGenerating(true);
     try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-        
-      const { data: business } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
       const fullContext = {
-        profile,
-        business,
+        ...(await fetchUserAiContext(user.id)),
         ...context
       };
 
@@ -50,14 +40,16 @@ export function AIAssistButton({ field, onSuggestion, context }: AIAssistButtonP
       });
 
       if (error) throw error;
-      
-      if (data.suggestion) {
-        onSuggestion(data.suggestion);
-        toast.success("AI suggestion generated!");
+
+      if (typeof data?.suggestion !== "string" || !data.suggestion.trim()) {
+        throw new Error(t("ai.suggestionUnavailable"));
       }
+
+      onSuggestion(data.suggestion);
+      toast.success(t("ai.suggestionReady"));
     } catch (error) {
       console.error(error);
-      toast.error("Failed to generate AI suggestion.");
+      toast.error(error instanceof Error ? error.message : t("ai.suggestionFailed"));
     } finally {
       setIsGenerating(false);
     }
@@ -72,7 +64,7 @@ export function AIAssistButton({ field, onSuggestion, context }: AIAssistButtonP
       className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 h-8 px-2 py-1"
     >
       {isGenerating ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Sparkles className="h-3 w-3 mr-1" />}
-      <span className="text-xs">AI Assist</span>
+      <span className="text-xs">{t("ai.assist")}</span>
     </Button>
   );
 }

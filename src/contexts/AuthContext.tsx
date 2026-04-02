@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import i18n, { supportedLanguages } from "@/i18n";
+import { supabase } from "@/services/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Session, User } from "@supabase/supabase-js";
 
@@ -23,6 +24,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const syncPreferredLanguage = async (userId: string) => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("preferred_language")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const preferredLanguage = profile?.preferred_language;
+    const isSupportedLanguage = supportedLanguages.some((language) => language.code === preferredLanguage);
+
+    if (isSupportedLanguage && i18n.resolvedLanguage !== preferredLanguage) {
+      await i18n.changeLanguage(preferredLanguage);
+    }
+  };
+
   useEffect(() => {
     const loadSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -30,6 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.session?.user ?? null);
       if (data.session?.user) {
         sessionStorage.removeItem("pending_verification_email");
+        await syncPreferredLanguage(data.session.user.id);
       }
       setIsLoading(false);
     };
@@ -47,6 +64,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (event === "SIGNED_IN") {
         sessionStorage.removeItem("pending_verification_email");
+        if (session?.user?.id) {
+          void syncPreferredLanguage(session.user.id);
+        }
         const isRecoveryFlow = window.location.pathname === "/reset-password";
         if (!isRecoveryFlow) {
           navigate("/dashboard");

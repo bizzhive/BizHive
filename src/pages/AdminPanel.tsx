@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,74 +8,39 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { supabase } from "@/integrations/supabase/client";
+import { streamBizHiveChat } from "@/services/ai/chat";
+import { recordAdminAudit } from "@/services/admin/audit";
+import { supabase } from "@/services/supabase/client";
+import type { Json, Tables } from "@/services/supabase/database.types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, BookOpen, FileText, Loader2, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users, Upload, Ban, Send, RotateCcw, Sparkles } from "lucide-react";
+import { BarChart3, BookOpen, FileText, Loader2, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users, Ban, Send, RotateCcw, Sparkles } from "lucide-react";
 import BeeIcon from "@/components/BeeIcon";
 import AdminBlogsTab from "@/components/admin/AdminBlogsTab";
 import AdminCommunityTab from "@/components/admin/AdminCommunityTab";
 import AdminDocumentsTab from "@/components/admin/AdminDocumentsTab";
+import { slugify } from "@/lib/text";
 import { Link } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 
-const TEMP_ADMIN_OVERRIDE_KEY = "bizhive-temp-admin-override";
-const TEMP_ADMIN_OVERRIDE_TTL_MS = 1000 * 60 * 60 * 12;
+type AdminRole = "admin" | "moderator";
+type LegalTemplate = Tables<"legal_document_templates">;
+type UserRole = Tables<"user_roles">;
+type UserBan = Tables<"user_bans">;
+type AdminAuditLog = Tables<"admin_audit_logs">;
 
-const createGroupSlug = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-const hasValidTempAdminOverride = (userId?: string) => {
-  if (!userId) {
-    return false;
-  }
-
-  try {
-    const rawValue = sessionStorage.getItem(TEMP_ADMIN_OVERRIDE_KEY);
-
-    if (!rawValue) {
-      return false;
-    }
-
-    const parsedValue = JSON.parse(rawValue) as { userId?: string; verifiedAt?: string };
-    const verifiedAt = parsedValue.verifiedAt ? new Date(parsedValue.verifiedAt).getTime() : Number.NaN;
-
-    return (
-      parsedValue.userId === userId &&
-      Number.isFinite(verifiedAt) &&
-      Date.now() - verifiedAt < TEMP_ADMIN_OVERRIDE_TTL_MS
-    );
-  } catch {
-    sessionStorage.removeItem(TEMP_ADMIN_OVERRIDE_KEY);
-    return false;
-  }
-};
-
-const persistTempAdminOverride = (userId: string) => {
-  sessionStorage.setItem(
-    TEMP_ADMIN_OVERRIDE_KEY,
-    JSON.stringify({
-      userId,
-      verifiedAt: new Date().toISOString(),
-    })
-  );
-};
-
-const clearTempAdminOverride = () => {
-  sessionStorage.removeItem(TEMP_ADMIN_OVERRIDE_KEY);
+const EMPTY_NEWSLETTER_DRAFT = {
+  body: "",
+  subject: "",
 };
 
 const AdminPanel = () => {
   const { toast } = useToast();
   const { user, session, isLoading: authLoading, signOut } = useAuth();
+  const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hasAdminAccess, setHasAdminAccess] = useState<boolean | null>(null);
+  const [adminRoles, setAdminRoles] = useState<AdminRole[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tempAdminPassword, setTempAdminPassword] = useState("");
-  const [verifyingTempAccess, setVerifyingTempAccess] = useState(false);
 
   const [contacts, setContacts] = useState<any[]>([]);
   const [subscribers, setSubscribers] = useState<any[]>([]);
@@ -84,8 +49,15 @@ const AdminPanel = () => {
   const [communityPosts, setCommunityPosts] = useState<any[]>([]);
   const [communityMessages, setCommunityMessages] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [legalTemplates, setLegalTemplates] = useState<LegalTemplate[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
+  const [userBans, setUserBans] = useState<UserBan[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AdminAuditLog[]>([]);
   const [contactSearch, setContactSearch] = useState("");
+  const [subscriberSearch, setSubscriberSearch] = useState("");
+  const [userSearch, setUserSearch] = useState("");
+  const [auditSearch, setAuditSearch] = useState("");
   
   // AI Training State
   const [aiPersona, setAiPersona] = useState("");
@@ -97,13 +69,11 @@ const AdminPanel = () => {
   ]);
   const [isTestingAi, setIsTestingAi] = useState(false);
   
-  // New State for features
-  const [newsletterSubject, setNewsletterSubject] = useState("");
-  const [newsletterBody, setNewsletterBody] = useState("");
-  const [sendingNewsletter, setSendingNewsletter] = useState(false);
-  const [newGroupData, setNewGroupData] = useState({ name: "", description: "", is_private: false });
+  const [newsletterDraft, setNewsletterDraft] = useState(EMPTY_NEWSLETTER_DRAFT);
 
   const currentUserId = user?.id;
+  const isAdmin = adminRoles.includes("admin");
+  const isModerator = adminRoles.includes("moderator");
 
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -112,12 +82,8 @@ const AdminPanel = () => {
       }
 
       if (!user) {
+        setAdminRoles([]);
         setHasAdminAccess(false);
-        return;
-      }
-
-      if (hasValidTempAdminOverride(user.id)) {
-        setHasAdminAccess(true);
         return;
       }
 
@@ -129,92 +95,93 @@ const AdminPanel = () => {
 
       if (error) {
         toast({ title: "Access check failed", description: error.message, variant: "destructive" });
+        setAdminRoles([]);
         setHasAdminAccess(false);
         return;
       }
 
-      setHasAdminAccess((data?.length ?? 0) > 0);
+      const nextRoles = (data ?? []).map((row) => row.role as AdminRole);
+      setAdminRoles(nextRoles);
+      setHasAdminAccess(nextRoles.length > 0);
     };
     void checkAdminAccess();
   }, [authLoading, toast, user]);
 
-  const handleTemporaryAccessUnlock = async () => {
-    if (!user || !session?.access_token) {
-      toast({
-        title: "Sign in required",
-        description: "Log in before unlocking temporary admin access.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!tempAdminPassword.trim()) {
-      toast({
-        title: "Password required",
-        description: "Enter the temporary admin password to continue.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setVerifyingTempAccess(true);
-
-    try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-access`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ password: tempAdminPassword }),
-      });
-
-      const payload = await response.json().catch(() => ({}));
-
-      if (!response.ok || !payload.authorized) {
-        throw new Error(payload.error || "Incorrect temporary admin password.");
-      }
-
-      persistTempAdminOverride(user.id);
-      setTempAdminPassword("");
-      setHasAdminAccess(true);
-      toast({
-        title: "Temporary access unlocked",
-        description: "You can now use the admin panel for this signed-in session.",
-      });
-    } catch (error) {
-      toast({
-        title: "Access denied",
-        description: error instanceof Error ? error.message : "Unable to verify temporary admin access.",
-        variant: "destructive",
-      });
-    } finally {
-      setVerifyingTempAccess(false);
-    }
+  const handleLogout = async () => {
+    await signOut();
   };
 
-  const handleLogout = async () => {
-    clearTempAdminOverride();
-    await signOut();
+  const recordAudit = async (action: string, entityType: string, summary: string, entityId?: string, details?: Json) => {
+    if (!user || !hasAdminAccess) {
+      return;
+    }
+
+    await recordAdminAudit(supabase, {
+      action,
+      actorName: user.user_metadata?.full_name || user.email || "Admin",
+      actorRole: isAdmin ? "admin" : "moderator",
+      details,
+      entityId: entityId ?? null,
+      entityType,
+      summary,
+      userId: user.id,
+    });
   };
 
   const fetchData = async () => {
     setLoading(true);
+
     const [
-      contactsRes, subscribersRes, settingsRes, blogsRes,
-      groupsRes, postsRes, messagesRes, documentsRes,
+      contactsRes,
+      subscribersRes,
+      settingsRes,
+      blogsRes,
+      groupsRes,
+      postsRes,
+      messagesRes,
+      documentsRes,
       profilesRes,
+      templatesRes,
+      rolesRes,
+      bansRes,
+      auditRes,
     ] = await Promise.all([
-      supabase.from("contact_submissions").select("*").order("created_at", { ascending: false }),
-      supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
-      supabase.from("admin_settings").select("value").eq("key", "ai_system_prompt").maybeSingle(),
-      supabase.from("blog_posts").select("*").order("updated_at", { ascending: false }),
+      isAdmin ? supabase.from("contact_submissions").select("*").order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
+      isAdmin ? supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
+      isAdmin ? supabase.from("admin_settings").select("value").eq("key", "ai_system_prompt").maybeSingle() : Promise.resolve({ data: null, error: null }),
+      isAdmin ? supabase.from("blog_posts").select("*").order("updated_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
       supabase.from("community_groups").select("*").order("created_at", { ascending: false }),
       supabase.from("community_posts").select("*").order("created_at", { ascending: false }),
       supabase.from("community_messages").select("*").order("created_at", { ascending: false }),
-      supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      (supabase.from("profiles").select('user_id, full_name, created_at, location_data, users(email)') as any),
+      isAdmin ? supabase.from("documents").select("*").order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
+      isAdmin ? (supabase.from("profiles").select('user_id, full_name, created_at, location_data, preferred_language, onboarding_completed, signature_mode, users(email)') as any) : Promise.resolve({ data: [], error: null }),
+      isAdmin ? supabase.from("legal_document_templates").select("*").order("updated_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
+      (isAdmin || isModerator) ? supabase.from("user_roles").select("*").order("user_id", { ascending: true }) : Promise.resolve({ data: [], error: null }),
+      (isAdmin || isModerator) ? supabase.from("user_bans").select("*").order("banned_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
+      isAdmin ? supabase.from("admin_audit_logs").select("*").order("created_at", { ascending: false }).limit(200) : Promise.resolve({ data: [], error: null }),
     ]);
+
+    const firstError = [
+      contactsRes.error,
+      subscribersRes.error,
+      settingsRes.error,
+      blogsRes.error,
+      groupsRes.error,
+      postsRes.error,
+      messagesRes.error,
+      documentsRes.error,
+      profilesRes.error,
+      templatesRes.error,
+      rolesRes.error,
+      bansRes.error,
+      auditRes.error,
+    ].find(Boolean);
+
+    if (firstError) {
+      toast({ title: "Admin data failed to load", description: firstError.message, variant: "destructive" });
+      setLoading(false);
+      return;
+    }
 
     setContacts(contactsRes.data ?? []);
     setSubscribers(subscribersRes.data ?? []);
@@ -223,12 +190,17 @@ const AdminPanel = () => {
     setCommunityPosts(postsRes.data ?? []);
     setCommunityMessages(messagesRes.data ?? []);
     setDocuments(documentsRes.data ?? []);
+    setLegalTemplates(templatesRes.data ?? []);
+    setUserRoles(rolesRes.data ?? []);
+    setUserBans(bansRes.data ?? []);
+    setAuditLogs(auditRes.data ?? []);
     if (profilesRes.data) {
-        const formattedProfiles = (profilesRes.data as any[]).map(p => ({ ...p, email: p.users?.email, users: undefined }));
-        setProfiles(formattedProfiles);
+      const formattedProfiles = (profilesRes.data as any[]).map((profile) => ({ ...profile, email: profile.users?.email, users: undefined }));
+      setProfiles(formattedProfiles);
+    } else {
+      setProfiles([]);
     }
     
-    // Parse AI Prompt if it contains separator
     const fullPrompt = settingsRes.data?.value ?? "";
     if (fullPrompt.includes("---GUIDELINES---")) {
       const [persona, guidelines] = fullPrompt.split("---GUIDELINES---");
@@ -236,25 +208,53 @@ const AdminPanel = () => {
       setAiGuidelines(guidelines.trim());
     } else {
       setAiPersona(fullPrompt);
+      setAiGuidelines("");
     }
+
     setLoading(false);
   };
 
   useEffect(() => {
-    if (hasAdminAccess) {
-      fetchData();
-      const channel = supabase
-        .channel('admin-realtime-all')
-        .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-            console.log('Realtime change detected:', payload);
-            toast({ title: `Content changed in ${payload.table}`, description: "Refreshing all data..." });
-            fetchData();
-        })
-        .subscribe();
-
-      return () => { supabase.removeChannel(channel); };
+    if (!hasAdminAccess) {
+      return;
     }
-  }, [hasAdminAccess, toast]);
+
+    void fetchData();
+
+    const scheduleRefresh = () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+
+      refreshTimeoutRef.current = setTimeout(() => {
+        void fetchData();
+      }, 250);
+    };
+
+    const channel = supabase
+      .channel("admin-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "admin_settings" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "blog_posts" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "community_groups" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "community_posts" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "community_messages" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "contact_submissions" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "documents" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "legal_document_templates" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "newsletter_subscribers" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_bans" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_roles" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "admin_audit_logs" }, scheduleRefresh)
+      .subscribe();
+
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+      void supabase.removeChannel(channel);
+    };
+  }, [hasAdminAccess, isAdmin, isModerator]);
 
   // Analytics Data Preparation
   const contactStats = contacts.reduce((acc: any, curr) => {
@@ -281,6 +281,10 @@ const AdminPanel = () => {
 
 
   const handleSavePrompt = async () => {
+    if (!isAdmin) {
+      return;
+    }
+
     setSavingPrompt(true);
     const combinedPrompt = `${aiPersona}\n\n---GUIDELINES---\n\n${aiGuidelines}`;
     const { error } = await supabase.from("admin_settings").upsert({ key: "ai_system_prompt", value: combinedPrompt });
@@ -288,58 +292,81 @@ const AdminPanel = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
+      await recordAudit("ai.prompt.updated", "admin_settings", "Updated Bee AI system instructions", "ai_system_prompt", {
+        guidelinesLength: aiGuidelines.length,
+        personaLength: aiPersona.length,
+      });
       toast({ title: "AI Updated", description: "New instructions are now live for all users." });
     }
   };
 
   // Action Handlers
   const handleCreateGroup = async () => {
-    const slug = createGroupSlug(newGroupData.name);
+    if (!isAdmin && !isModerator) {
+      return;
+    }
+
+    const slug = slugify(newGroupData.name);
     if (!slug) {
       toast({ title: "Invalid group name", description: "Enter a valid group name to create a slug.", variant: "destructive" });
       return;
     }
 
-    const { error } = await supabase.from("community_groups").insert({
+    const payload = {
       ...newGroupData,
       slug,
-    });
+    };
+    const { data, error } = await supabase.from("community_groups").insert(payload).select("id").single();
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
+      await recordAudit("community.group.created", "community_groups", `Created community group "${payload.name}"`, data?.id, payload);
       setNewGroupData({ name: "", description: "", is_private: false });
       toast({ title: "Success", description: "Group created" });
-      fetchData();
+      void fetchData();
     }
   };
 
   const handleBanUser = async (userId: string) => {
+    if (!isAdmin && !isModerator) {
+      return;
+    }
+
+    await supabase.from("user_bans").delete().eq("user_id", userId);
     const { error } = await supabase.from("user_bans").insert({ user_id: userId, reason: "Admin Ban" });
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "User Banned", description: "User access restricted" }); fetchData(); }
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    await recordAudit("user.banned", "user_bans", `Banned user ${userId.slice(0, 8)}`, userId, { targetUserId: userId });
+    toast({ title: "User Banned", description: "User access restricted" });
+    void fetchData();
   };
 
-  const handleSendNewsletter = async () => {
-    setSendingNewsletter(true);
-    // Simulation of sending emails
-    setTimeout(() => {
-      toast({ title: "Newsletter Sent", description: `Sent to ${subscribers.length} subscribers.` });
-      setSendingNewsletter(false);
-      setNewsletterSubject("");
-      setNewsletterBody("");
-    }, 2000);
-  };
+  const toggleUserRole = async (userId: string, role: UserRole["role"]) => {
+    if (!isAdmin || !user) {
+      return;
+    }
 
-  const handleUploadDocument = async () => {
-    // Mock upload for template list
-    const { error } = await supabase.from("documents").insert({
-      title: "New Government Form",
-      category: "legal",
-      description: "Official form sourced from government portal",
-      is_premium: false,
-      file_url: "#", // In real app, upload to storage bucket first
-    });
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Document Added", description: "Available in library" }); fetchData(); }
+    const hasRole = (userRoles ?? []).some((row) => row.user_id === userId && row.role === role);
+    if (userId === user.id && role === "admin" && hasRole) {
+      toast({ title: "Action blocked", description: "You cannot remove your own admin role.", variant: "destructive" });
+      return;
+    }
+
+    const mutation = hasRole
+      ? supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role)
+      : supabase.from("user_roles").insert({ user_id: userId, role });
+
+    const { error } = await mutation;
+    if (error) {
+      toast({ title: "Role update failed", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    await recordAudit(hasRole ? "user-role.removed" : "user-role.added", "user_roles", `${hasRole ? "Removed" : "Granted"} ${role} role ${hasRole ? "from" : "to"} user ${userId.slice(0, 8)}`, userId, { role, targetUserId: userId });
+    toast({ title: "Role updated", description: `${hasRole ? "Removed" : "Granted"} ${role} role.` });
+    void fetchData();
   };
 
   const handleTestAiSend = async () => {
@@ -350,52 +377,27 @@ const AdminPanel = () => {
     }
 
     const userMsg = { role: "user", content: testMessage };
-    setTestChat(prev => [...prev, userMsg]);
+    setTestChat(prev => [...prev, userMsg, { role: "assistant", content: "" }]);
     setTestMessage("");
     setIsTestingAi(true);
 
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+      await streamBizHiveChat({
+        accessToken: session.access_token,
+        messages: [userMsg],
+        systemOverride: `${aiPersona}\n\n${aiGuidelines}`.trim(),
+        context: { role: "admin_tester" },
+        onChunk: (_chunk, fullResponse) => {
+          setTestChat(prev =>
+            prev.map((message, index) =>
+              index === prev.length - 1 ? { ...message, content: fullResponse } : message
+            )
+          );
         },
-        body: JSON.stringify({
-          messages: [userMsg], 
-          // Send current drafts to test immediately without saving
-          systemOverride: `${aiPersona}\n\n${aiGuidelines}`.trim(),
-          context: { role: "admin_tester" }
-        }),
+        errorMessages: {
+          default: "Bee test request failed.",
+        },
       });
-
-      if (!resp.ok) throw new Error("Bee test request failed.");
-      if (!resp.body) throw new Error("No response");
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let aiResponse = "";
-
-      setTestChat(prev => [...prev, { role: "assistant", content: "" }]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        // Simple parsing for stream (in real app use proper SSE parser)
-        const lines = chunk.split("\n");
-        for (const line of lines) {
-          if (line.startsWith("data: ") && line !== "data: [DONE]") {
-             try {
-                const json = JSON.parse(line.slice(6));
-                const content = json.choices?.[0]?.delta?.content || "";
-                aiResponse += content;
-                setTestChat(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, content: aiResponse } : m));
-             } catch {
-               // Ignore malformed chunks while the response stream is still in flight.
-             }
-          }
-        }
-      }
     } catch (error) {
       toast({
         title: "Bee test failed",
@@ -440,19 +442,7 @@ const AdminPanel = () => {
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Access Required</CardTitle></CardHeader>
           <CardContent className="space-y-4 text-center">
-            <p className="text-sm text-muted-foreground">This account does not currently have an admin or moderator role.</p>
-            <div className="space-y-2 text-left">
-              <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Temporary test access</label>
-              <Input
-                type="password"
-                value={tempAdminPassword}
-                onChange={(event) => setTempAdminPassword(event.target.value)}
-                placeholder="Enter temporary admin password"
-              />
-              <Button className="w-full" onClick={handleTemporaryAccessUnlock} disabled={verifyingTempAccess}>
-                {verifyingTempAccess ? "Verifying..." : "Unlock Admin Panel"}
-              </Button>
-            </div>
+            <p className="text-sm text-muted-foreground">This account needs an assigned admin or moderator role before it can access the panel.</p>
             <Button variant="outline" className="w-full" onClick={handleLogout}>Sign Out</Button>
           </CardContent>
         </Card>
@@ -465,6 +455,26 @@ const AdminPanel = () => {
     c.name?.toLowerCase().includes(contactSearch.toLowerCase()) || 
     c.email?.toLowerCase().includes(contactSearch.toLowerCase())
   );
+  const filteredSubscribers = subscribers.filter((subscriber) =>
+    subscriberSearch === "" || subscriber.email?.toLowerCase().includes(subscriberSearch.toLowerCase())
+  );
+  const filteredProfiles = profiles.filter((profile) =>
+    userSearch === "" ||
+    profile.full_name?.toLowerCase().includes(userSearch.toLowerCase()) ||
+    profile.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
+    profile.user_id?.toLowerCase().includes(userSearch.toLowerCase())
+  );
+  const filteredAuditLogs = auditLogs.filter((log) =>
+    auditSearch === "" ||
+    log.summary?.toLowerCase().includes(auditSearch.toLowerCase()) ||
+    log.action?.toLowerCase().includes(auditSearch.toLowerCase()) ||
+    log.entity_type?.toLowerCase().includes(auditSearch.toLowerCase())
+  );
+  const rolesByUser = userRoles.reduce<Record<string, string[]>>((accumulator, role) => {
+    accumulator[role.user_id] = [...(accumulator[role.user_id] ?? []), role.role];
+    return accumulator;
+  }, {});
+  const bannedUserIds = new Set(userBans.map((ban) => ban.user_id));
 
   const documentRequests = contacts.filter(c => c.category === "document_request");
   // Exclude requests from main contacts view to keep it clean
@@ -479,21 +489,23 @@ const AdminPanel = () => {
             <div><h1 className="text-3xl font-bold text-foreground">Admin Panel</h1><p className="text-sm text-muted-foreground">Manage content, users, and system settings.</p></div>
           </div>
           <div className="flex gap-2">
+            <Badge variant="outline">{isAdmin ? "Admin" : "Moderator"}</Badge>
             <Button variant="outline" onClick={fetchData} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />Refresh</Button>
             <Button variant="ghost" onClick={handleLogout}>Logout</Button>
           </div>
         </div>
 
-        <Tabs defaultValue="contacts" className="space-y-6">
+        <Tabs defaultValue="analytics" className="space-y-6">
           <TabsList className="h-auto flex-wrap justify-start gap-2 bg-transparent p-0">
             <TabsTrigger value="analytics" className="gap-2"><BarChart3 className="h-4 w-4" />Analytics</TabsTrigger>
-            <TabsTrigger value="contacts" className="gap-2"><MessageSquare className="h-4 w-4" />Messages</TabsTrigger>
-            <TabsTrigger value="subscribers" className="gap-2"><Mail className="h-4 w-4" />Subscribers</TabsTrigger>
-            <TabsTrigger value="blogs" className="gap-2"><BookOpen className="h-4 w-4" />Blogs</TabsTrigger>
+            {isAdmin && <TabsTrigger value="contacts" className="gap-2"><MessageSquare className="h-4 w-4" />Messages</TabsTrigger>}
+            {isAdmin && <TabsTrigger value="subscribers" className="gap-2"><Mail className="h-4 w-4" />Subscribers</TabsTrigger>}
+            {isAdmin && <TabsTrigger value="blogs" className="gap-2"><BookOpen className="h-4 w-4" />Blogs</TabsTrigger>}
             <TabsTrigger value="community" className="gap-2"><Users className="h-4 w-4" />Community</TabsTrigger>
-            <TabsTrigger value="documents" className="gap-2"><FileText className="h-4 w-4" />Documents</TabsTrigger>
-            <TabsTrigger value="users" className="gap-2"><Shield className="h-4 w-4" />Users</TabsTrigger>
-            <TabsTrigger value="ai" className="gap-2"><BeeIcon className="h-4 w-4" />AI Training</TabsTrigger>
+            {isAdmin && <TabsTrigger value="documents" className="gap-2"><FileText className="h-4 w-4" />Documents</TabsTrigger>}
+            {isAdmin && <TabsTrigger value="users" className="gap-2"><Shield className="h-4 w-4" />Users</TabsTrigger>}
+            {isAdmin && <TabsTrigger value="ai" className="gap-2"><BeeIcon className="h-4 w-4" />AI Training</TabsTrigger>}
+            {isAdmin && <TabsTrigger value="audit" className="gap-2"><FileText className="h-4 w-4" />Audit</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="analytics">
@@ -529,7 +541,7 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="contacts">
+          {isAdmin && <TabsContent value="contacts">
             <Card>
               <CardHeader><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><CardTitle>Contact submissions ({generalMessages.length})</CardTitle><div className="relative w-full md:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input placeholder="Search messages..." value={contactSearch} onChange={(e) => setContactSearch(e.target.value)} className="pl-9" /></div></div></CardHeader>
               <CardContent>
@@ -552,30 +564,30 @@ const AdminPanel = () => {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent>}
 
-          <TabsContent value="subscribers">
+          {isAdmin && <TabsContent value="subscribers">
             <Card>
-              <CardHeader><CardTitle>Send Newsletter</CardTitle></CardHeader>
-              <CardContent className="space-y-4">
-                <Input placeholder="Subject Line" value={newsletterSubject} onChange={e => setNewsletterSubject(e.target.value)} />
-                <Textarea placeholder="Email Body (HTML or Text)..." value={newsletterBody} onChange={e => setNewsletterBody(e.target.value)} rows={6} />
-                <div className="flex justify-between items-center">
-                  <div className="text-sm text-muted-foreground">To: {subscribers.length} Subscribers</div>
-                  <Button onClick={handleSendNewsletter} disabled={sendingNewsletter}>
-                    <Send className="mr-2 h-4 w-4" /> {sendingNewsletter ? "Sending..." : "Blast Newsletter"}
-                  </Button>
+              <CardHeader><CardTitle>Subscriber Tools</CardTitle></CardHeader>
+              <CardContent className="space-y-4 text-sm text-muted-foreground">
+                <Input placeholder="Draft subject (optional)" value={newsletterDraft.subject} onChange={(e) => setNewsletterDraft((current) => ({ ...current, subject: e.target.value }))} />
+                <Textarea placeholder="Notes for your email provider or CRM workflow..." value={newsletterDraft.body} onChange={(e) => setNewsletterDraft((current) => ({ ...current, body: e.target.value }))} rows={6} />
+                <div className="rounded-lg border border-dashed p-4">
+                  Newsletter delivery is no longer faked in-app. Use this panel to manage the list, then send through your real email provider.
                 </div>
+                <Button onClick={() => navigator.clipboard.writeText(filteredSubscribers.map((subscriber) => subscriber.email).join(", "))} disabled={filteredSubscribers.length === 0}>
+                  <Send className="mr-2 h-4 w-4" /> Copy Recipient List
+                </Button>
               </CardContent>
             </Card>
             <div className="h-6"></div>
             <Card>
-              <CardHeader><CardTitle>Newsletter subscribers ({subscribers.length})</CardTitle></CardHeader>
-              <CardContent><div className="max-h-[620px] overflow-auto rounded-md border"><Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Email</TableHead></TableRow></TableHeader><TableBody>{subscribers.map(s => <TableRow key={s.id}><TableCell className="text-xs text-muted-foreground">{new Date(s.created_at).toLocaleDateString()}</TableCell><TableCell>{s.email}</TableCell></TableRow>)}</TableBody></Table></div></CardContent>
+              <CardHeader><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><CardTitle>Newsletter subscribers ({filteredSubscribers.length})</CardTitle><div className="relative w-full md:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input placeholder="Search subscribers..." value={subscriberSearch} onChange={(e) => setSubscriberSearch(e.target.value)} className="pl-9" /></div></div></CardHeader>
+              <CardContent><div className="max-h-[620px] overflow-auto rounded-md border"><Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Email</TableHead></TableRow></TableHeader><TableBody>{filteredSubscribers.map(s => <TableRow key={s.id}><TableCell className="text-xs text-muted-foreground">{new Date(s.created_at).toLocaleDateString()}</TableCell><TableCell>{s.email}</TableCell></TableRow>)}</TableBody></Table></div></CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent>}
 
-          <TabsContent value="blogs"><AdminBlogsTab blogs={blogs} onRefresh={fetchData} currentUserId={currentUserId} /></TabsContent>
+          {isAdmin && <TabsContent value="blogs"><AdminBlogsTab blogs={blogs} canEdit={isAdmin} onAudit={({ action, details, entityId, entityType, summary }) => recordAudit(action, entityType, summary, entityId, details)} onRefresh={fetchData} currentUserId={currentUserId} /></TabsContent>}
           
           <TabsContent value="community">
             <Card className="mb-6">
@@ -586,21 +598,10 @@ const AdminPanel = () => {
                 <Button onClick={handleCreateGroup}>Create</Button>
               </CardContent>
             </Card>
-            <AdminCommunityTab groups={communityGroups} posts={communityPosts} messages={communityMessages} onRefresh={fetchData} currentUserId={currentUserId} />
+            <AdminCommunityTab groups={communityGroups} posts={communityPosts} messages={communityMessages} canModerate={isAdmin || isModerator} onAudit={({ action, details, entityId, entityType, summary }) => recordAudit(action, entityType, summary, entityId, details)} onRefresh={fetchData} currentUserId={currentUserId} />
           </TabsContent>
 
-          <TabsContent value="documents">
-            <Card className="mb-6">
-              <CardHeader><CardTitle>Upload Official Document</CardTitle></CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={handleUploadDocument}>
-                  <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-2" />
-                  <p className="text-sm font-medium">Click to upload form (PDF/DOCX)</p>
-                  <p className="text-xs text-muted-foreground">Automatically adds to Documents Library</p>
-                </div>
-              </CardContent>
-            </Card>
-            
+          {isAdmin && <TabsContent value="documents">
             <Card>
               <CardHeader><CardTitle>Requested Documents</CardTitle></CardHeader>
               <CardContent>
@@ -620,25 +621,26 @@ const AdminPanel = () => {
                 </Table>
               </CardContent>
             </Card>
-            <AdminDocumentsTab documents={documents} onRefresh={fetchData} />
-          </TabsContent>
+            <AdminDocumentsTab documents={documents} legalTemplates={legalTemplates} canEdit={isAdmin} onAudit={({ action, details, entityId, entityType, summary }) => recordAudit(action, entityType, summary, entityId, details)} onRefresh={fetchData} />
+          </TabsContent>}
 
-          <TabsContent value="users">
+          {isAdmin && <TabsContent value="users">
             <Card>
-              <CardHeader><CardTitle>User Management</CardTitle></CardHeader>
+              <CardHeader><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><CardTitle>User Management</CardTitle><div className="relative w-full md:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input placeholder="Search users..." value={userSearch} onChange={(e) => setUserSearch(e.target.value)} className="pl-9" /></div></div></CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>User Details</TableHead>
                       <TableHead>Location/IP</TableHead>
+                      <TableHead>Roles</TableHead>
                       <TableHead>Joined</TableHead>
                       <TableHead>Security</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {profiles.map((p: any) => (
+                    {filteredProfiles.map((p: any) => (
                       <TableRow key={p.user_id}>
                         <TableCell>
                           <div className="font-medium">{p.full_name || "Unknown"}</div>
@@ -646,14 +648,30 @@ const AdminPanel = () => {
                           <div className="text-xs text-muted-foreground font-mono">{p.user_id}</div>
                         </TableCell>
                         <TableCell>{p.location_data || "Unknown City"}</TableCell>
+                        <TableCell><div className="flex flex-wrap gap-2">{(rolesByUser[p.user_id] ?? ["user"]).map((role) => <Badge key={role} variant={role === "admin" ? "default" : "secondary"}>{role}</Badge>)}</div></TableCell>
                         <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="font-mono text-[10px]">PWD: [HIDDEN/HASHED]</Badge>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="outline" className="font-mono text-[10px]">PWD: [HIDDEN/HASHED]</Badge>
+                            {bannedUserIds.has(p.user_id) && <Badge variant="destructive">Banned</Badge>}
+                          </div>
                         </TableCell>
                         <TableCell>
-                          <Button variant="destructive" size="sm" onClick={() => handleBanUser(p.user_id)}>
-                            <Ban className="h-3 w-3 mr-1" /> Ban
-                          </Button>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex flex-wrap gap-2">
+                              {(["premium", "moderator", "admin"] as UserRole["role"][]).map((role) => {
+                                const hasRole = (rolesByUser[p.user_id] ?? ["user"]).includes(role);
+                                return (
+                                  <Button key={role} variant={hasRole ? "default" : "outline"} size="sm" onClick={() => toggleUserRole(p.user_id, role)}>
+                                    {hasRole ? `Remove ${role}` : `Add ${role}`}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                            <Button variant="destructive" size="sm" onClick={() => handleBanUser(p.user_id)}>
+                              <Ban className="h-3 w-3 mr-1" /> Ban
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -661,9 +679,9 @@ const AdminPanel = () => {
                 </Table>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent>}
 
-          <TabsContent value="ai">
+          {isAdmin && <TabsContent value="ai">
             <div className="grid lg:grid-cols-2 gap-6">
               <Card className="h-fit">
                 <CardHeader><CardTitle className="flex items-center gap-2"><BeeIcon className="h-5 w-5" />Bee AI Training</CardTitle></CardHeader>
@@ -715,7 +733,14 @@ const AdminPanel = () => {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          </TabsContent>}
+
+          {isAdmin && <TabsContent value="audit">
+            <Card>
+              <CardHeader><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><CardTitle>Audit Log ({filteredAuditLogs.length})</CardTitle><div className="relative w-full md:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input placeholder="Search audit events..." value={auditSearch} onChange={(e) => setAuditSearch(e.target.value)} className="pl-9" /></div></div></CardHeader>
+              <CardContent><div className="max-h-[620px] overflow-auto rounded-md border"><Table><TableHeader><TableRow><TableHead>Time</TableHead><TableHead>Action</TableHead><TableHead>Entity</TableHead><TableHead>Summary</TableHead></TableRow></TableHeader><TableBody>{filteredAuditLogs.map((log) => <TableRow key={log.id}><TableCell className="text-xs text-muted-foreground">{new Date(log.created_at).toLocaleString()}</TableCell><TableCell><Badge variant="outline">{log.action}</Badge></TableCell><TableCell>{log.entity_type}</TableCell><TableCell>{log.summary}</TableCell></TableRow>)}</TableBody></Table></div></CardContent>
+            </Card>
+          </TabsContent>}
         </Tabs>
       </div>
     </div>

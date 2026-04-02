@@ -32,6 +32,45 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_audit_logs: {
+        Row: {
+          action: string
+          actor_name: string | null
+          actor_role: string
+          actor_user_id: string
+          created_at: string
+          details: Json
+          entity_id: string | null
+          entity_type: string
+          id: string
+          summary: string
+        }
+        Insert: {
+          action: string
+          actor_name?: string | null
+          actor_role: string
+          actor_user_id: string
+          created_at?: string
+          details?: Json
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          summary: string
+        }
+        Update: {
+          action?: string
+          actor_name?: string | null
+          actor_role?: string
+          actor_user_id?: string
+          created_at?: string
+          details?: Json
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          summary?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_id: string | null
@@ -41,10 +80,14 @@ export type Database = {
           cover_image: string | null
           created_at: string
           excerpt: string | null
+          featured: boolean
           id: string
+          meta_description: string | null
+          meta_title: string | null
           published: boolean
           read_time: string | null
           slug: string
+          thumbnail_image: string | null
           title: string
           updated_at: string
         }
@@ -56,10 +99,14 @@ export type Database = {
           cover_image?: string | null
           created_at?: string
           excerpt?: string | null
+          featured?: boolean
           id?: string
+          meta_description?: string | null
+          meta_title?: string | null
           published?: boolean
           read_time?: string | null
           slug: string
+          thumbnail_image?: string | null
           title: string
           updated_at?: string
         }
@@ -71,10 +118,14 @@ export type Database = {
           cover_image?: string | null
           created_at?: string
           excerpt?: string | null
+          featured?: boolean
           id?: string
+          meta_description?: string | null
+          meta_title?: string | null
           published?: boolean
           read_time?: string | null
           slug?: string
+          thumbnail_image?: string | null
           title?: string
           updated_at?: string
         }
@@ -435,6 +486,11 @@ export type Database = {
           location_data: string | null
           onboarding_completed: boolean | null
           phone: string | null
+          preferred_language: string | null
+          signature_data_url: string | null
+          signature_font_family: string | null
+          signature_mode: string | null
+          signature_text: string | null
           state: string | null
           updated_at: string
           user_id: string
@@ -450,6 +506,11 @@ export type Database = {
           location_data?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
+          preferred_language?: string | null
+          signature_data_url?: string | null
+          signature_font_family?: string | null
+          signature_mode?: string | null
+          signature_text?: string | null
           state?: string | null
           updated_at?: string
           user_id: string
@@ -465,6 +526,11 @@ export type Database = {
           location_data?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
+          preferred_language?: string | null
+          signature_data_url?: string | null
+          signature_font_family?: string | null
+          signature_mode?: string | null
+          signature_text?: string | null
           state?: string | null
           updated_at?: string
           user_id?: string
@@ -656,6 +722,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_learning_workbooks: {
+        Row: {
+          chapter_slug: string
+          created_at: string
+          data: Json
+          id: string
+          page_slug: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chapter_slug: string
+          created_at?: string
+          data?: Json
+          id?: string
+          page_slug: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chapter_slug?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          page_slug?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_progress: {
         Row: {
