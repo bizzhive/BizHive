@@ -1,127 +1,243 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Users, DollarSign, Target, BarChart3, Cog, Rocket, Shield, Award, ArrowRight, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import {
+  ArrowRight,
+  Award,
+  BarChart3,
+  CheckCircle,
+  Cog,
+  DollarSign,
+  Rocket,
+  Shield,
+  Target,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import FAQSection from "@/components/FAQSection";
+import { PageHeader, SectionHeading, SiteContainer, Surface } from "@/components/site/SitePrimitives";
+import { useTranslation } from "react-i18next";
 
 const manageFAQs = [
-  { question: "When should I start scaling my business?", answer: "Scale when you have consistent revenue, a proven business model, and repeatable customer acquisition. Key indicators: positive unit economics, growing demand you can't fulfill, and operational processes that are documented and can be delegated." },
-  { question: "How do I manage cash flow during growth?", answer: "Maintain at least 3-6 months of operating expenses as runway. Use cash flow forecasting, negotiate longer payment terms with suppliers, invoice promptly, and consider invoice factoring for B2B businesses. Never confuse revenue with profit." },
-  { question: "What metrics should I track?", answer: "Focus on: Customer Acquisition Cost (CAC), Lifetime Value (LTV), Monthly Recurring Revenue (MRR), Churn Rate, Burn Rate, and Runway. The LTV:CAC ratio should be at least 3:1 for a healthy business." },
-  { question: "How do I build a strong team while scaling?", answer: "Hire for culture fit first, skills second. Document processes before hiring. Start with generalists, move to specialists as you grow. Invest in onboarding, use OKRs for alignment, and build a feedback culture early." },
-  { question: "Should I seek external funding to grow?", answer: "Not always. Bootstrap if your business generates healthy cash flow. Seek funding only if: you need to grow faster than cash flow allows, your market has a winner-takes-all dynamic, or capital-intensive infrastructure is needed. Remember, every rupee of funding comes with dilution." },
+  {
+    question: "When should I start scaling my business?",
+    answer:
+      "Scale when revenue, demand, and delivery systems are stable enough that growth will amplify strength rather than amplify failure.",
+  },
+  {
+    question: "How do I manage cash flow during growth?",
+    answer:
+      "Forecast cash, protect runway, and separate revenue excitement from actual operating health. Growth pressure makes discipline more important, not less.",
+  },
+  {
+    question: "What metrics should I track?",
+    answer:
+      "Track the metrics that reflect delivered value, acquisition efficiency, retention, and operating stability. Not every number deserves dashboard space.",
+  },
+  {
+    question: "How do I build a strong team while scaling?",
+    answer:
+      "Document outcomes first, then hire into clear roles. Scaling without process clarity usually creates management drag instead of leverage.",
+  },
+  {
+    question: "Should I seek external funding to grow?",
+    answer:
+      "Only when capital clearly improves speed or defensibility. Funding is a strategic tool, not automatic validation.",
+  },
 ];
+
+const managementAreas = [
+  {
+    icon: TrendingUp,
+    title: "Scale operations",
+    description: "Expand delivery capacity without turning the company into a coordination problem.",
+    path: "/tools",
+    bullets: ["Team expansion", "Process optimization", "Operational visibility"],
+  },
+  {
+    icon: Users,
+    title: "Customer systems",
+    description: "Retention, support, and customer understanding should mature as fast as acquisition does.",
+    path: "/community",
+    bullets: ["Support loops", "Feedback systems", "Customer continuity"],
+  },
+  {
+    icon: DollarSign,
+    title: "Financial control",
+    description: "Keep cash, pricing, and unit economics visible while the business becomes more complex.",
+    path: "/tools/financial-calculator",
+    bullets: ["Cash flow discipline", "Pricing review", "Runway awareness"],
+  },
+];
+
+const scalingStrategies = [
+  { icon: Target, title: "Market expansion", description: "Enter adjacent markets only after the current one is working.", path: "/plan/market-research" },
+  { icon: BarChart3, title: "Performance analytics", description: "Use data to make weekly decisions instead of retrospective guesses.", path: "/tools/startup-calculator" },
+  { icon: Cog, title: "Operational automation", description: "Automate repeated work only after the manual version is understood.", path: "/tools" },
+  { icon: Rocket, title: "Growth experiments", description: "Run deliberate experiments rather than scattered marketing activity.", path: "/blog" },
+  { icon: Shield, title: "Risk management", description: "Protect growth with compliance, contracts, and better decision hygiene.", path: "/legal" },
+  { icon: Award, title: "Quality control", description: "Make quality measurable before volume pushes it downward.", path: "/launch" },
+];
+
+const growthPrinciples = [
+  {
+    title: "Unit economics first",
+    description: "A business that loses money faster under growth is not scaling, it is compounding risk.",
+  },
+  {
+    title: "Systems before headcount",
+    description: "Teams scale better when the operating model is visible and repeatable, not trapped in one founder's head.",
+  },
+  {
+    title: "Retention compounds value",
+    description: "Growth gets healthier when existing customers stay, expand, and create proof for the next wave.",
+  },
+];
+
 const Manage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const managementAreas = [
-    { icon: TrendingUp, title: "Scale Operations", description: "Expand your team, enhance efficiency", color: "text-blue-600 dark:text-blue-400", bgColor: "bg-blue-50 dark:bg-blue-900/20", features: ["Team Expansion", "Process Optimization", "Service Diversification", "Quality Control"], path: "/tools" },
-    { icon: Users, title: "Customer Management", description: "Build loyalty and engagement", color: "text-green-600 dark:text-green-400", bgColor: "bg-green-50 dark:bg-green-900/20", features: ["CRM Integration", "Loyalty Programs", "Feedback Systems", "Support Optimization"], path: "/ai-assistant" },
-    { icon: DollarSign, title: "Financial Management", description: "Monitor performance, optimize costs", color: "text-purple-600 dark:text-purple-400", bgColor: "bg-purple-50 dark:bg-purple-900/20", features: ["Cash Flow Analysis", "Cost Optimization", "Investment Planning", "Risk Management"], path: "/tools/financial-calculator" },
-  ];
-
-  const scalingStrategies = [
-    { icon: Target, title: "Market Expansion", description: "Enter new markets and demographics", path: "/plan/market-research" },
-    { icon: BarChart3, title: "Performance Analytics", description: "Track KPIs and optimize operations", path: "/tools/startup-calculator" },
-    { icon: Cog, title: "Automation", description: "Streamline processes with technology", path: "/tools" },
-    { icon: Rocket, title: "Growth Hacking", description: "Rapid experimentation for growth", path: "/blog" },
-    { icon: Shield, title: "Risk Management", description: "Identify and mitigate business risks", path: "/legal" },
-    { icon: Award, title: "Quality Assurance", description: "Maintain excellence while scaling", path: "/launch" },
-  ];
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
-            <TrendingUp className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-5xl font-bold text-foreground mb-6">{t("Manage & Scale Your Business")}</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {t("Grow your business with advanced management strategies and proven scaling techniques")}
-          </p>
-        </div>
+    <div className="page-shell">
+      <SiteContainer className="space-y-8">
+        <PageHeader
+          eyebrow="Grow"
+          title={t("Scale the business without losing control")}
+          description={t("The manage layer now feels more like a scaling workspace and less like a loose set of ideas. Strategy, metrics, customer systems, and operating discipline all sit under one clearer frame.")}
+          actions={
+            <>
+              <Button size="lg" onClick={() => navigate("/tools")}>
+                {t("Open growth tools")}
+              </Button>
+              <Button variant="outline" size="lg" onClick={() => navigate("/manage/learn")}>
+                {t("Open growth learning")}
+              </Button>
+            </>
+          }
+        />
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
-          {managementAreas.map((area, index) => (
-            <Card key={index} className="group hover:shadow-xl transition-all duration-300 relative overflow-hidden">
-              <CardHeader className="pb-4">
-                <div className={`w-14 h-14 ${area.bgColor} rounded-lg flex items-center justify-center mb-4`}>
-                  <area.icon className={`h-7 w-7 ${area.color}`} />
+        <section className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+          <Surface className="space-y-5">
+            <SectionHeading
+              eyebrow="Growth frame"
+              title={t("Scale only what already works")}
+              description={t("This page now explains growth as a systems problem, not just an ambition problem.")}
+            />
+            <div className="space-y-4">
+              {growthPrinciples.map((principle) => (
+                <div key={principle.title} className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                  <div className="font-semibold text-foreground">{t(principle.title)}</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{t(principle.description)}</p>
                 </div>
-                <CardTitle className="text-xl">{t(area.title)}</CardTitle>
-                <CardDescription>{t(area.description)}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 mb-6">
-                  {area.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-muted-foreground">{t(feature)}</span>
+              ))}
+            </div>
+          </Surface>
+
+          <Surface className="space-y-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <SectionHeading
+                eyebrow="Operating signals"
+                title={t("Growth should feel measured, not accidental")}
+                description={t("These signals make the page read like a system-level overview rather than another navigation stop.")}
+              />
+              <Badge className="w-fit rounded-full border-none bg-primary/10 px-3 py-1 text-primary">
+                {t("Management phase")}
+              </Badge>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {[
+                {
+                  label: "Focus areas",
+                  value: "3",
+                  description: "Operations, customers, and finance anchor the rest of the growth layer.",
+                },
+                {
+                  label: "Strategy tracks",
+                  value: "6",
+                  description: "The page now surfaces the most common scale decisions in one structured grid.",
+                },
+                {
+                  label: "Primary warning",
+                  value: "Premature",
+                  description: "The content intentionally pushes against scaling before the fundamentals are stable.",
+                },
+              ].map((item) => (
+                <div key={item.label} className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                  <div className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">{t(item.value)}</div>
+                  <div className="mt-1 text-sm font-medium text-foreground">{t(item.label)}</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{t(item.description)}</p>
+                </div>
+              ))}
+            </div>
+          </Surface>
+        </section>
+
+        <section className="space-y-6">
+          <SectionHeading
+            eyebrow="Management areas"
+            title={t("Use the right system for the next scale problem")}
+            description={t("These cards now feel like connected management lanes instead of loosely related feature boxes.")}
+          />
+          <div className="grid gap-5 xl:grid-cols-3">
+            {managementAreas.map((area) => (
+              <Surface key={area.title} className="flex h-full flex-col p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary/10 text-primary">
+                  <area.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                  {t(area.title)}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{t(area.description)}</p>
+                <div className="mt-5 space-y-3">
+                  {area.bullets.map((bullet) => (
+                    <div key={bullet} className="flex items-start gap-3 text-sm text-muted-foreground">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-primary" />
+                      <span>{t(bullet)}</span>
                     </div>
                   ))}
                 </div>
-                <Button className="w-full" variant="outline" onClick={() => navigate(area.path)}>
-                  {t("Get Started")} <ArrowRight className="ml-2 h-4 w-4" />
+                <Button className="mt-6 w-full" variant="outline" onClick={() => navigate(area.path)}>
+                  {t("Open workflow")}
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">{t("Advanced Scaling Strategies")}</h2>
-            <p className="text-lg text-muted-foreground">{t("Proven methodologies to accelerate growth")}</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {scalingStrategies.map((strategy, index) => (
-              <Card key={index} className="group hover:shadow-lg transition-all duration-300 cursor-pointer" onClick={() => navigate(strategy.path)}>
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                      <strategy.icon className="h-5 w-5 text-white" />
-                    </div>
-                    <CardTitle className="text-lg">{t(strategy.title)}</CardTitle>
-                  </div>
-                  <CardDescription>{t(strategy.description)}</CardDescription>
-                </CardHeader>
-              </Card>
+              </Surface>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Why Growth Management Matters */}
-        <div className="bg-muted/50 rounded-2xl p-8 mb-8 border">
-          <h2 className="text-2xl font-bold text-foreground mb-4">{t("Why Strategic Growth Management is Critical")}</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-muted-foreground mb-3">{t("90% of startups fail, and a leading cause is premature scaling - growing faster than your operations, team, or finances can support. Strategic growth management helps you scale sustainably.")}</p>
-              <p className="text-muted-foreground">{t("Focus on building strong foundations: efficient processes, reliable team, and healthy cash flow before pursuing aggressive growth.")}</p>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-start gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
-                <p className="text-sm text-muted-foreground"><strong className="text-foreground">{t("Unit Economics First")}:</strong> {t("Ensure each sale is profitable before scaling volume")}</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
-                <p className="text-sm text-muted-foreground"><strong className="text-foreground">{t("Systems Before People")}:</strong> {t("Document processes so new hires can onboard quickly")}</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-1 shrink-0" />
-                <p className="text-sm text-muted-foreground"><strong className="text-foreground">{t("Customer Retention")}:</strong> {t("It costs 5x more to acquire a new customer than retain one")}</p>
-              </div>
-            </div>
+        <section className="space-y-6">
+          <SectionHeading
+            eyebrow="Scaling strategies"
+            title={t("Explore the next set of growth decisions")}
+            description={t("This strategy grid is now cleaner and easier to scan, with each card mapping to a specific next path in the platform.")}
+          />
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {scalingStrategies.map((strategy) => (
+              <button
+                key={strategy.title}
+                type="button"
+                onClick={() => navigate(strategy.path)}
+                className="rounded-[24px] border border-border/70 bg-card/88 p-5 text-left transition-all hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_36px_rgba(16,12,8,0.08)]"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <strategy.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                  {t(strategy.title)}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{t(strategy.description)}</p>
+                <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                  {t("Open")}
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </button>
+            ))}
           </div>
-        </div>
+        </section>
 
-        {/* FAQ */}
         <FAQSection items={manageFAQs} />
-      </div>
+      </SiteContainer>
     </div>
   );
 };

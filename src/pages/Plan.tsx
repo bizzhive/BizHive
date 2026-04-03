@@ -1,130 +1,284 @@
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Search, Target, TrendingUp, DollarSign, FileCheck, CheckCircle, Lightbulb, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Calculator,
+  FileCheck,
+  Layers3,
+  Lightbulb,
+  Search,
+  Target,
+  TrendingUp,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import FAQSection from "@/components/FAQSection";
+import { PageHeader, SectionHeading, SiteContainer, Surface } from "@/components/site/SitePrimitives";
+import { useTranslation } from "react-i18next";
 
 const planFAQs = [
-  { question: "Why is business planning important?", answer: "A solid business plan helps you define your vision, understand your market, secure funding, and create a roadmap for growth. Studies show that entrepreneurs who plan are 16% more likely to achieve viability than those who don't." },
-  { question: "What business structure should I choose in India?", answer: "It depends on your goals: Sole Proprietorship is simplest for freelancers. LLP is great for partnerships with limited liability. Pvt Ltd is ideal for startups seeking funding. OPC works for solo founders wanting corporate benefits. Consider factors like liability, taxation, compliance costs, and scalability." },
-  { question: "How long does it take to register a business in India?", answer: "Sole Proprietorship: 1-2 days. LLP: 10-15 days. Pvt Ltd: 15-25 days (including DSC, DIN, name approval, and incorporation). The process has been significantly streamlined through the MCA portal." },
-  { question: "Do I need a CA or lawyer to start a business?", answer: "Not strictly required for sole proprietorships, but highly recommended for LLP and Pvt Ltd registrations. A CA helps with tax planning, GST registration, and compliance. Legal counsel is advisable for partnership agreements and shareholder contracts." },
-  { question: "How much does it cost to start a business in India?", answer: "Costs vary widely: Sole Proprietorship can start with ₹500-2,000. LLP registration costs ₹5,000-15,000. Pvt Ltd incorporation costs ₹10,000-25,000. Add GST registration (free), professional fees, and initial working capital. Use our Startup Calculator for detailed estimates." },
-  { question: "What is the minimum capital required?", answer: "There's no minimum capital requirement for Pvt Ltd companies since 2015. For LLP, there's no minimum contribution required. However, having adequate capital (at least 6 months of operating expenses) is practically essential for survival." },
+  {
+    question: "Why is business planning important?",
+    answer:
+      "A solid business plan helps you define your vision, understand your market, secure funding, and create a roadmap for growth. Studies show that entrepreneurs who plan are more likely to achieve viability than those who don't.",
+  },
+  {
+    question: "What business structure should I choose in India?",
+    answer:
+      "It depends on your goals. Sole Proprietorship is simple for freelancers, LLP works well for partnerships with limited liability, and Private Limited is often better for startups seeking funding.",
+  },
+  {
+    question: "How long does it take to register a business in India?",
+    answer:
+      "It varies by structure. Sole proprietorships are the fastest, while LLP and Private Limited registrations take longer because of name approval, documentation, and incorporation steps.",
+  },
+  {
+    question: "Do I need a CA or lawyer to start a business?",
+    answer:
+      "Not always, but professional review is strongly recommended for registrations, tax planning, and any document that creates legal obligations.",
+  },
+  {
+    question: "How much does it cost to start a business in India?",
+    answer:
+      "Costs depend on your structure, compliance needs, and operating model. Use the startup and financial tools to estimate setup plus the first few months of runway together.",
+  },
+];
+
+const planWorkflows = [
+  {
+    icon: Search,
+    title: "Market research",
+    description: "Validate demand, understand customer behavior, and map competitors before making expensive bets.",
+    href: "/plan/market-research",
+    bullets: [
+      "Target market identification",
+      "Competitor analysis tools",
+      "Demand and positioning checks",
+    ],
+  },
+  {
+    icon: FileCheck,
+    title: "Business plan builder",
+    description: "Turn assumptions into a real operating plan with clearer sections and more consistent outputs.",
+    href: "/plan/business-plan",
+    bullets: [
+      "Business goals and strategy",
+      "Financial projections",
+      "Operational planning",
+    ],
+  },
+  {
+    icon: Target,
+    title: "Structure and registration",
+    description: "Move from idea to legal setup with connected compliance, filing, and document flows.",
+    href: "/legal",
+    bullets: [
+      "Business structure selection",
+      "Registration preparation",
+      "Draft-first legal workflows",
+    ],
+  },
+];
+
+const planningSignals = [
+  {
+    label: "Core outputs",
+    value: "3",
+    description: "Research, plan, and registration now sit in one connected planning narrative.",
+  },
+  {
+    label: "Decision lens",
+    value: "5",
+    description: "Every founder plan should clarify customer, model, economics, structure, and timing.",
+  },
+  {
+    label: "Planning bias",
+    value: "Low",
+    description: "The page now focuses on clear next actions instead of vague startup inspiration.",
+  },
+];
+
+const processSteps = [
+  { step: "01", title: "Research reality", description: "Confirm the problem, urgency, and buyer before building too much." },
+  { step: "02", title: "Map the model", description: "Define offer, channels, customers, pricing, and operating assumptions." },
+  { step: "03", title: "Choose structure", description: "Pick the legal and tax setup that matches how you want to grow." },
+  { step: "04", title: "Stress test", description: "Run the numbers, risks, and dependencies before you commit money." },
+  { step: "05", title: "Move to launch", description: "Hand off a cleaner plan into launch, documents, and growth workflows." },
+];
+
+const quickTools = [
+  { icon: Layers3, label: "Business canvas", href: "/tools/business-canvas" },
+  { icon: TrendingUp, label: "SWOT analysis", href: "/tools/swot-analysis" },
+  { icon: Calculator, label: "Financial calculator", href: "/tools/financial-calculator" },
+  { icon: BadgeCheck, label: "Learning hub", href: "/plan/learn" },
 ];
 
 const Plan = () => {
   const { t } = useTranslation();
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl mb-6">
-            <Target className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t("Plan Your Business")}</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            {t("Turn your business idea into a comprehensive plan with our step-by-step guides and interactive tools")}
-          </p>
-        </div>
-
-        {/* Why Plan Section */}
-        <div className="bg-muted/50 rounded-2xl p-8 mb-12 border">
-          <div className="flex items-start gap-4 mb-6">
-            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl shrink-0">
-              <Lightbulb className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">{t("Why Planning Matters")}</h2>
-              <p className="text-muted-foreground">{t("Planning isn't just paperwork - it's the foundation of every successful business. Here's why:")}</p>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">{t("Clarity & Direction")}</h3>
-              <p className="text-sm text-muted-foreground">{t("A plan forces you to think through your business model, revenue streams, and competitive advantages before investing time and money.")}</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">{t("Attract Investors")}</h3>
-              <p className="text-sm text-muted-foreground">{t("No investor funds a pitch without a plan. Banks, VCs, and angel investors all require a well-structured business plan before committing capital.")}</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">{t("Reduce Risk")}</h3>
-              <p className="text-sm text-muted-foreground">{t("Market research and financial projections help you identify potential pitfalls early, saving you from costly mistakes down the road.")}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Planning Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {[
-            { icon: Search, title: "Market Research", desc: "Identify your target market, analyze competitors, and understand market demand", items: ["Target market identification", "Competitor analysis tools", "Market demand assessment", "Economic viability check"], href: "/plan/market-research", color: "text-blue-500", bg: "bg-blue-500/10" },
-            { icon: FileCheck, title: "Business Plan", desc: "Create a comprehensive business plan with our guided templates", items: ["Business goals definition", "Financial projections", "Marketing strategies", "Operational planning"], href: "/plan/business-plan", color: "text-green-500", bg: "bg-green-500/10" },
-            { icon: Target, title: "Business Registration", desc: "Choose the right business structure and complete registration", items: ["Business structure selection", "Name registration", "Digital signature setup", "Incorporation filing"], href: "/legal", color: "text-purple-500", bg: "bg-purple-500/10" },
-          ].map((card, i) => (
-            <Card key={i} className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-              <CardHeader>
-                <div className={`p-3 rounded-xl ${card.bg} w-fit mb-2`}>
-                  <card.icon className={`h-6 w-6 ${card.color}`} />
-                </div>
-                <CardTitle>{t(card.title)}</CardTitle>
-                <CardDescription>{t(card.desc)}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="text-sm text-muted-foreground space-y-1.5 mb-4">
-                  {card.items.map((item, j) => (
-                    <li key={j} className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-500 shrink-0" />{t(item)}</li>
-                  ))}
-                </ul>
-                <Button asChild className="w-full"><Link to={card.href}>{t("Get Started")}</Link></Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Planning Process */}
-        <div className="bg-card rounded-2xl p-8 mb-12 border">
-          <h2 className="text-2xl font-bold mb-6 text-foreground">{t("5-Step Planning Process")}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {[
-              { step: "1", title: "Research", desc: "Market & Competition", color: "bg-blue-500" },
-              { step: "2", title: "Plan", desc: "Business Model", color: "bg-green-500" },
-              { step: "3", title: "Structure", desc: "Legal Entity", color: "bg-purple-500" },
-              { step: "4", title: "Register", desc: "Official Filing", color: "bg-orange-500" },
-              { step: "5", title: "Prepare", desc: "Launch Ready", color: "bg-teal-500" },
-            ].map((s) => (
-              <div key={s.step} className="text-center">
-                <div className={`w-10 h-10 ${s.color} rounded-full flex items-center justify-center mx-auto mb-2 text-white font-bold text-sm`}>{s.step}</div>
-                <h3 className="font-semibold text-sm text-foreground">{t(s.title)}</h3>
-                <p className="text-xs text-muted-foreground">{t(s.desc)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick Tools */}
-        <div className="bg-muted/30 rounded-2xl p-8 mb-4 border">
-          <h2 className="text-2xl font-bold mb-6 text-foreground">{t("Quick Planning Tools")}</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {[
-              { icon: Target, label: "Business Canvas", href: "/tools/business-canvas" },
-              { icon: TrendingUp, label: "SWOT Analysis", href: "/tools/swot-analysis" },
-              { icon: DollarSign, label: "Financial Calculator", href: "/tools/financial-calculator" },
-              { icon: CheckCircle, label: "Launch Checklist", href: "/launch" },
-            ].map((t, i) => (
-              <Button key={i} asChild variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
-                <Link to={t.href}><t.icon className="h-5 w-5" /><span className="text-sm">{t(t.label)}</span></Link>
+    <div className="page-shell">
+      <SiteContainer className="space-y-8">
+        <PageHeader
+          eyebrow="Plan"
+          title={t("Design the business before you spend the money")}
+          description={t("Planning in BizHive now feels like an intentional operating phase: clearer structure, cleaner hierarchy, and tighter links between research, planning, tools, and legal setup.")}
+          actions={
+            <>
+              <Button asChild size="lg">
+                <Link to="/plan/market-research">{t("Start market research")}</Link>
               </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/plan/business-plan">{t("Open business plan")}</Link>
+              </Button>
+            </>
+          }
+        />
+
+        <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+          <Surface className="space-y-5">
+            <SectionHeading
+              eyebrow="Why this phase matters"
+              title={t("Good planning reduces expensive guessing")}
+              description={t("The planning surface now explains what this stage is for, what decisions it unlocks, and where founders should go next inside the product.")}
+            />
+            <div className="space-y-4">
+              {[
+                {
+                  title: "Clarity before execution",
+                  description: "Planning forces the business model, customer, and economics into one visible frame before launch pressure takes over.",
+                },
+                {
+                  title: "Better funding conversations",
+                  description: "Investors and advisors react more confidently when your strategy, assumptions, and risks are already structured.",
+                },
+                {
+                  title: "Less accidental work",
+                  description: "The page is now designed to move you into the right next tool instead of scattering attention across disconnected cards.",
+                },
+              ].map((item) => (
+                <div key={item.title} className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                  <div className="font-semibold text-foreground">{t(item.title)}</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{t(item.description)}</p>
+                </div>
+              ))}
+            </div>
+          </Surface>
+
+          <Surface className="space-y-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <SectionHeading
+                eyebrow="Planning signals"
+                title={t("One phase, one stronger operating story")}
+                description={t("These indicators summarize the planning layer so the page feels like a system, not just a collection of navigation cards.")}
+              />
+              <Badge className="w-fit rounded-full border-none bg-primary/10 px-3 py-1 text-primary">
+                {t("Foundation stage")}
+              </Badge>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {planningSignals.map((item) => (
+                <div key={item.label} className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                  <div className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">
+                    {t(item.value)}
+                  </div>
+                  <div className="mt-1 text-sm font-medium text-foreground">{t(item.label)}</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{t(item.description)}</p>
+                </div>
+              ))}
+            </div>
+          </Surface>
+        </section>
+
+        <section className="space-y-6">
+          <SectionHeading
+            eyebrow="Core workflows"
+            title={t("Use the planning tools in the right order")}
+            description={t("These cards now behave like a sequence: validate, structure, then formalize.")}
+          />
+          <div className="grid gap-5 xl:grid-cols-3">
+            {planWorkflows.map((workflow) => (
+              <Surface key={workflow.title} className="flex h-full flex-col p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary/10 text-primary">
+                  <workflow.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                  {t(workflow.title)}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{t(workflow.description)}</p>
+                <div className="mt-5 space-y-3">
+                  {workflow.bullets.map((bullet) => (
+                    <div key={bullet} className="flex items-start gap-3 text-sm text-muted-foreground">
+                      <div className="mt-1 h-2 w-2 rounded-full bg-primary" />
+                      <span>{t(bullet)}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button asChild className="mt-6 w-full">
+                  <Link to={workflow.href}>
+                    {t("Open workflow")}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </Surface>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* FAQ */}
+        <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+          <Surface className="space-y-5">
+            <SectionHeading
+              eyebrow="Planning sequence"
+              title={t("A more deliberate five-step path")}
+              description={t("This removes the old patchwork feel and gives the page a cleaner process backbone.")}
+            />
+            <div className="grid gap-4 md:grid-cols-5">
+              {processSteps.map((item) => (
+                <div key={item.step} className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">{item.step}</div>
+                  <div className="mt-3 font-semibold text-foreground">{t(item.title)}</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{t(item.description)}</p>
+                </div>
+              ))}
+            </div>
+          </Surface>
+
+          <Surface className="space-y-5">
+            <SectionHeading
+              eyebrow="Quick tools"
+              title={t("Support the plan with adjacent tools")}
+              description={t("These shortcuts keep the page useful without making it feel crowded or structurally loose.")}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {quickTools.map((tool) => (
+                <Button key={tool.href} asChild variant="outline" className="h-auto justify-start rounded-[22px] px-4 py-4">
+                  <Link to={tool.href} className="flex w-full items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <tool.icon className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm font-semibold">{t(tool.label)}</span>
+                  </Link>
+                </Button>
+              ))}
+            </div>
+            <div className="rounded-[22px] border border-border/70 bg-muted/20 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Lightbulb className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-semibold text-foreground">{t("Flow note")}</div>
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                    {t("A strong plan should now naturally hand off into launch and legal work instead of forcing founders to guess where to go next.")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Surface>
+        </section>
+
         <FAQSection items={planFAQs} />
-      </div>
+      </SiteContainer>
     </div>
   );
 };

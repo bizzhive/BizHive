@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { BookOpen, CheckCircle, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, GraduationCap, Save, Sparkles, Trophy } from "lucide-react";
+import { EmptyState, PageHeader, SectionHeading, SiteContainer, Surface } from "@/components/site/SitePrimitives";
+import { BookOpen, CheckCircle, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, GraduationCap, Save, Search, Sparkles, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
@@ -159,6 +160,7 @@ const emptyWorkbook = (title: string, workbook?: { fields: WorkbookField[] }): W
 const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
   const [activeChapter, setActiveChapter] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [chapterSearch, setChapterSearch] = useState("");
   const [completedChapters, setCompletedChapters] = useState<Set<number>>(new Set());
   const [earnedAchievements, setEarnedAchievements] = useState<Set<string>>(new Set());
   const [allProgressCounts, setAllProgressCounts] = useState<Record<string, number>>({});
@@ -167,6 +169,7 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
+  const deferredChapterSearch = useDeferredValue(chapterSearch);
 
   const currentChapter = chapters[activeChapter];
   const currentKey = chapterKey(pageSlug, currentChapter.title);
@@ -344,74 +347,271 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
   const overallProgress = Math.round((globalCompletedCount / totalLearnChapters) * 100);
   const pageProgress = Math.round((completedChapters.size / chapters.length) * 100);
   const remainingChapters = Math.max(chapters.length - completedChapters.size, 0);
+  const filteredChapterIndices = useMemo(() => {
+    const normalizedQuery = deferredChapterSearch.trim().toLowerCase();
+
+    return chapters
+      .map((chapter, index) => ({ chapter, index }))
+      .filter(({ chapter }) => {
+        if (!normalizedQuery) {
+          return true;
+        }
+
+        const haystack = [chapter.title, ...chapter.content].join(" ").toLowerCase();
+        return haystack.includes(normalizedQuery);
+      })
+      .map(({ index }) => index);
+  }, [chapters, deferredChapterSearch]);
+
+  useEffect(() => {
+    if (filteredChapterIndices.length === 0) {
+      return;
+    }
+
+    if (!filteredChapterIndices.includes(activeChapter)) {
+      setActiveChapter(filteredChapterIndices[0]);
+    }
+  }, [activeChapter, filteredChapterIndices]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-            <BookOpen className="h-7 w-7 text-primary" />
-          </div>
-          <h1 className="mb-2 text-3xl font-bold text-foreground md:text-4xl">{t(title)}</h1>
-          <p className="mx-auto mb-6 max-w-3xl text-muted-foreground">{t(subtitle)}</p>
-          <div className="mx-auto grid max-w-6xl gap-3 md:grid-cols-4">
-            {Object.entries(SECTION_META).map(([slug, item]) => (
-              <Link key={slug} to={item.route}>
-                <Card className={cn("h-full transition-all hover:shadow-md", slug === pageSlug && "border-primary bg-primary/5")}>
-                  <CardContent className="space-y-3 p-4">
-                    <div className="flex items-center justify-between">
+    <div className="page-shell">
+      <SiteContainer className="space-y-8">
+        <PageHeader
+          eyebrow="Learning workspace"
+          title={t(title)}
+          description={t(subtitle)}
+          actions={
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {Object.entries(SECTION_META).map(([slug, item]) => (
+                <Link key={slug} to={item.route} className="block">
+                  <div
+                    className={cn(
+                      "min-w-[150px] rounded-[22px] border border-border/70 bg-background/75 p-4 text-left transition-all hover:border-primary/30 hover:bg-background",
+                      slug === pageSlug && "border-primary/30 bg-primary/10 shadow-[0_18px_38px_rgba(255,138,61,0.18)]"
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-3">
                       <p className="font-semibold text-foreground">{item.shortTitle}</p>
-                      <Badge variant={slug === pageSlug ? "default" : "secondary"}>{mergedCounts[slug] ?? 0}/{item.total}</Badge>
+                      <Badge variant={slug === pageSlug ? "default" : "secondary"}>
+                        {mergedCounts[slug] ?? 0}/{item.total}
+                      </Badge>
                     </div>
-                    <Progress value={Math.round(((mergedCounts[slug] ?? 0) / item.total) * 100)} className="h-2" />
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
+                    <Progress
+                      value={Math.round(((mergedCounts[slug] ?? 0) / item.total) * 100)}
+                      className="mt-3 h-2"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          }
+        />
 
-        {user && (
-          <div className="mx-auto mb-6 grid max-w-6xl gap-4 md:grid-cols-4">
-            <Card><CardContent className="p-4"><div className="flex items-center justify-between"><div><p className="text-xs uppercase tracking-wide text-muted-foreground">{t("Learning XP")}</p><p className="text-2xl font-bold text-foreground">{pageXp}</p></div><Sparkles className="h-5 w-5 text-primary" /></div></CardContent></Card>
-            <Card><CardContent className="p-4"><div className="flex items-center justify-between"><div><p className="text-xs uppercase tracking-wide text-muted-foreground">{t("Completed Chapters")}</p><p className="text-2xl font-bold text-foreground">{completedChapters.size}/{chapters.length}</p></div><CheckCircle className="h-5 w-5 text-green-500" /></div></CardContent></Card>
-            <Card><CardContent className="p-4"><div className="flex items-center justify-between"><div><p className="text-xs uppercase tracking-wide text-muted-foreground">{t("Founder Level")}</p><p className="text-base font-semibold text-foreground">{currentLevel.name}</p></div><GraduationCap className="h-5 w-5 text-amber-500" /></div><div className="mt-3"><Progress value={Math.min(levelProgress, 100)} className="h-2" /><p className="mt-2 text-xs text-muted-foreground">{nextLevel ? `${globalXp}/${nextLevel.minXp} XP` : t("Max level reached")}</p></div></CardContent></Card>
-            <Card><CardContent className="p-4"><div className="flex items-center justify-between"><div><p className="text-xs uppercase tracking-wide text-muted-foreground">{t("Overall Learn Progress")}</p><p className="text-base font-semibold text-foreground">{globalCompletedCount}/{totalLearnChapters}</p></div><Trophy className="h-5 w-5 text-rose-500" /></div><div className="mt-3"><Progress value={overallProgress} className="h-2" /><p className="mt-2 text-xs text-muted-foreground">{overallProgress}% {t("common.completed")}</p></div></CardContent></Card>
-          </div>
+        <section className="grid gap-4 lg:grid-cols-4">
+          {[
+            {
+              label: t("Section progress"),
+              value: `${completedChapters.size}/${chapters.length}`,
+              detail: `${pageProgress}% ${t("common.completed")}`,
+              icon: <BookOpen className="h-5 w-5 text-primary" />,
+            },
+            {
+              label: t("Chapters remaining"),
+              value: remainingChapters,
+              detail: remainingChapters === 0 ? t("Section mastered") : t("Keep going"),
+              icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+            },
+            {
+              label: t("Founder level"),
+              value: currentLevel.name,
+              detail: nextLevel ? `${globalXp}/${nextLevel.minXp} XP` : t("Max level reached"),
+              icon: <GraduationCap className="h-5 w-5 text-amber-500" />,
+            },
+            {
+              label: t("Global learn progress"),
+              value: `${globalCompletedCount}/${totalLearnChapters}`,
+              detail: `${overallProgress}% ${t("common.completed")}`,
+              icon: <Trophy className="h-5 w-5 text-rose-500" />,
+            },
+          ].map((item) => (
+            <Surface key={item.label} className="space-y-4 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    {item.label}
+                  </p>
+                  <p className="mt-3 font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">
+                    {item.value}
+                  </p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted/70">
+                  {item.icon}
+                </div>
+              </div>
+              <p className="text-sm leading-6 text-muted-foreground">{item.detail}</p>
+              {item.label === t("Founder level") ? (
+                <Progress value={Math.min(levelProgress, 100)} className="h-2" />
+              ) : null}
+            </Surface>
+          ))}
+        </section>
+
+        {user ? (
+          <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+            <Surface className="space-y-4">
+              <SectionHeading
+                eyebrow="Momentum"
+                title="Keep your learning streak deliberate"
+                description="Each chapter now rolls into the same checkpoint, notes, and progress rhythm so the learning products feel guided instead of improvised."
+              />
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    {t("Learning XP")}
+                  </p>
+                  <p className="mt-3 text-2xl font-semibold text-foreground">{pageXp}</p>
+                </div>
+                <div className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    {t("Completed chapters")}
+                  </p>
+                  <p className="mt-3 text-2xl font-semibold text-foreground">{completedChapters.size}</p>
+                </div>
+                <div className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    {t("Badge track")}
+                  </p>
+                  <p className="mt-3 text-2xl font-semibold text-foreground">
+                    {earnedAchievements.size}/{milestoneAchievements.length}
+                  </p>
+                </div>
+              </div>
+            </Surface>
+
+            <Surface className="space-y-4">
+              <SectionHeading
+                eyebrow="Milestones"
+                title="Achievement track"
+                description="The badge system stays visible while you study, so progress is legible without digging through separate screens."
+              />
+              <div className="grid grid-cols-3 gap-3">
+                {milestoneAchievements.map((achievementKey) => (
+                  <AchievementBadge
+                    key={achievementKey}
+                    achievementKey={achievementKey}
+                    earned={earnedAchievements.has(achievementKey)}
+                    size="sm"
+                  />
+                ))}
+              </div>
+            </Surface>
+          </section>
+        ) : (
+          <Surface className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-2">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+                Learning sync
+              </p>
+              <h2 className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                Sign in to save chapter notes, progress, and badges
+              </h2>
+              <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+                You can browse lessons without logging in, but workbooks and rewards only persist for signed-in founders.
+              </p>
+            </div>
+            <Button asChild size="lg">
+              <Link to="/login">Sign in</Link>
+            </Button>
+          </Surface>
         )}
 
-        <div className="mx-auto flex max-w-6xl gap-6">
-          <div className={cn("flex-shrink-0 transition-all", sidebarOpen ? "w-72" : "w-10")}>
+        <div className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
+          <div className={cn("transition-all", sidebarOpen ? "w-full xl:w-[300px]" : "w-full xl:w-14")}>
             {sidebarOpen ? (
-              <Card className="sticky top-20">
-                <CardContent className="space-y-5 p-4">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-sm font-semibold">{t("Chapters")}</h3>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSidebarOpen(false)}><ChevronLeft className="h-4 w-4" /></Button>
+              <Surface className="sticky top-24 space-y-5 p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                      {t("Chapter navigator")}
+                    </p>
+                    <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                      {t("Chapters")}
+                    </h3>
                   </div>
-                  <div className="space-y-1">
-                    {chapters.map((chapter, index) => (
-                      <button key={chapter.title} onClick={() => setActiveChapter(index)} className={cn("flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors", activeChapter === index ? "bg-primary font-medium text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground")}>
-                        {completedChapters.has(index) ? <CheckCircle className="h-3.5 w-3.5 shrink-0 text-green-500" /> : <span className="w-3.5 shrink-0 text-center text-xs opacity-70">{index + 1}</span>}
-                        <span className="truncate">{t(chapter.title)}</span>
-                      </button>
-                    ))}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-2xl"
+                    onClick={() => setSidebarOpen(false)}
+                    aria-label="Collapse chapter navigator"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={chapterSearch}
+                    onChange={(event) => setChapterSearch(event.target.value)}
+                    placeholder="Search chapters..."
+                    className="h-12 rounded-2xl border-border/70 bg-muted/35 pl-11"
+                    aria-label="Search chapters"
+                  />
+                </div>
+
+                {filteredChapterIndices.length === 0 ? (
+                  <EmptyState
+                    className="rounded-[24px] border-dashed py-10"
+                    icon={<Search className="h-6 w-6" />}
+                    title="No chapters match"
+                    description="Try another term or clear the search to see the full lesson map."
+                  />
+                ) : (
+                  <div className="space-y-2">
+                    {filteredChapterIndices.map((index) => {
+                      const chapter = chapters[index];
+
+                      return (
+                        <button
+                          key={chapter.title}
+                          onClick={() => setActiveChapter(index)}
+                          className={cn(
+                            "flex w-full items-start gap-3 rounded-[22px] border px-4 py-3 text-left transition-all",
+                            activeChapter === index
+                              ? "border-primary/30 bg-primary/10 text-foreground shadow-[0_14px_28px_rgba(255,138,61,0.14)]"
+                              : "border-border/70 bg-background/68 text-muted-foreground hover:border-primary/20 hover:bg-background"
+                          )}
+                        >
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted/80 text-xs font-semibold text-foreground">
+                            {completedChapters.has(index) ? (
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                            ) : (
+                              index + 1
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-medium text-foreground">{t(chapter.title)}</div>
+                            <div className="mt-1 text-xs leading-5 text-muted-foreground">
+                              {completedChapters.has(index) ? t("Checkpoint completed") : t("Open lesson")}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
-                  {user && (
-                    <div className="rounded-2xl border bg-muted/40 p-4">
-                      <div className="mb-3 flex items-center justify-between">
-                        <div><p className="text-xs uppercase tracking-wide text-muted-foreground">{t("Badge Progress")}</p><p className="text-sm font-semibold text-foreground">{t("Unlock learning milestones")}</p></div>
-                        <Badge variant="secondary">+{SECTION_BONUS_XP} XP</Badge>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3">
-                        {milestoneAchievements.map((achievementKey) => <AchievementBadge key={achievementKey} achievementKey={achievementKey} earned={earnedAchievements.has(achievementKey)} size="sm" />)}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                )}
+              </Surface>
             ) : (
-              <Button variant="ghost" size="icon" className="sticky top-20" onClick={() => setSidebarOpen(true)}><ChevronRight className="h-4 w-4" /></Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="sticky top-24 h-12 w-12 rounded-2xl border border-border/70 bg-card/85"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Expand chapter navigator"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             )}
           </div>
 
@@ -506,7 +706,7 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
             </Card>
           </div>
         </div>
-      </div>
+      </SiteContainer>
     </div>
   );
 };

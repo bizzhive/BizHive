@@ -1,21 +1,53 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Rocket, Building, FileText, Users, TrendingUp, Shield, CheckCircle, Clock, DollarSign, Target } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Building,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  FileText,
+  Rocket,
+  Shield,
+  Target,
+  TrendingUp,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import FAQSection from "@/components/FAQSection";
+import { PageHeader, SectionHeading, SiteContainer, Surface } from "@/components/site/SitePrimitives";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/services/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
-import FAQSection from "@/components/FAQSection";
 
 const launchFAQs = [
-  { question: "When is the right time to launch?", answer: "Launch when you have a Minimum Viable Product (MVP) that solves a core problem. Don't wait for perfection - early feedback is invaluable. Most successful startups launch with 60-70% of planned features and iterate based on customer feedback." },
-  { question: "What licenses do I need before launching?", answer: "It depends on your industry. At minimum: GST registration (if turnover exceeds ₹20L), Shop & Establishment license, PAN card. Industry-specific licenses like FSSAI (food), Drug License (pharma), or RERA (real estate) may also be needed." },
-  { question: "How much should I spend on my initial launch?", answer: "Follow the lean startup approach — spend minimally on launch marketing (10-15% of your initial budget). Focus on organic channels, social media, and word-of-mouth. Paid advertising should come after you've validated product-market fit." },
-  { question: "Should I soft launch or go all-in?", answer: "Always soft launch first. Test with a small, friendly audience (100-500 users), collect feedback, fix critical issues, then scale. This reduces risk and helps you refine your offering before spending on broad marketing." },
-  { question: "What common launch mistakes should I avoid?", answer: "Top mistakes: 1) Launching without market validation, 2) Underestimating legal compliance, 3) No customer support plan, 4) Ignoring cash flow management, 5) Trying to serve everyone instead of a niche, 6) Not having a post-launch iteration plan." },
+  {
+    question: "When is the right time to launch?",
+    answer:
+      "Launch when you have a minimum viable offer that solves a real problem. Early feedback is more valuable than waiting for perfection.",
+  },
+  {
+    question: "What licenses do I need before launching?",
+    answer:
+      "It depends on your industry. GST, local registrations, and sector-specific licenses should be reviewed before you begin serving customers.",
+  },
+  {
+    question: "How much should I spend on my initial launch?",
+    answer:
+      "Start lean. Validate channels and operations before scaling spend on marketing or team expansion.",
+  },
+  {
+    question: "Should I soft launch or go all-in?",
+    answer:
+      "A soft launch is usually safer. It helps you test systems, gather feedback, and correct issues before broader visibility.",
+  },
+  {
+    question: "What common launch mistakes should I avoid?",
+    answer:
+      "Skipping validation, ignoring compliance, launching without support systems, and confusing activity with readiness are all common avoidable mistakes.",
+  },
 ];
 
 const launchChecklist = [
@@ -25,9 +57,9 @@ const launchChecklist = [
   "Tax registrations completed",
   "Business bank account opened",
   "Insurance policies in place",
-  "Workspace/office setup completed",
+  "Workspace or office setup completed",
   "Technology infrastructure ready",
-  "Product/service development finished",
+  "Product or service development finished",
   "Quality testing completed",
   "Pricing strategy finalized",
   "Marketing materials prepared",
@@ -39,6 +71,58 @@ const launchChecklist = [
   "Risk management plan in place",
 ];
 
+const launchPhases = [
+  {
+    phase: "Pre-launch",
+    title: "Foundation setup",
+    description: "Finish legal, financial, and operational groundwork before customer pressure begins.",
+    icon: Building,
+    timeframe: "4-8 weeks",
+  },
+  {
+    phase: "Soft launch",
+    title: "Market testing",
+    description: "Release to a smaller audience and treat feedback like product fuel, not criticism.",
+    icon: Target,
+    timeframe: "2-4 weeks",
+  },
+  {
+    phase: "Official launch",
+    title: "Go to market",
+    description: "Bring marketing, sales, support, and offer clarity together in one visible motion.",
+    icon: Rocket,
+    timeframe: "2-3 weeks",
+  },
+  {
+    phase: "Post-launch",
+    title: "Stabilize and grow",
+    description: "Use the first wave of data to improve systems instead of prematurely scaling chaos.",
+    icon: TrendingUp,
+    timeframe: "Ongoing",
+  },
+];
+
+const supportRoutes = [
+  {
+    icon: FileText,
+    title: "Document library",
+    description: "Open templates, official links, and reusable worksheets for launch operations.",
+    href: "/documents",
+  },
+  {
+    icon: Shield,
+    title: "Legal studio",
+    description: "Move from compliance review into editable legal drafts and saved document flows.",
+    href: "/legal",
+  },
+  {
+    icon: DollarSign,
+    title: "Funding and support",
+    description: "Explore incubators, capital options, and support structures once launch basics are in place.",
+    href: "/incubators",
+  },
+];
+
 const Launch = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -46,149 +130,229 @@ const Launch = () => {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (!user) return;
-    const load = async () => {
-      const { data } = await supabase.from("launch_checklist").select("checklist_data").eq("user_id", user.id).single();
-      if (data?.checklist_data) setCheckedItems(data.checklist_data as Record<string, boolean>);
+    if (!user) {
+      return;
+    }
+
+    const loadChecklist = async () => {
+      const { data } = await supabase
+        .from("launch_checklist")
+        .select("checklist_data")
+        .eq("user_id", user.id)
+        .single();
+
+      if (data?.checklist_data) {
+        setCheckedItems(data.checklist_data as Record<string, boolean>);
+      }
     };
-    load();
+
+    void loadChecklist();
   }, [user]);
 
-  const toggleItem = async (item: string) => {
-    const updated = { ...checkedItems, [item]: !checkedItems[item] };
-    setCheckedItems(updated);
-    if (!user) return;
-    const { error } = await supabase.from("launch_checklist").upsert({
-      user_id: user.id,
-      checklist_data: updated,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: "user_id" });
-    if (error) toast({ title: "Error", description: "Failed to save checklist", variant: "destructive" });
-  };
-
-  const completedCount = Object.values(checkedItems).filter(Boolean).length;
+  const completedCount = useMemo(() => Object.values(checkedItems).filter(Boolean).length, [checkedItems]);
   const progress = Math.round((completedCount / launchChecklist.length) * 100);
 
-  const launchPhases = [
-    { phase: "Pre-Launch", title: "Foundation Setup", description: "Complete legal formalities and operational setup", icon: Building, color: "blue", tasks: ["Business registration & incorporation", "Tax registrations (GST, PAN, etc.)", "Banking setup & accounts", "Insurance & legal compliance", "Workspace setup", "Technology infrastructure"], timeframe: "4-8 weeks" },
-    { phase: "Soft Launch", title: "Market Testing", description: "Test your product/service with limited audience", icon: Target, color: "green", tasks: ["Beta testing with select customers", "Feedback collection & analysis", "Product/service refinement", "Initial marketing campaigns", "Team hiring & training", "Operational process optimization"], timeframe: "2-4 weeks" },
-    { phase: "Official Launch", title: "Go-to-Market", description: "Full-scale market entry and promotion", icon: Rocket, color: "purple", tasks: ["Marketing campaign execution", "PR & media outreach", "Customer acquisition activities", "Sales process implementation", "Customer support setup", "Performance monitoring"], timeframe: "2-3 weeks" },
-    { phase: "Post-Launch", title: "Growth & Optimization", description: "Scale operations and optimize performance", icon: TrendingUp, color: "orange", tasks: ["Performance analysis & reporting", "Customer feedback implementation", "Process improvements", "Team expansion", "Market expansion planning", "Investor relations"], timeframe: "Ongoing" },
-  ];
+  const toggleItem = async (item: string) => {
+    const nextValue = !checkedItems[item];
+    const nextState = { ...checkedItems, [item]: nextValue };
+    setCheckedItems(nextState);
 
-  const colors: Record<string, string> = { blue: "bg-blue-500 text-blue-50", green: "bg-green-500 text-green-50", purple: "bg-purple-500 text-purple-50", orange: "bg-orange-500 text-orange-50" };
+    if (!user) {
+      return;
+    }
+
+    const { error } = await supabase.from("launch_checklist").upsert(
+      {
+        user_id: user.id,
+        checklist_data: nextState,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" }
+    );
+
+    if (error) {
+      toast({ title: t("Error"), description: t("Failed to save checklist"), variant: "destructive" });
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
-            <Rocket className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-5xl font-bold text-foreground mb-6">Launch Your Business</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Step-by-step guidance to successfully launch your business
-          </p>
-        </div>
+    <div className="page-shell">
+      <SiteContainer className="space-y-8">
+        <PageHeader
+          eyebrow="Launch"
+          title={t("Turn preparation into a controlled launch")}
+          description={t("The launch page now behaves like a real operations workspace: phases, readiness checks, and support paths are grouped logically instead of feeling like separate fragments.")}
+          actions={
+            <>
+              <Button asChild size="lg">
+                <Link to="/documents">{t("Open launch documents")}</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/launch/learn">{t("Open launch learning")}</Link>
+              </Button>
+            </>
+          }
+        />
 
-        {/* Launch Phases */}
-        <div className="mb-16 space-y-8">
-          <h2 className="text-2xl font-bold text-foreground mb-8">Launch Phases</h2>
-          {launchPhases.map((phase, index) => {
-            const Icon = phase.icon;
-            return (
-              <Card key={index} className="overflow-hidden">
-                <CardHeader className="bg-muted/50">
-                  <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-lg ${colors[phase.color]}`}><Icon className="h-6 w-6" /></div>
-                    <div>
-                      <div className="flex items-center space-x-2 mb-1">
-                        <Badge variant="outline">{t(phase.phase)}</Badge>
-                        <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />{t(phase.timeframe)}</Badge>
-                      </div>
-                      <CardTitle className="text-xl">{t(phase.title)}</CardTitle>
-                      <CardDescription>{t(phase.description)}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {phase.tasks.map((task, i) => (
-                      <div key={i} className="flex items-center space-x-2">
-                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground">{t(task)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* Checklist with persistence */}
-        <Card className="mb-16">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center">
-                  <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
-                  {t("Pre-Launch Checklist")}
-                </CardTitle>
-                <CardDescription>{t("Track your progress")} - {completedCount}/{launchChecklist.length} {t("completed")}</CardDescription>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-bold text-primary">{progress}%</span>
-                <div className="w-24 bg-secondary rounded-full h-2 mt-1">
-                  <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
+        <section className="grid gap-4 lg:grid-cols-4">
+          {[
+            {
+              label: t("Checklist progress"),
+              value: `${completedCount}/${launchChecklist.length}`,
+              detail: `${progress}% ${t("complete")}`,
+              icon: <BadgeCheck className="h-5 w-5 text-emerald-500" />,
+            },
+            {
+              label: t("Launch mode"),
+              value: progress >= 75 ? t("Nearly ready") : t("In preparation"),
+              detail: progress >= 75 ? t("You are close to launch execution.") : t("Keep reducing operational gaps."),
+              icon: <Rocket className="h-5 w-5 text-primary" />,
+            },
+            {
+              label: t("Recommended path"),
+              value: t("Soft launch"),
+              detail: t("Test the workflow with a smaller audience before going broad."),
+              icon: <Target className="h-5 w-5 text-amber-500" />,
+            },
+            {
+              label: t("System memory"),
+              value: user ? t("Synced") : t("Local"),
+              detail: user ? t("Checklist changes save to your workspace.") : t("Sign in to save your readiness state."),
+              icon: <Clock className="h-5 w-5 text-rose-500" />,
+            },
+          ].map((item) => (
+            <Surface key={item.label} className="space-y-4 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">{item.label}</p>
+                  <p className="mt-3 font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">{item.value}</p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted/70">
+                  {item.icon}
                 </div>
               </div>
+              <p className="text-sm leading-6 text-muted-foreground">{item.detail}</p>
+            </Surface>
+          ))}
+        </section>
+
+        <section className="space-y-6">
+          <SectionHeading
+            eyebrow="Launch phases"
+            title={t("Move through launch in clear operating stages")}
+            description={t("This replaces the earlier broad cards with a tighter phase model that matches how founders actually prepare to launch.")}
+          />
+          <div className="grid gap-5 xl:grid-cols-4">
+            {launchPhases.map((phase) => (
+              <Surface key={phase.phase} className="space-y-4 p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary/10 text-primary">
+                    <phase.icon className="h-5 w-5" />
+                  </div>
+                  <Badge variant="secondary">{t(phase.timeframe)}</Badge>
+                </div>
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">{t(phase.phase)}</div>
+                  <h3 className="mt-3 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                    {t(phase.title)}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{t(phase.description)}</p>
+                </div>
+              </Surface>
+            ))}
+          </div>
+        </section>
+
+        <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
+          <Surface className="p-6 sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <SectionHeading
+                eyebrow="Readiness checklist"
+                title={t("Track launch readiness in one place")}
+                description={t("This checklist now has a stronger layout and keeps saved progress visible so launch prep feels cumulative instead of temporary.")}
+              />
+              <Badge className="w-fit rounded-full border-none bg-primary/10 px-3 py-1 text-primary">
+                {progress}% {t("complete")}
+              </Badge>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {launchChecklist.map((item, index) => (
-                <label key={index} className="flex items-start space-x-2 cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors">
+
+            <div className="mt-6 grid gap-3 md:grid-cols-2">
+              {launchChecklist.map((item) => (
+                <label
+                  key={item}
+                  className="flex items-start gap-3 rounded-[22px] border border-border/70 bg-background/72 px-4 py-4 transition-colors hover:bg-accent/40"
+                >
                   <input
                     type="checkbox"
-                    checked={!!checkedItems[item]}
+                    checked={Boolean(checkedItems[item])}
                     onChange={() => toggleItem(item)}
-                    className="mt-1 h-4 w-4 text-primary border-input rounded focus:ring-primary"
+                    className="mt-1 h-4 w-4 rounded border-input"
                   />
-                  <span className={`text-sm ${checkedItems[item] ? "line-through text-muted-foreground" : "text-foreground"}`}>{t(item)}</span>
+                  <span className={`text-sm leading-6 ${checkedItems[item] ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                    {t(item)}
+                  </span>
                 </label>
               ))}
             </div>
-            {!user && <p className="text-sm text-muted-foreground mt-4 text-center">{t("Log in to save your checklist progress.")}</p>}
-          </CardContent>
-        </Card>
 
-        {/* Launch Resources */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader><div className="flex items-center space-x-2"><FileText className="h-5 w-5 text-primary" /><CardTitle className="text-lg">{t("Document Templates")}</CardTitle></div></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground mb-4">{t("Download ready-to-use templates")}</p><Button asChild className="w-full"><Link to="/documents">{t("Access Templates")}</Link></Button></CardContent>
-          </Card>
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader><div className="flex items-center space-x-2"><Shield className="h-5 w-5 text-green-600" /><CardTitle className="text-lg">{t("Legal Compliance")}</CardTitle></div></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground mb-4">{t("Ensure legal requirements are met")}</p><Button asChild className="w-full"><Link to="/legal">{t("Check Compliance")}</Link></Button></CardContent>
-          </Card>
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader><div className="flex items-center space-x-2"><DollarSign className="h-5 w-5 text-purple-600" /><CardTitle className="text-lg">{t("Funding Support")}</CardTitle></div></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground mb-4">{t("Explore funding options")}</p><Button asChild className="w-full"><Link to="/incubators">{t("Find Funding")}</Link></Button></CardContent>
-          </Card>
-        </div>
+            {!user ? (
+              <div className="mt-5 rounded-[22px] border border-dashed border-border/70 bg-muted/15 px-4 py-4 text-sm text-muted-foreground">
+                {t("Log in to save your checklist progress.")}
+              </div>
+            ) : null}
+          </Surface>
 
-        {/* Why Launch Right */}
-        <div className="bg-muted/50 rounded-2xl p-8 mb-8 border">
-          <h2 className="text-2xl font-bold text-foreground mb-4">{t("Why Getting Your Launch Right Matters")}</h2>
-          <p className="text-muted-foreground mb-4">{t("Your launch sets the tone for everything that follows. A well-executed launch builds momentum, attracts early customers, and establishes credibility in the market. According to research, startups that follow a structured launch process are 2.7x more likely to succeed in their first year.")}</p>
-          <p className="text-muted-foreground">{t("Use the checklist above to track every critical step, from legal compliance to marketing readiness. Each item represents a common failure point that can be avoided with proper preparation.")}</p>
-        </div>
+          <div className="space-y-6">
+            <Surface className="p-6 sm:p-8">
+              <SectionHeading
+                eyebrow="Launch note"
+                title={t("Why the launch flow feels sharper now")}
+                description={t("The screen now groups sequencing, persistence, and support resources into one coherent experience instead of leaving founders to piece it together.")}
+              />
+              <div className="mt-6 space-y-4">
+                {[
+                  "Use a soft launch to expose weak systems before they become public failures.",
+                  "Treat compliance and customer support as launch blockers, not later tasks.",
+                  "Save checklist progress as you go so readiness is measurable across sessions.",
+                ].map((point) => (
+                  <div key={point} className="flex items-start gap-3 rounded-[22px] border border-border/70 bg-muted/20 p-4">
+                    <CheckCircle className="mt-0.5 h-5 w-5 text-primary" />
+                    <p className="text-sm leading-6 text-muted-foreground">{t(point)}</p>
+                  </div>
+                ))}
+              </div>
+            </Surface>
 
-        {/* FAQ */}
+            <Surface className="p-6 sm:p-8">
+              <SectionHeading
+                eyebrow="Support flows"
+                title={t("Open the launch-adjacent systems")}
+                description={t("These routes are placed here because founders usually need them during launch, not buried elsewhere in the site.")}
+              />
+              <div className="mt-6 space-y-3">
+                {supportRoutes.map((item) => (
+                  <Button key={item.href} asChild variant="outline" className="h-auto w-full justify-between rounded-[22px] px-4 py-4">
+                    <Link to={item.href}>
+                      <span className="flex items-center gap-3 text-left">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                          <item.icon className="h-4 w-4" />
+                        </span>
+                        <span>
+                          <span className="block font-semibold text-foreground">{t(item.title)}</span>
+                          <span className="mt-1 block text-sm leading-6 text-muted-foreground">{t(item.description)}</span>
+                        </span>
+                      </span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                ))}
+              </div>
+            </Surface>
+          </div>
+        </section>
+
         <FAQSection items={launchFAQs} />
-      </div>
+      </SiteContainer>
     </div>
   );
 };

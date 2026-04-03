@@ -42,17 +42,20 @@ export function LanguageSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="rounded-full h-10 px-3 bg-background/50 backdrop-blur border text-foreground hover:bg-accent hover:text-accent-foreground gap-2">
-          <Globe className="h-5 w-5" />
-          <span className="text-sm font-bold">{activeLanguage.code.toUpperCase()}</span>
+        <Button
+          variant="outline"
+          className="h-11 rounded-2xl border-border/70 bg-background/75 px-3.5 text-foreground shadow-sm backdrop-blur hover:bg-accent hover:text-accent-foreground"
+        >
+          <Globe className="h-4 w-4" />
+          <span className="text-sm font-bold tracking-wide">{activeLanguage.code.toUpperCase()}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="rounded-2xl border-border/70 bg-background/96 p-1 shadow-[0_18px_48px_rgba(16,12,8,0.16)]">
         {supportedLanguages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
-            className={i18n.resolvedLanguage === lang.code ? "bg-accent font-medium" : ""}
+            className={`rounded-xl ${i18n.resolvedLanguage === lang.code ? "bg-accent font-medium" : ""}`}
           >
             {lang.name}
           </DropdownMenuItem>

@@ -57,11 +57,11 @@ export function AIAssistButton({ field, onSuggestion, context }: AIAssistButtonP
 
   return (
     <Button 
-      variant="ghost" 
+      variant="outline" 
       size="sm" 
       onClick={handleAssist} 
       disabled={isGenerating}
-      className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 h-8 px-2 py-1"
+      className="h-8 rounded-full border-primary/20 bg-primary/8 px-3 text-primary hover:bg-primary/12 hover:text-primary"
     >
       {isGenerating ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Sparkles className="h-3 w-3 mr-1" />}
       <span className="text-xs">{t("ai.assist")}</span>

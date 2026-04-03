@@ -1,12 +1,43 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, Phone, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { supabase } from "@/services/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/services/supabase/client";
 import { useTranslation } from "react-i18next";
 import BeeIcon from "./BeeIcon";
+import { SiteContainer } from "@/components/site/SitePrimitives";
+
+const footerColumns = [
+  {
+    title: "Journey",
+    links: [
+      { label: "Plan Your Business", href: "/plan" },
+      { label: "Launch Your Business", href: "/launch" },
+      { label: "Manage & Scale", href: "/manage" },
+      { label: "Business Tools", href: "/tools" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Document Library", href: "/documents" },
+      { label: "Legal Zone", href: "/legal" },
+      { label: "Incubators & Funding", href: "/incubators" },
+      { label: "Blog", href: "/blog" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "Contact", href: "/contact" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Community", href: "/community" },
+    ],
+  },
+];
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -14,8 +45,8 @@ const Footer = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubscribe = async (event: React.FormEvent) => {
+    event.preventDefault();
     setSubscribing(true);
 
     try {
@@ -23,104 +54,146 @@ const Footer = () => {
 
       if (error) {
         if (error.code === "23505") {
-          toast({ title: t("Already subscribed!"), description: t("This email is already on our list.") });
+          toast({
+            title: t("Already subscribed!"),
+            description: t("This email is already on our list."),
+          });
         } else {
           throw error;
         }
       } else {
-        toast({ title: t("Subscribed!"), description: t("You'll receive our latest updates.") });
+        toast({
+          title: t("Subscribed!"),
+          description: t("You'll receive our latest updates."),
+        });
       }
 
       setEmail("");
     } catch (error: unknown) {
-      toast({ title: t("Error"), description: (error as Error).message || t("Failed to subscribe"), variant: "destructive" });
+      toast({
+        title: t("Error"),
+        description: (error as Error).message || t("Failed to subscribe"),
+        variant: "destructive",
+      });
     } finally {
       setSubscribing(false);
     }
   };
 
   return (
-    <footer className="relative overflow-hidden bg-foreground/95 text-background dark:bg-card dark:text-foreground">
-      <div className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500"></div>
-      <div className="container relative z-10 mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <div className="mb-4 flex items-center space-x-2">
-              <BeeIcon className="h-9 w-9" />
-              <div>
-                <span className="text-lg font-bold">BizHive</span>
-                <p className="text-xs text-primary">{t("Business Growth Platform")}</p>
+    <footer className="relative overflow-hidden border-t border-border/70 bg-[linear-gradient(180deg,_rgba(255,255,255,0),_rgba(255,248,242,0.7)),linear-gradient(180deg,_rgba(37,21,12,0.04),_rgba(37,21,12,0.08))] dark:bg-[linear-gradient(180deg,_rgba(17,11,8,0),_rgba(17,11,8,0.8)),linear-gradient(180deg,_rgba(255,145,77,0.04),_rgba(255,145,77,0.02))]">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      <SiteContainer className="py-14 sm:py-16">
+        <div className="glass-panel grid gap-8 rounded-[32px] p-6 sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:p-10">
+          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-orange-600 text-white shadow-[0_16px_36px_rgba(255,145,77,0.34)]">
+                  <BeeIcon className="h-8 w-8" />
+                </div>
+                <div>
+                  <div className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+                    BizHive
+                  </div>
+                  <p className="text-sm text-primary">{t("Business Growth Platform")}</p>
+                </div>
+              </div>
+
+              <p className="max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
+                {t("BizHive brings planning, launch, legal, growth, and operating tools into one founder-ready workspace built for Indian businesses.")}
+              </p>
+
+              <div className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
+                <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+                  <div className="mb-2 flex items-center gap-2 font-semibold text-foreground">
+                    <Mail className="h-4 w-4 text-primary" />
+                    bizzhive.support@gmail.com
+                  </div>
+                  <p>{t("Support, partnership, and platform questions.")}</p>
+                </div>
+                <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+                  <div className="mb-2 flex items-center gap-2 font-semibold text-foreground">
+                    <Phone className="h-4 w-4 text-primary" />
+                    +91 XXXXX XXXXX
+                  </div>
+                  <p>{t("Business hours support line for founders and teams.")}</p>
+                </div>
               </div>
             </div>
-            <p className="mb-4 text-sm text-background/70 dark:text-muted-foreground">
-              {t("Empowering Indian entrepreneurs with comprehensive resources, tools, and guidance for business success.")}
-            </p>
-            <div className="space-y-2 text-sm text-background/70 dark:text-muted-foreground">
-              <div className="flex items-center space-x-2"><Mail className="h-4 w-4" /><span>bizzhive.support@gmail.com</span></div>
-              <div className="flex items-center space-x-2"><Phone className="h-4 w-4" /><span>+91 XXXXX XXXXX</span></div>
+
+            <div className="grid gap-6 sm:grid-cols-3 lg:grid-cols-1">
+              {footerColumns.map((column) => (
+                <div key={column.title}>
+                  <h3 className="mb-3 font-display text-lg font-semibold text-foreground">
+                    {t(column.title)}
+                  </h3>
+                  <ul className="space-y-2.5 text-sm text-muted-foreground">
+                    {column.links.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          to={link.href}
+                          className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
+                        >
+                          {t(link.label)}
+                          <ArrowUpRight className="h-3.5 w-3.5 opacity-45" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div>
-            <h3 className="mb-4 font-semibold text-primary">{t("Business Journey")}</h3>
-            <ul className="space-y-2 text-sm text-background/70 dark:text-muted-foreground">
-              <li><Link to="/plan" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Plan Your Business")}</Link></li>
-              <li><Link to="/launch" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Launch Your Business")}</Link></li>
-              <li><Link to="/manage" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Manage & Scale")}</Link></li>
-              <li><Link to="/tools" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Business Tools")}</Link></li>
-              <li><Link to="/taxation" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Taxation Guide")}</Link></li>
-            </ul>
-          </div>
+          <div className="space-y-6 rounded-[28px] border border-border/70 bg-background/70 p-6">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+                {t("Stay Updated")}
+              </div>
+              <h3 className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+                {t("Keep the whole team informed.")}
+              </h3>
+              <p className="text-sm leading-7 text-muted-foreground">
+                {t("Get product updates, founder guides, and new resource drops without hunting through the platform.")}
+              </p>
+            </div>
 
-          <div>
-            <h3 className="mb-4 font-semibold text-primary">{t("Resources")}</h3>
-            <ul className="space-y-2 text-sm text-background/70 dark:text-muted-foreground">
-              <li><Link to="/legal" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Legal Zone")}</Link></li>
-              <li><Link to="/documents" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Document Library")}</Link></li>
-              <li><Link to="/incubators" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Incubators & Funding")}</Link></li>
-              <li><Link to="/community" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Community")}</Link></li>
-              <li><Link to="/blog" className="transition-colors hover:text-background dark:hover:text-foreground">{t("Blog")}</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="mb-4 font-semibold text-primary">{t("Stay Updated")}</h3>
-            <p className="mb-4 text-sm text-background/70 dark:text-muted-foreground">{t("Subscribe for the latest business insights.")}</p>
-            <form onSubmit={handleSubscribe} className="space-y-2">
+            <form onSubmit={handleSubscribe} className="space-y-3">
               <Input
                 type="email"
                 placeholder={t("Enter your email")}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border-background/20 bg-background/10 text-background placeholder:text-background/50 dark:border-border dark:bg-muted dark:text-foreground"
+                onChange={(event) => setEmail(event.target.value)}
+                className="h-12 rounded-2xl border-border/70 bg-muted/35 px-4"
                 required
               />
-              <Button type="submit" className="w-full" disabled={subscribing}>
+              <Button type="submit" className="h-12 w-full rounded-2xl" disabled={subscribing}>
                 {subscribing ? t("Subscribing...") : t("Subscribe")}
               </Button>
             </form>
-            <div className="mt-4 space-y-3">
-              <Button asChild variant="secondary" className="w-full">
-                <Link to="/admin">{t("Admin Access")}</Link>
-              </Button>
-              <Link to="/contact" className="block text-sm text-primary hover:text-primary/80">{t("Contact Us")} -&gt;</Link>
+
+            <div className="rounded-2xl border border-border/70 bg-muted/25 p-4">
+              <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                {t("Admin access")}
+              </div>
+              <p className="text-sm leading-6 text-muted-foreground">
+                {t("The control panel now opens only through the protected admin route.")}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 border-t border-background/10 pt-8 text-center text-sm text-background/60 dark:border-border dark:text-muted-foreground">
-          <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
-            <p>&copy; 2026 BizHive. {t("All rights reserved.")}</p>
-            <p>{t("Designed & Developed by")} <a href="mailto:ghttushar2002@gmail.com" className="text-primary transition-colors hover:text-primary/80">Tushar Gehlot</a></p>
-          </div>
-          <div className="mt-4 flex flex-wrap justify-center space-x-4 text-xs">
-            <Link to="/privacy" className="hover:text-background dark:hover:text-foreground">{t("Privacy Policy")}</Link>
-            <Link to="/terms" className="hover:text-background dark:hover:text-foreground">{t("Terms of Service")}</Link>
-            <Link to="/contact" className="hover:text-background dark:hover:text-foreground">{t("Contact")}</Link>
-            <Link to="/admin" className="hover:text-background dark:hover:text-foreground">{t("Admin Panel")}</Link>
-          </div>
+        <div className="mt-6 flex flex-col items-center justify-between gap-3 px-1 text-sm text-muted-foreground md:flex-row">
+          <p>&copy; 2026 BizHive. {t("All rights reserved.")}</p>
+          <p>
+            {t("Designed & Developed by")}{" "}
+            <a href="mailto:ghttushar2002@gmail.com" className="font-semibold text-primary hover:text-primary/80">
+              Tushar Gehlot
+            </a>
+          </p>
         </div>
-      </div>
+      </SiteContainer>
     </footer>
   );
 };

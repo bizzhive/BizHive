@@ -1,7 +1,18 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import {
+  BookOpen,
+  ChevronDown,
+  ClipboardList,
+  LogOut,
+  Menu,
+  Moon,
+  Rocket,
+  Sun,
+  TrendingUp,
+  User,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,57 +21,76 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Menu, Moon, Sun, LogOut, ChevronDown, User, ClipboardList, Rocket, TrendingUp, BookOpen } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import BeeIcon from "./BeeIcon";
 import { LanguageSelector } from "./LanguageSelector";
+import { SiteContainer } from "@/components/site/SitePrimitives";
 
-const navGroups = [
+type NavItem = {
+  description: string;
+  href: string;
+  name: string;
+};
+
+type NavGroup = {
+  icon: typeof ClipboardList;
+  items: NavItem[];
+  labelKey: string;
+};
+
+const navGroups: NavGroup[] = [
   {
     labelKey: "nav.plan",
     icon: ClipboardList,
     items: [
-      { name: "Learn: Planning", href: "/plan/learn", desc: "Planning fundamentals" },
-      { name: "Business Planning", href: "/plan", desc: "Create your roadmap" },
-      { name: "Market Research", href: "/plan/market-research", desc: "Industry insights & analysis" },
-      { name: "Business Plan", href: "/plan/business-plan", desc: "Write a winning plan" },
-      { name: "Business Canvas", href: "/tools/business-canvas", desc: "Visual business model" },
+      { name: "Learn: Planning", href: "/plan/learn", description: "Core startup planning lessons and business basics." },
+      { name: "Business Planning", href: "/plan", description: "Map your direction, positioning, and key decisions." },
+      { name: "Market Research", href: "/plan/market-research", description: "Understand customers, demand, and competition." },
+      { name: "Business Plan", href: "/plan/business-plan", description: "Shape your investor-ready plan in structured sections." },
     ],
   },
   {
     labelKey: "nav.launch",
     icon: Rocket,
     items: [
-      { name: "Learn: Launching", href: "/launch/learn", desc: "Launch fundamentals" },
-      { name: "Launch Checklist", href: "/launch", desc: "Step-by-step launch guide" },
-      { name: "Legal & Compliance", href: "/legal", desc: "Registrations & licenses" },
-      { name: "Taxation", href: "/taxation", desc: "Tax planning & GST" },
+      { name: "Learn: Launching", href: "/launch/learn", description: "Get launch-ready with a guided execution checklist." },
+      { name: "Launch Checklist", href: "/launch", description: "Move from setup to launch with one clear roadmap." },
+      { name: "Legal & Compliance", href: "/legal", description: "Draft, review, and prepare legal documents." },
+      { name: "Taxation", href: "/taxation", description: "Understand GST, filing, and practical compliance steps." },
     ],
   },
   {
     labelKey: "nav.grow",
     icon: TrendingUp,
     items: [
-      { name: "Learn: Growing", href: "/manage/learn", desc: "Growth fundamentals" },
-      { name: "Manage & Scale", href: "/manage", desc: "Operations & growth" },
-      { name: "Incubators & Funding", href: "/incubators", desc: "Find the right incubator" },
-      { name: "SWOT Analysis", href: "/tools/swot-analysis", desc: "Strengths & weaknesses" },
-      { name: "All Tools", href: "/tools", desc: "Calculators & frameworks" },
+      { name: "Learn: Growing", href: "/manage/learn", description: "Operational playbooks for scaling with discipline." },
+      { name: "Manage & Scale", href: "/manage", description: "Handle people, processes, and growth systems." },
+      { name: "Incubators & Funding", href: "/incubators", description: "Explore schemes, incubators, and funding routes." },
+      { name: "Tools", href: "/tools", description: "Use strategic tools for planning, analysis, and finance." },
     ],
   },
   {
     labelKey: "nav.resources",
     icon: BookOpen,
     items: [
-      { name: "Documents", href: "/documents", desc: "Templates & forms" },
-      { name: "Blog", href: "/blog", desc: "Articles & guides" },
-      { name: "Community", href: "/community", desc: "Forums & networking" },
+      { name: "Documents", href: "/documents", description: "Templates, drafts, and filing-ready resources." },
+      { name: "Blog", href: "/blog", description: "Guides, explainers, and product updates." },
+      { name: "Community", href: "/community", description: "Founder conversations, shared learnings, and support." },
     ],
   },
 ];
+
+const quickLinks = [
+  { label: "nav.beeAi", href: "/ai-assistant" },
+  { label: "nav.contact", href: "/contact" },
+];
+
+const matchesPath = (pathname: string, href: string) =>
+  href === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
 const UserProfileMenu = () => {
   const { signOut } = useAuth();
@@ -70,28 +100,30 @@ const UserProfileMenu = () => {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground data-[state=open]:text-foreground">
-            <User className="h-4 w-4 mr-1.5" />
+          <NavigationMenuTrigger className="h-11 rounded-2xl border border-border/70 bg-background/75 px-3 text-sm font-semibold text-foreground shadow-sm hover:bg-accent">
+            <User className="mr-2 h-4 w-4" />
             {t("nav.profile")}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-1 p-3">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link to="/dashboard" className="block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent">
-                    {t("nav.myProfile")}
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-              <li>
-                <NavigationMenuLink asChild>
-                  <button onClick={signOut} className="flex items-center w-full select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent text-destructive">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    {t("nav.logout")}
-                  </button>
-                </NavigationMenuLink>
-              </li>
-            </ul>
+            <div className="w-[220px] space-y-1 p-2">
+              <NavigationMenuLink asChild>
+                <Link
+                  to="/dashboard"
+                  className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                >
+                  {t("nav.myProfile")}
+                </Link>
+              </NavigationMenuLink>
+              <NavigationMenuLink asChild>
+                <button
+                  onClick={signOut}
+                  className="flex w-full items-center rounded-2xl px-4 py-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {t("nav.logout")}
+                </button>
+              </NavigationMenuLink>
+            </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
@@ -107,96 +139,106 @@ const Navigation = () => {
   const { user, signOut } = useAuth();
   const { t } = useTranslation();
 
-  const isActive = (path: string) => location.pathname === path;
+  const activeGroup = useMemo(
+    () =>
+      navGroups.find((group) =>
+        group.items.some((item) => matchesPath(location.pathname, item.href))
+      )?.labelKey,
+    [location.pathname]
+  );
 
   return (
-    <nav className="border-b bg-background/80 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2 flex-shrink-0 group">
-            <BeeIcon className="w-9 h-9 group-hover:scale-110 transition-transform duration-300" />
-            <div className="flex flex-col">
-              <span className="font-bold text-lg text-foreground leading-tight">BizHive</span>
-              <span className="text-[10px] text-primary -mt-0.5 hidden sm:block font-medium">{t("Business Growth Platform")}</span>
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/78 backdrop-blur-2xl">
+      <SiteContainer className="py-3">
+        <div className="glass-panel flex items-center justify-between gap-3 rounded-[28px] px-4 py-3 sm:px-5">
+          <Link
+            to="/"
+            className="flex items-center gap-3 rounded-2xl px-2 py-1 transition-transform duration-200 hover:scale-[1.01]"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-orange-600 text-white shadow-[0_12px_30px_rgba(255,145,77,0.34)]">
+              <BeeIcon className="h-7 w-7" />
+            </div>
+            <div className="min-w-0">
+              <div className="font-display text-xl font-semibold leading-none tracking-[-0.04em] text-foreground">
+                BizHive
+              </div>
+              <div className="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-primary/85">
+                {t("Business Growth Platform")}
+              </div>
             </div>
           </Link>
 
-          <div className="hidden lg:block">
+          <div className="hidden min-w-0 flex-1 items-center justify-center xl:flex">
             <NavigationMenu>
-              <NavigationMenuList className="gap-0.5">
+              <NavigationMenuList className="gap-1 rounded-2xl border border-border/60 bg-muted/35 p-1.5">
                 {navGroups.map((group) => {
                   const Icon = group.icon;
+
                   return (
                     <NavigationMenuItem key={group.labelKey}>
-                      <NavigationMenuTrigger className="bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground data-[state=open]:text-foreground">
-                        <Icon className="h-4 w-4 mr-1.5" />
+                      <NavigationMenuTrigger
+                        className={cn(
+                          "h-11 rounded-2xl bg-transparent px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground data-[state=open]:bg-background data-[state=open]:text-foreground",
+                          activeGroup === group.labelKey && "bg-background text-foreground shadow-sm"
+                        )}
+                      >
+                        <Icon className="mr-2 h-4 w-4" />
                         {t(group.labelKey)}
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
-                        <ul className="grid w-[320px] gap-1 p-3">
+                        <div className="grid w-[360px] gap-2 p-3">
                           {group.items.map((item) => (
-                            <li key={item.href}>
-                              <NavigationMenuLink asChild>
-                                <Link
-                                  to={item.href}
-                                  className={cn(
-                                    "block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent",
-                                    isActive(item.href) && "bg-accent text-accent-foreground"
-                                  )}
-                                >
-                                  <div className="text-sm font-medium leading-none mb-1">{t(item.name)}</div>
-                                  <p className="text-xs leading-snug text-muted-foreground">{t(item.desc)}</p>
-                                </Link>
-                              </NavigationMenuLink>
-                            </li>
+                            <NavigationMenuLink asChild key={item.href}>
+                              <Link
+                                to={item.href}
+                                className={cn(
+                                  "rounded-[22px] border border-transparent bg-background/70 px-4 py-4 transition-all hover:border-border/70 hover:bg-accent/80",
+                                  matchesPath(location.pathname, item.href) && "border-border/70 bg-accent/80"
+                                )}
+                              >
+                                <div className="text-sm font-semibold text-foreground">{t(item.name)}</div>
+                                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                  {t(item.description)}
+                                </p>
+                              </Link>
+                            </NavigationMenuLink>
                           ))}
-                        </ul>
+                        </div>
                       </NavigationMenuContent>
                     </NavigationMenuItem>
                   );
                 })}
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      to="/ai-assistant"
-                      className={cn(
-                        "inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                        isActive("/ai-assistant") && "bg-accent text-accent-foreground"
-                      )}
-                    >
-                      <BeeIcon className="w-4 h-4 mr-1.5" />
-                      {t("nav.beeAi")}
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      to="/contact"
-                      className={cn(
-                        "inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                        isActive("/contact") && "bg-accent text-accent-foreground"
-                      )}
-                    >
-                      {t("nav.contact")}
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
+                {quickLinks.map((item) => (
+                  <NavigationMenuItem key={item.href}>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        to={item.href}
+                        className={cn(
+                          "inline-flex h-11 items-center justify-center rounded-2xl px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground",
+                          matchesPath(location.pathname, item.href) && "bg-background text-foreground shadow-sm"
+                        )}
+                      >
+                        {item.href === "/ai-assistant" ? <BeeIcon className="mr-2 h-4 w-4" /> : null}
+                        {t(item.label)}
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                ))}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <LanguageSelector />
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-9 h-9">
+            <Button variant="outline" size="icon" onClick={toggleTheme} className="h-11 w-11 rounded-2xl">
               {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </Button>
 
-            <div className="hidden lg:flex items-center gap-1.5">
+            <div className="hidden lg:block">
               {user ? (
                 <UserProfileMenu />
               ) : (
-                <Button asChild variant="ghost" size="sm">
+                <Button asChild variant="outline" className="h-11 rounded-2xl px-4">
                   <Link to="/login">{t("nav.login")}</Link>
                 </Button>
               )}
@@ -204,88 +246,116 @@ const Navigation = () => {
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
+                <Button variant="outline" size="icon" className="h-11 w-11 rounded-2xl xl:hidden">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 overflow-y-auto">
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center space-x-2 mb-6 pt-2">
-                    <BeeIcon className="w-8 h-8" />
-                    <span className="font-bold text-lg">BizHive</span>
+              <SheetContent
+                side="right"
+                className="w-[min(92vw,420px)] border-border/70 bg-background/96 p-0 shadow-[0_28px_70px_rgba(16,12,8,0.24)]"
+              >
+                <div className="flex h-full flex-col">
+                  <div className="border-b border-border/70 px-6 py-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-orange-600 text-white">
+                        <BeeIcon className="h-7 w-7" />
+                      </div>
+                      <div>
+                        <div className="font-display text-2xl font-semibold tracking-[-0.05em] text-foreground">
+                          BizHive
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {t("One consistent path from idea to scale.")}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex-1 space-y-1">
+                  <div className="flex-1 space-y-3 overflow-y-auto px-4 py-5">
                     {navGroups.map((group) => (
-                      <div key={group.labelKey}>
+                      <div key={group.labelKey} className="rounded-[24px] border border-border/70 bg-card/60">
                         <button
                           onClick={() => setOpenGroup(openGroup === group.labelKey ? null : group.labelKey)}
-                          className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-semibold text-foreground rounded-lg hover:bg-accent transition-colors"
+                          className="flex w-full items-center justify-between px-4 py-4 text-left"
                         >
-                          {t(group.labelKey)}
-                          <ChevronDown className={cn("h-4 w-4 transition-transform", openGroup === group.labelKey && "rotate-180")} />
+                          <span className="text-sm font-semibold text-foreground">{t(group.labelKey)}</span>
+                          <ChevronDown
+                            className={cn(
+                              "h-4 w-4 text-muted-foreground transition-transform",
+                              openGroup === group.labelKey && "rotate-180"
+                            )}
+                          />
                         </button>
-                        {openGroup === group.labelKey && (
-                          <div className="ml-3 space-y-0.5 animate-fade-in">
+                        {openGroup === group.labelKey ? (
+                          <div className="space-y-1 border-t border-border/60 px-3 py-3">
                             {group.items.map((item) => (
                               <Link
                                 key={item.href}
                                 to={item.href}
                                 onClick={() => setIsOpen(false)}
                                 className={cn(
-                                  "block px-3 py-2 text-sm rounded-lg transition-colors",
-                                  isActive(item.href)
-                                    ? "bg-accent text-accent-foreground font-medium"
-                                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                  "block rounded-2xl px-3 py-3 text-sm transition-colors",
+                                  matchesPath(location.pathname, item.href)
+                                    ? "bg-accent text-foreground"
+                                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                                 )}
                               >
-                                {t(item.name)}
+                                <div className="font-medium">{t(item.name)}</div>
+                                <div className="mt-1 text-xs leading-5 text-muted-foreground">
+                                  {t(item.description)}
+                                </div>
                               </Link>
                             ))}
                           </div>
-                        )}
+                        ) : null}
                       </div>
                     ))}
-                    <Link
-                      to="/ai-assistant"
-                      onClick={() => setIsOpen(false)}
-                      className={cn(
-                        "flex items-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-lg transition-colors",
-                        isActive("/ai-assistant") ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent"
-                      )}
-                    >
-                      <BeeIcon className="w-4 h-4" /> {t("nav.beeAi")}
-                    </Link>
-                    <Link
-                      to="/contact"
-                      onClick={() => setIsOpen(false)}
-                      className={cn(
-                        "block px-3 py-2.5 text-sm font-semibold rounded-lg transition-colors",
-                        isActive("/contact") ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent"
-                      )}
-                    >
-                      {t("nav.contact")}
-                    </Link>
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {quickLinks.map((item) => (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={cn(
+                            "flex items-center justify-center rounded-[22px] border border-border/70 px-4 py-3 text-sm font-semibold transition-colors",
+                            matchesPath(location.pathname, item.href)
+                              ? "bg-accent text-foreground"
+                              : "bg-card/60 text-foreground hover:bg-accent"
+                          )}
+                        >
+                          {item.href === "/ai-assistant" ? <BeeIcon className="mr-2 h-4 w-4" /> : null}
+                          {t(item.label)}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="space-y-2 pt-4 border-t">
+                  <div className="border-t border-border/70 px-4 py-4">
                     {user ? (
-                      <>
-                        <Button asChild variant="outline" className="w-full">
-                          <Link to="/dashboard" onClick={() => setIsOpen(false)}>{t("nav.myProfile")}</Link>
+                      <div className="grid gap-2">
+                        <Button asChild variant="outline" className="h-11 rounded-2xl">
+                          <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                            {t("nav.myProfile")}
+                          </Link>
                         </Button>
                         <Button
                           variant="ghost"
-                          className="w-full text-destructive hover:text-destructive"
-                          onClick={() => { signOut(); setIsOpen(false); }}
+                          className="h-11 rounded-2xl text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => {
+                            signOut();
+                            setIsOpen(false);
+                          }}
                         >
-                          <LogOut className="h-4 w-4 mr-2" />
+                          <LogOut className="h-4 w-4" />
                           {t("nav.logout")}
                         </Button>
-                      </>
+                      </div>
                     ) : (
-                      <Button asChild variant="outline" className="w-full">
-                        <Link to="/login" onClick={() => setIsOpen(false)}>{t("nav.login")}</Link>
+                      <Button asChild className="h-11 w-full rounded-2xl">
+                        <Link to="/login" onClick={() => setIsOpen(false)}>
+                          {t("nav.login")}
+                        </Link>
                       </Button>
                     )}
                   </div>
@@ -294,8 +364,8 @@ const Navigation = () => {
             </Sheet>
           </div>
         </div>
-      </div>
-    </nav>
+      </SiteContainer>
+    </header>
   );
 };
 

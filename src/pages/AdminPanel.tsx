@@ -11,10 +11,11 @@ import {
 import { streamBizHiveChat } from "@/services/ai/chat";
 import { recordAdminAudit } from "@/services/admin/audit";
 import { supabase } from "@/services/supabase/client";
+import { PageHeader, SiteContainer, Surface } from "@/components/site/SitePrimitives";
 import type { Json, Tables } from "@/services/supabase/database.types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, BookOpen, FileText, Loader2, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users, Ban, Send, RotateCcw, Sparkles } from "lucide-react";
+import { BarChart3, BookOpen, FileText, Gauge, Loader2, Mail, MessageSquare, RefreshCw, Save, Search, Shield, Users, Ban, Send, RotateCcw, Sparkles, ShieldCheck, AlertTriangle } from "lucide-react";
 import BeeIcon from "@/components/BeeIcon";
 import AdminBlogsTab from "@/components/admin/AdminBlogsTab";
 import AdminCommunityTab from "@/components/admin/AdminCommunityTab";
@@ -33,6 +34,33 @@ const EMPTY_NEWSLETTER_DRAFT = {
   body: "",
   subject: "",
 };
+
+const AdminStatCard = ({
+  description,
+  icon: Icon,
+  title,
+  value,
+}: {
+  description: string;
+  icon: typeof Gauge;
+  title: string;
+  value: number | string;
+}) => (
+  <Surface className="h-full p-5">
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <div className="mt-2 font-display text-3xl font-semibold tracking-[-0.045em] text-foreground">
+          {value}
+        </div>
+      </div>
+      <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary/10 text-primary">
+        <Icon className="h-5 w-5" />
+      </div>
+    </div>
+    <p className="mt-4 text-sm leading-6 text-muted-foreground">{description}</p>
+  </Surface>
+);
 
 const AdminPanel = () => {
   const { toast } = useToast();
@@ -70,6 +98,11 @@ const AdminPanel = () => {
   const [isTestingAi, setIsTestingAi] = useState(false);
   
   const [newsletterDraft, setNewsletterDraft] = useState(EMPTY_NEWSLETTER_DRAFT);
+  const [newGroupData, setNewGroupData] = useState({
+    name: "",
+    description: "",
+    is_private: false,
+  });
 
   const currentUserId = user?.id;
   const isAdmin = adminRoles.includes("admin");
@@ -409,43 +442,71 @@ const AdminPanel = () => {
 
   if (authLoading || hasAdminAccess === null) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Checking Admin Access</CardTitle></CardHeader>
-          <CardContent className="flex justify-center">
+      <div className="page-shell">
+        <SiteContainer>
+          <Surface className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-4 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[20px] bg-primary/10 text-primary">
+              <Shield className="h-7 w-7" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">
+                Checking admin access
+              </h1>
+              <p className="text-sm leading-6 text-muted-foreground">
+                Verifying the current account before the control panel loads.
+              </p>
+            </div>
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </CardContent>
-        </Card>
+          </Surface>
+        </SiteContainer>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Sign In Required</CardTitle></CardHeader>
-          <CardContent className="space-y-4 text-center">
-            <p className="text-sm text-muted-foreground">Sign in with an authorized account to access the admin panel.</p>
+      <div className="page-shell">
+        <SiteContainer>
+          <Surface className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-5 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[20px] bg-primary/10 text-primary">
+              <Shield className="h-7 w-7" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">
+                Admin sign-in required
+              </h1>
+              <p className="text-sm leading-6 text-muted-foreground">
+                Sign in with an authorized account before opening the control room.
+              </p>
+            </div>
             <Button asChild className="w-full">
               <Link to="/login">Go to Login</Link>
             </Button>
-          </CardContent>
-        </Card>
+          </Surface>
+        </SiteContainer>
       </div>
     );
   }
 
   if (!hasAdminAccess) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center"><div className="mx-auto mb-2"><Shield className="h-10 w-10 text-primary" /></div><CardTitle>Admin Access Required</CardTitle></CardHeader>
-          <CardContent className="space-y-4 text-center">
-            <p className="text-sm text-muted-foreground">This account needs an assigned admin or moderator role before it can access the panel.</p>
+      <div className="page-shell">
+        <SiteContainer>
+          <Surface className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-5 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[20px] bg-primary/10 text-primary">
+              <ShieldCheck className="h-7 w-7" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">
+                Admin access required
+              </h1>
+              <p className="text-sm leading-6 text-muted-foreground">
+                This account still needs an admin or moderator role assigned inside the platform.
+              </p>
+            </div>
             <Button variant="outline" className="w-full" onClick={handleLogout}>Sign Out</Button>
-          </CardContent>
-        </Card>
+          </Surface>
+        </SiteContainer>
       </div>
     );
   }
@@ -475,38 +536,82 @@ const AdminPanel = () => {
     return accumulator;
   }, {});
   const bannedUserIds = new Set(userBans.map((ban) => ban.user_id));
+  const summaryStats = [
+    {
+      title: "Users",
+      value: profiles.length,
+      description: "Profiles synced into the current Supabase workspace.",
+      icon: Users,
+    },
+    {
+      title: "Community activity",
+      value: communityPosts.length + communityMessages.length,
+      description: "Posts and messages that currently need moderation visibility.",
+      icon: MessageSquare,
+    },
+    {
+      title: "Content objects",
+      value: blogs.length + documents.length + legalTemplates.length,
+      description: "Blogs, documents, and legal templates under active admin control.",
+      icon: FileText,
+    },
+    {
+      title: "Security flags",
+      value: userBans.length,
+      description: "Accounts currently banned or restricted by the admin team.",
+      icon: AlertTriangle,
+    },
+  ];
 
   const documentRequests = contacts.filter(c => c.category === "document_request");
   // Exclude requests from main contacts view to keep it clean
   const generalMessages = filteredContacts.filter(c => c.category !== "document_request");
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Shield className="h-8 w-8 text-primary" />
-            <div><h1 className="text-3xl font-bold text-foreground">Admin Panel</h1><p className="text-sm text-muted-foreground">Manage content, users, and system settings.</p></div>
-          </div>
-          <div className="flex gap-2">
-            <Badge variant="outline">{isAdmin ? "Admin" : "Moderator"}</Badge>
-            <Button variant="outline" onClick={fetchData} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />Refresh</Button>
-            <Button variant="ghost" onClick={handleLogout}>Logout</Button>
-          </div>
+    <div className="page-shell">
+      <SiteContainer className="space-y-8">
+        <PageHeader
+          eyebrow="Operations"
+          title="BizHive control room"
+          description="Manage users, content, moderation, and system-level settings from one consistent admin workspace."
+          actions={
+            <>
+              <Badge variant="outline">{isAdmin ? "Admin" : "Moderator"}</Badge>
+              <Button variant="outline" onClick={fetchData} disabled={loading}>
+                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                Refresh
+              </Button>
+              <Button variant="ghost" onClick={handleLogout}>Logout</Button>
+            </>
+          }
+        />
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {summaryStats.map((item) => (
+            <AdminStatCard
+              key={item.title}
+              title={item.title}
+              value={item.value}
+              description={item.description}
+              icon={item.icon}
+            />
+          ))}
         </div>
 
-        <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="h-auto flex-wrap justify-start gap-2 bg-transparent p-0">
-            <TabsTrigger value="analytics" className="gap-2"><BarChart3 className="h-4 w-4" />Analytics</TabsTrigger>
-            {isAdmin && <TabsTrigger value="contacts" className="gap-2"><MessageSquare className="h-4 w-4" />Messages</TabsTrigger>}
-            {isAdmin && <TabsTrigger value="subscribers" className="gap-2"><Mail className="h-4 w-4" />Subscribers</TabsTrigger>}
-            {isAdmin && <TabsTrigger value="blogs" className="gap-2"><BookOpen className="h-4 w-4" />Blogs</TabsTrigger>}
-            <TabsTrigger value="community" className="gap-2"><Users className="h-4 w-4" />Community</TabsTrigger>
-            {isAdmin && <TabsTrigger value="documents" className="gap-2"><FileText className="h-4 w-4" />Documents</TabsTrigger>}
-            {isAdmin && <TabsTrigger value="users" className="gap-2"><Shield className="h-4 w-4" />Users</TabsTrigger>}
-            {isAdmin && <TabsTrigger value="ai" className="gap-2"><BeeIcon className="h-4 w-4" />AI Training</TabsTrigger>}
-            {isAdmin && <TabsTrigger value="audit" className="gap-2"><FileText className="h-4 w-4" />Audit</TabsTrigger>}
-          </TabsList>
+        <Tabs defaultValue="analytics" className="space-y-8">
+          <div className="overflow-x-auto pb-1">
+            <TabsList className="h-auto min-w-max justify-start gap-2 rounded-[24px] border border-border/70 bg-muted/30 p-2">
+              <TabsTrigger value="analytics" className="gap-2 rounded-2xl"><BarChart3 className="h-4 w-4" />Analytics</TabsTrigger>
+              {isAdmin && <TabsTrigger value="contacts" className="gap-2 rounded-2xl"><MessageSquare className="h-4 w-4" />Messages</TabsTrigger>}
+              {isAdmin && <TabsTrigger value="subscribers" className="gap-2 rounded-2xl"><Mail className="h-4 w-4" />Subscribers</TabsTrigger>}
+              {isAdmin && <TabsTrigger value="blogs" className="gap-2 rounded-2xl"><BookOpen className="h-4 w-4" />Blogs</TabsTrigger>}
+              <TabsTrigger value="community" className="gap-2 rounded-2xl"><Users className="h-4 w-4" />Community</TabsTrigger>
+              {isAdmin && <TabsTrigger value="documents" className="gap-2 rounded-2xl"><FileText className="h-4 w-4" />Documents</TabsTrigger>}
+              {isAdmin && <TabsTrigger value="users" className="gap-2 rounded-2xl"><Shield className="h-4 w-4" />Users</TabsTrigger>}
+              {isAdmin && <TabsTrigger value="ai" className="gap-2 rounded-2xl"><BeeIcon className="h-4 w-4" />AI Training</TabsTrigger>}
+              {isAdmin && <TabsTrigger value="audit" className="gap-2 rounded-2xl"><FileText className="h-4 w-4" />Audit</TabsTrigger>}
+            </TabsList>
+          </div>
 
           <TabsContent value="analytics">
             <div className="grid md:grid-cols-2 gap-6">
@@ -742,7 +847,7 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>}
         </Tabs>
-      </div>
+      </SiteContainer>
     </div>
   );
 };
