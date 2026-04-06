@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const SiteContainer = ({
@@ -54,6 +54,8 @@ type PageHeaderProps = {
   className?: string;
   description: ReactNode;
   eyebrow?: ReactNode;
+  icon?: LucideIcon;
+  visual?: ReactNode;
   title: ReactNode;
 };
 
@@ -62,19 +64,26 @@ export const PageHeader = ({
   className,
   description,
   eyebrow,
+  icon: Icon,
   title,
+  visual,
 }: PageHeaderProps) => (
   <section
     className={cn(
-      "panel-surface overflow-hidden p-5 sm:p-6 lg:p-8",
-      "bg-[linear-gradient(140deg,rgba(255,255,255,0.98),rgba(242,245,251,0.94))]",
-      "dark:bg-[linear-gradient(160deg,rgba(19,24,33,0.98),rgba(15,20,28,0.96))]",
+      "panel-surface overflow-hidden px-5 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7",
+      "bg-[linear-gradient(140deg,rgba(255,252,248,0.98),rgba(245,235,225,0.94))]",
+      "dark:bg-[linear-gradient(160deg,rgba(34,21,20,0.98),rgba(21,14,13,0.96))]",
       className
     )}
   >
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-      <div className="space-y-4">
+    <div className={cn("grid gap-6", visual ? "xl:grid-cols-[1.05fr_0.95fr] xl:items-center" : "lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end")}>
+      <div className="space-y-4 min-w-0">
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
+        {Icon ? (
+          <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary/12 text-primary shadow-[0_14px_32px_rgba(255,138,61,0.18)]">
+            <Icon className="h-5 w-5" />
+          </div>
+        ) : null}
         <div className="space-y-3">
           <h1 className="max-w-4xl font-display text-3xl font-semibold tracking-[-0.06em] text-foreground sm:text-4xl lg:text-5xl">
             {title}
@@ -84,7 +93,12 @@ export const PageHeader = ({
           </div>
         </div>
       </div>
-      {actions ? <div className="flex flex-wrap items-center gap-3">{actions}</div> : null}
+      {visual ? (
+        <div className="min-h-[220px]">{visual}</div>
+      ) : actions ? (
+        <div className="flex flex-wrap items-center gap-3">{actions}</div>
+      ) : null}
+      {visual && actions ? <div className="xl:col-span-2 flex flex-wrap items-center gap-3">{actions}</div> : null}
     </div>
   </section>
 );

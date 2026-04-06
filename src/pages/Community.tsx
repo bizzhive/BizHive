@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { BellDot, MessageSquareText, Plus, Search, Send } from "lucide-react";
+import { BellDot, Lock, MessageSquareText, Plus, Search, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { PageHeader, ScrollSurface, SiteContainer } from "@/components/site/SitePrimitives";
+import { ClayGraphic } from "@/components/ClayGraphic";
+import { PageHeader, ScrollSurface, SiteContainer, Surface } from "@/components/site/SitePrimitives";
+import { PremiumModal } from "@/components/PremiumModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/services/supabase/client";
 import type { Tables } from "@/services/supabase/database.types";
-import { useTranslation } from "react-i18next";
 
 type CommunityGroup = Tables<"community_groups">;
 type CommunityPost = Tables<"community_posts">;
@@ -18,7 +19,6 @@ type CommunityMessage = Tables<"community_messages">;
 const READ_KEY = "bizhive.community.read";
 
 const Community = () => {
-  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
   const [groups, setGroups] = useState<CommunityGroup[]>([]);
@@ -73,7 +73,7 @@ const Community = () => {
         void fetchData();
         const newMessage = payload.new as CommunityMessage | undefined;
         if (newMessage && newMessage.user_id !== user?.id) {
-          toast({ title: "New community reply", description: newMessage.content.slice(0, 80) });
+          toast({ title: "New reply", description: newMessage.content.slice(0, 88) });
         }
       })
       .subscribe();
@@ -97,7 +97,7 @@ const Community = () => {
     if (selectedGroup && selectedGroup.id !== selectedGroupId) {
       setSelectedGroupId(selectedGroup.id);
     }
-  }, [selectedGroup?.id]);
+  }, [selectedGroup?.id, selectedGroupId]);
 
   const groupPosts = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -158,7 +158,7 @@ const Community = () => {
     });
 
     if (error) {
-      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
       return;
     }
 
@@ -181,7 +181,7 @@ const Community = () => {
     });
 
     if (error) {
-      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
       return;
     }
 
@@ -192,132 +192,167 @@ const Community = () => {
     <div className="page-shell">
       <SiteContainer className="page-stack">
         <PageHeader
-          eyebrow={t("community.eyebrow")}
-          title={t("community.title")}
-          description={t("community.description")}
+          eyebrow="Community"
+          title="Discuss startup questions in one clear threaded space"
+          description="Rooms, topics, and replies now have one consistent structure. You should always know whether you are browsing a room, opening a discussion, or replying to one."
+          icon={MessageSquareText}
+          visual={<ClayGraphic className="h-full min-h-[240px]" compact />}
           actions={
-            <Dialog open={newTopicOpen} onOpenChange={setNewTopicOpen}>
-              <DialogTrigger asChild>
-                <Button className="h-12 rounded-2xl px-5">
-                  <Plus className="mr-2 h-4 w-4" />
-                  {t("community.newTopic")}
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="rounded-[28px] border-border/80 bg-card">
-                <DialogHeader>
-                  <DialogTitle>{t("community.newTopic")}</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <Input value={topicTitle} onChange={(event) => setTopicTitle(event.target.value)} placeholder={t("community.topicPlaceholder")} className="h-12 rounded-2xl" />
-                  <Textarea value={topicBody} onChange={(event) => setTopicBody(event.target.value)} placeholder="Write the context, question, and what kind of help you need." className="min-h-[180px] rounded-2xl" />
-                  <Button className="h-12 w-full rounded-2xl" onClick={createTopic}>
-                    Publish topic
+            <>
+              <Dialog open={newTopicOpen} onOpenChange={setNewTopicOpen}>
+                <DialogTrigger asChild>
+                  <Button className="h-12 rounded-2xl px-5">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Start a topic
                   </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent className="rounded-[28px] border-border/80 bg-card">
+                  <DialogHeader>
+                    <DialogTitle className="font-display text-2xl tracking-[-0.04em]">Start a topic</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input value={topicTitle} onChange={(event) => setTopicTitle(event.target.value)} placeholder="What do you want help with?" className="h-12 rounded-[22px]" />
+                    <Textarea value={topicBody} onChange={(event) => setTopicBody(event.target.value)} placeholder="Add the business context, your current challenge, and what kind of help you want from the room." className="min-h-[180px] rounded-[22px]" />
+                    <Button className="h-12 w-full rounded-2xl" onClick={createTopic}>
+                      Publish topic
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <PremiumModal
+                trigger={
+                  <Button variant="ghost" className="glass-button h-12">
+                    <Lock className="mr-2 h-4 w-4 text-primary" />
+                    Private channels
+                  </Button>
+                }
+              />
+            </>
           }
         />
 
-        <section className="grid gap-5 xl:grid-cols-[280px_360px_minmax(0,1fr)]">
-          <ScrollSurface className="lg:h-[38rem]">
-            <div className="space-y-3 compact-scroll">
+        <section className="grid gap-4 xl:grid-cols-[280px_360px_minmax(0,1fr)]">
+          <ScrollSurface className="lg:h-[48rem]">
+            <div className="compact-scroll space-y-3">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search rooms and topics" className="h-12 rounded-2xl pl-11" />
+                <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search rooms and discussions" className="h-12 rounded-[22px] pl-11" />
               </div>
               {filteredGroups.map((group) => (
                 <button
                   key={group.id}
                   type="button"
                   onClick={() => setSelectedGroupId(group.id)}
-                  className={`rounded-2xl border px-4 py-4 text-left ${
-                    selectedGroupId === group.id ? "border-primary/40 bg-primary/10" : "border-border/80 bg-muted/35"
+                  className={`rounded-[24px] border px-4 py-4 text-left ${
+                    selectedGroupId === group.id ? "border-primary/30 bg-primary/10" : "border-border/70 bg-muted/35"
                   }`}
                 >
-                  <div className="font-semibold text-foreground">{group.name}</div>
-                  <div className="mt-1 text-sm leading-6 text-muted-foreground">{group.description}</div>
-                </button>
-              ))}
-            </div>
-          </ScrollSurface>
-
-          <ScrollSurface className="lg:h-[38rem]">
-            <div className="space-y-3 compact-scroll">
-              {groupPosts.map((post) => (
-                <button
-                  key={post.id}
-                  type="button"
-                  onClick={() => setSelectedPostId(post.id)}
-                  className={`rounded-2xl border px-4 py-4 text-left ${
-                    selectedPostId === post.id ? "border-foreground bg-foreground text-background" : "border-border/80 bg-muted/35"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="font-semibold">{post.title}</div>
-                    {unreadCountByPost[post.id] ? (
-                      <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${selectedPostId === post.id ? "bg-background/20 text-background" : "bg-primary/10 text-primary"}`}>
-                        {unreadCountByPost[post.id]} new
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="font-semibold text-foreground">{group.name}</div>
+                    {group.is_private ? (
+                      <span className="rounded-full bg-foreground px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-background">
+                        Premium
                       </span>
                     ) : null}
                   </div>
-                  <div className={`mt-2 text-sm leading-6 ${selectedPostId === post.id ? "text-background/80" : "text-muted-foreground"}`}>
-                    {post.content.slice(0, 120)}
-                  </div>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">{group.description}</p>
                 </button>
               ))}
             </div>
           </ScrollSurface>
 
-          <ScrollSurface className="lg:h-[38rem]">
+          <ScrollSurface className="lg:h-[48rem]">
+            <div className="compact-scroll space-y-3">
+              {groupPosts.length ? (
+                groupPosts.map((post) => (
+                  <button
+                    key={post.id}
+                    type="button"
+                    onClick={() => setSelectedPostId(post.id)}
+                    className={`rounded-[24px] border px-4 py-4 text-left ${
+                      selectedPostId === post.id ? "border-foreground bg-foreground text-background" : "border-border/70 bg-muted/35"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="font-semibold">{post.title}</div>
+                      {unreadCountByPost[post.id] ? (
+                        <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${selectedPostId === post.id ? "bg-background/20 text-background" : "bg-primary/10 text-primary"}`}>
+                          {unreadCountByPost[post.id]} new
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className={`mt-2 line-clamp-3 text-sm leading-7 ${selectedPostId === post.id ? "text-background/82" : "text-muted-foreground"}`}>
+                      {post.content}
+                    </div>
+                  </button>
+                ))
+              ) : (
+                <div className="panel-muted p-4 text-sm leading-7 text-muted-foreground">
+                  No topics match the current search in this room yet.
+                </div>
+              )}
+            </div>
+          </ScrollSurface>
+
+          <ScrollSurface className="lg:h-[48rem]">
             <div className="flex h-full min-h-0 flex-col gap-4">
-              <div className="border-b border-border/80 pb-4">
+              <div className="rounded-[24px] border border-border/70 bg-muted/35 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="font-display text-2xl font-semibold tracking-[-0.05em] text-foreground">
+                    <div className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
                       {selectedPost?.title || "Choose a discussion"}
                     </div>
-                    <div className="mt-1 text-sm text-muted-foreground">{selectedPost?.author_name || t("community.signInPrompt")}</div>
+                    <div className="mt-2 text-sm text-muted-foreground">{selectedPost?.author_name || "Read a thread or start one from the room you select."}</div>
                   </div>
                   {selectedPost ? <BellDot className="h-5 w-5 text-primary" /> : null}
                 </div>
+                {selectedGroup?.is_private ? (
+                  <div className="mt-4 rounded-[20px] border border-primary/20 bg-primary/10 px-4 py-3 text-sm leading-6 text-foreground">
+                    This room is marked as a private-channel preview. The premium layer will add deeper access rules later without changing the current structure.
+                  </div>
+                ) : null}
               </div>
 
               <div className="compact-scroll flex-1 space-y-3">
                 {selectedPost ? (
                   <>
-                    <div className="rounded-2xl border border-border/80 bg-muted/35 p-4">
-                      <div className="text-sm leading-7 text-foreground">{selectedPost.content}</div>
+                    <div className="rounded-[24px] border border-border/70 bg-muted/35 p-4">
+                      <p className="text-sm leading-8 text-foreground">{selectedPost.content}</p>
                     </div>
                     {threadMessages.map((message) => (
-                      <div key={message.id} className={`rounded-2xl p-4 ${message.user_id === user?.id ? "bg-foreground text-background" : "border border-border/80 bg-muted/35"}`}>
-                        <div className={`text-xs font-semibold uppercase tracking-[0.14em] ${message.user_id === user?.id ? "text-background/70" : "text-muted-foreground"}`}>
+                      <div key={message.id} className={message.user_id === user?.id ? "ml-auto max-w-[86%] rounded-[24px] bg-primary px-5 py-4 text-primary-foreground" : "rounded-[24px] border border-border/70 bg-muted/35 p-4"}>
+                        <div className={message.user_id === user?.id ? "text-xs font-semibold uppercase tracking-[0.14em] text-primary-foreground/74" : "text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"}>
                           {message.user_name || "Member"}
                         </div>
-                        <div className="mt-2 text-sm leading-7">{message.content}</div>
+                        <div className="mt-2 text-sm leading-8">{message.content}</div>
                       </div>
                     ))}
                   </>
                 ) : (
-                  <div className="panel-muted flex min-h-[240px] flex-col items-center justify-center gap-3 p-6 text-center">
+                  <div className="panel-muted flex min-h-[260px] flex-col items-center justify-center gap-3 p-6 text-center">
                     <MessageSquareText className="h-6 w-6 text-primary" />
                     <div className="text-lg font-semibold text-foreground">Choose a discussion</div>
                     <p className="max-w-sm text-sm leading-6 text-muted-foreground">
-                      Select a room and a topic to read the thread and send replies with the single composer below.
+                      Pick a room, open a topic, and then use the single reply composer below to stay in one clean thread flow.
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-border/80 pt-4">
+              <div className="rounded-[24px] border border-border/70 bg-card/80 p-4">
+                <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  Reply composer
+                </div>
                 <div className="flex gap-3">
                   <Textarea
                     value={composer}
                     onChange={(event) => setComposer(event.target.value)}
-                    placeholder={selectedPost ? t("community.replyPlaceholder") : t("community.signInPrompt")}
-                    className="min-h-[88px] rounded-2xl"
+                    placeholder={selectedPost ? "Write one thoughtful reply to the current discussion." : "Choose a discussion before replying."}
+                    className="min-h-[100px] rounded-[22px]"
                   />
-                  <Button className="h-auto min-h-[88px] rounded-2xl px-4" onClick={sendReply}>
+                  <Button className="h-auto min-h-[100px] rounded-[22px] px-4" onClick={sendReply}>
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>

@@ -1,4 +1,4 @@
-export const enTranslation = {
+﻿export const enTranslation = {
   brand: {
     description: "Business growth workspace",
     tagline: "Founder operating system",
@@ -26,11 +26,14 @@ export const enTranslation = {
   },
   nav: {
     blog: "Blog",
+    bee: "Bee AI",
     community: "Community",
     contact: "Contact",
     dashboard: "Dashboard",
     grow: "Grow",
     home: "Home",
+    incubators: "Incubators",
+    askBee: "Ask Bee",
     launch: "Launch",
     library: "Library",
     login: "Login",
@@ -47,13 +50,17 @@ export const enTranslation = {
     adminTitle: "Admin access",
     alreadySubscribed: "Already subscribed",
     alreadySubscribedNote: "This email is already receiving updates.",
-    builder: "Built for founder testing and iteration.",
+    builder: "Designed and developed by Tushar Gehlot",
     copyright: "© 2026 BizHive. All rights reserved.",
     ctaBody: "Get product updates, new templates, and founder resources without hunting around the app.",
     ctaTitle: "Keep your team in the loop",
     description:
       "BizHive brings planning, launch, compliance, tools, community, and founder education into one product.",
     emailPlaceholder: "Enter your email",
+    explore: "Explore",
+    foundationBody:
+      "Plan, launch, grow, documents, community, and Bee AI stay connected inside one founder operating system.",
+    foundationTitle: "Unified founder stack",
     legal: "Legal",
     library: "Explore",
     product: "Product",
@@ -63,9 +70,18 @@ export const enTranslation = {
     updates: "Updates",
   },
   bee: {
-    body: "Bee is being rebuilt with a better interface. The assistant surface stays visible, but the heavy AI workflows come back later.",
+    body: "Bee stays visible across the product so founders can ask for context, summaries, and guidance without losing their place.",
+    copilotOpen: "Open Bee",
+    copilotPlaceholder: "Ask Bee about the screen, the selected text, or your next action.",
+    copilotTitle: "Bee copilot",
     noteOne: "The widget now behaves like a normal help surface instead of overpowering the screen.",
     noteTwo: "When AI is re-enabled, the same panel will pick up page context and saved workspace information.",
+    previewNote: "This is the UI-complete Bee experience. Provider routing can plug in later without changing the product shell.",
+    previewStatus: "Preview",
+    promptExplain: "Explain this clearly",
+    promptNextStep: "What should I do next?",
+    promptSummarize: "Summarize this page",
+    send: "Send",
     status: "Later",
     title: "Bee assistant",
   },
@@ -80,10 +96,10 @@ export const enTranslation = {
     title: "Loading workspace",
   },
   policyPage: {
-    eyebrow: "Public legal page",
+    eyebrow: "Legal and policy",
   },
   infoPage: {
-    eyebrow: "Why this page exists",
+    eyebrow: "Page overview",
     description:
       "Each major BizHive page now has one job, one visual system, and one clear set of next steps.",
   },
@@ -93,7 +109,7 @@ export const enTranslation = {
       ctaSecondary: "Explore the product",
       eyebrow: "One platform for planning, launch, growth, and compliance",
       subtitle:
-        "BizHive is being rebuilt as a single founder workspace with cleaner navigation, clearer responsibilities, and fewer dead ends.",
+        "BizHive brings planning, launch, growth, compliance, documents, and learning into one compact founder workspace.",
       title: "Build your business with one clear operating system.",
     },
     highlightTitle: "Everything visible on the homepage",
@@ -162,7 +178,7 @@ export const enTranslation = {
       "These are the main BizHive surfaces the rebuild is organized around. Each one has a clear job and a cleaner path in and out.",
     latestTitle: "Published content that is already visible",
     latestDescription:
-      "The blog library now always has real articles available, even while the live CMS content is being rebuilt.",
+      "The blog library always carries published founder content so visitors can understand the product before creating an account.",
     testimonialTitle: "What testers should feel",
     testimonialBody:
       "A cleaner product should reduce hesitation. People should know what the app does, where they are, and what comes next.",
@@ -454,7 +470,7 @@ export const enTranslation = {
       "The public blog is being seeded. Local editorial fallbacks keep the reading section populated in the meantime.",
     searchPlaceholder: "Search articles",
     note:
-      "The blog now stays public and useful even when live CMS content is still being rebuilt. If there are no published database posts, curated editorial fallbacks fill the gap.",
+      "The blog remains public and useful even when the live editorial queue is light. If there are no published database posts, curated fallbacks keep the reading surface active.",
     backToBlog: "Back to blog",
     articleNotFound: "Article not found.",
   },
@@ -492,7 +508,7 @@ export const enTranslation = {
     resetTitle: "Create a new password",
     resetBody: "Choose a strong password so you can get back into your workspace.",
     shellNote:
-      "The rebuilt auth flow is meant to feel calm and familiar, not like a separate mini-site with different spacing and tone.",
+      "Sign in once to unlock your saved work, guided learning, documents, and founder workspace across the full product.",
     tabs: {
       login: "Login",
       register: "Create account",
@@ -538,11 +554,11 @@ export const enTranslation = {
       community: "Community",
       documents: "Documents",
     },
-    loadingBody: "Loading admin content…",
+    loadingBody: "Loading admin content...",
   },
   adminAccess: {
-    description: "Enter the temporary admin password to open the control panel.",
-    title: "Temporary admin access",
+    description: "Enter the shared admin password to open the control panel.",
+    title: "Admin access",
     grantedTitle: "Access granted",
     grantedBody: "Admin controls are now unlocked for this session.",
     incorrectTitle: "Incorrect password",
@@ -699,6 +715,38 @@ export const enTranslation = {
     suggestionReady: "Suggestion ready",
     suggestionFailed: "Unable to generate a suggestion right now.",
     suggestionUnavailable: "No suggestion was returned for this field.",
+  },
+  premium: {
+    title: "BizHive Premium",
+    description:
+      "Preview the future premium tier: advanced tools, deeper workflow support, private channels, webinars, workshops, and high-context operating help for growing teams.",
+    cta: "Buy premium",
+    previewAction: "Preview",
+    keepExploring: "Keep exploring",
+  },
+  feedback: {
+    loginTitle: "Login required",
+    loginBody: "Please sign in before sending feedback.",
+    missingTitle: "Feedback is incomplete",
+    missingBody: "Please fill in your name, profession, and feedback before submitting.",
+    savedTitle: "Feedback saved",
+    savedBody: "Your feedback is now part of the product signal queue and can appear in rotating testimonials.",
+    lockedBody: "Your final edit is saved. This entry is now locked.",
+    failedBody: "We could not save your feedback right now.",
+    eyebrow: "Feedback",
+    title: "Rate the experience",
+    description:
+      "Each signed-in user can submit one testimonial and make one final edit before it becomes permanent.",
+    fields: {
+      name: "Your name",
+      profession: "Your profession",
+      feedback: "Tell us what is working or what still feels unclear",
+    },
+    lockedNote: "This feedback is now permanent and can no longer be changed.",
+    editNote: "You can make one final edit before this testimonial becomes permanent.",
+    firstNote: "Your first submission may appear in the rotating testimonial ribbon.",
+    updateAction: "Update feedback",
+    submitAction: "Submit feedback",
   },
   notFound: {
     title: "Page not found",
@@ -871,3 +919,4 @@ export const enTranslation = {
 } as const;
 
 export type TranslationDictionary = typeof enTranslation;
+

@@ -3,19 +3,23 @@ import { LegalPage } from "@/components/site/LegalPage";
 const RefundPolicy = () => (
   <LegalPage
     title="Refund Policy"
-    description="This policy outlines the general refund and cancellation position for any paid BizHive plans, services, or subscriptions introduced on the platform."
+    description="This Refund Policy describes the general position BizHive intends to apply to paid subscriptions, digital services, premium access, and paid resources if and when such offerings become commercially available."
     sections={[
       {
-        title: "Subscription services",
-        body: "If BizHive introduces paid subscriptions, the exact billing cycle, renewal logic, cancellation timing, and refund rules will be displayed at checkout and in the relevant plan documentation. Unless a separate plan-specific policy states otherwise, fees already consumed for active service periods may be non-refundable.",
+        title: "General refund framework",
+        body: "Any paid BizHive offering introduced in the future may carry plan-specific billing terms, renewal rules, access conditions, and refund eligibility criteria shown at checkout or in accompanying plan documentation. Unless a more specific policy states otherwise, charges for periods or benefits already consumed may be treated as non-refundable to the extent permitted by applicable law.",
       },
       {
-        title: "Content and templates",
-        body: "Refund eligibility for paid downloads, document packs, or advisory materials depends on the delivery model and any mandatory local consumer-protection rules. Digital access may become non-refundable once the material is delivered or materially consumed, unless law requires otherwise.",
+        title: "Subscriptions and recurring billing",
+        body: "If recurring subscriptions are introduced, users will generally be expected to cancel before the next billing cycle to avoid renewal charges for subsequent periods. Access that remains available during an already-billed service period may not automatically entitle the user to a pro-rated refund unless required by law, explicitly promised at checkout, or approved by BizHive in response to a verified issue.",
       },
       {
-        title: "Exceptions and support",
-        body: "If there is a billing error, duplicate charge, or product access failure, contact support with transaction details so the case can be reviewed. BizHive may issue credits, reversals, or alternative remedies where appropriate.",
+        title: "Digital resources, templates, and premium content",
+        body: "Refund treatment for digital resources, downloadable packs, templates, educational materials, or premium content may depend on whether access has already been granted, downloaded, or materially consumed. Once a digital product has been delivered or substantially accessed, refund eligibility may be restricted, subject to mandatory consumer-protection rules or case-specific review.",
+      },
+      {
+        title: "Billing errors and service failures",
+        body: "If a user experiences a duplicate charge, technical billing error, or material failure to access a purchased service, BizHive may review the circumstances and, where appropriate, issue a correction, credit, refund, extension, or other commercially reasonable remedy. Supporting payment details, dates, and account identifiers may be required to investigate such cases.",
       },
     ]}
   />

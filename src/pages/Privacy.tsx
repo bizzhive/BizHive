@@ -3,23 +3,27 @@ import { LegalPage } from "@/components/site/LegalPage";
 const Privacy = () => (
   <LegalPage
     title="Privacy Policy"
-    description="This policy explains how BizHive collects, stores, uses, and protects personal information when someone uses the website, creates an account, or submits information through the platform."
+    description="This Privacy Policy explains how BizHive collects, uses, stores, shares, and protects information when users visit the website, create an account, save business data, submit community content, or interact with platform features."
     sections={[
       {
-        title: "Information we collect",
-        body: "BizHive may collect account data, profile information, saved business context, community submissions, support messages, newsletter sign-ups, and usage information needed to operate the product. We also collect data you choose to submit in documents, tools, and onboarding forms.",
+        title: "Scope and information covered",
+        body: "BizHive may collect identity information, contact details, account credentials managed through authentication providers, founder profile details, business context, saved documents, legal drafts, feedback submissions, support messages, and product-usage information necessary to operate and improve the platform. We may also process content you voluntarily enter into tools, forms, learning workbooks, community posts, and other workspace features.",
       },
       {
-        title: "How we use information",
-        body: "We use information to provide access to the platform, save workspace state, improve product flows, respond to support requests, maintain platform security, and communicate service updates. We may also use aggregated usage patterns to improve product design and planning.",
+        title: "How information is used",
+        body: "We use personal and business information to deliver platform access, save workspaces, personalize product state such as language and progress, operate community and publishing features, respond to support requests, maintain security, investigate abuse, and improve product quality. We may use aggregated and de-identified usage insights to improve product design, navigation, and educational coverage.",
       },
       {
-        title: "Third-party services",
-        body: "BizHive uses third-party infrastructure and service providers including hosting, analytics, authentication, and database services. These providers may process information on our behalf to operate the product, subject to their own legal terms and security controls.",
+        title: "Storage, infrastructure, and service providers",
+        body: "BizHive relies on third-party infrastructure and software services to provide hosting, authentication, storage, analytics, delivery, and operational support. Such providers may process information on our behalf strictly to the extent necessary to operate the product. Access is limited by technical controls, contractual obligations where applicable, and our operational need to maintain the service.",
       },
       {
-        title: "Your choices",
-        body: "You may request updates or deletion of account-linked information where legally permitted. Some operational and compliance records may need to be retained for security, fraud prevention, or legal obligations. Community posts and public-facing contributions may remain visible if they form part of shared discussion history.",
+        title: "Sharing, disclosure, and public content",
+        body: "BizHive does not sell personal information as part of its normal product operation. Information may be disclosed where reasonably necessary to comply with law, enforce platform rights, investigate fraud or abuse, protect users, or complete a platform function you requested. Community posts, published feedback, and other deliberately public contributions may remain visible to other users or visitors according to the feature in which they were submitted.",
+      },
+      {
+        title: "User rights, retention, and contact",
+        body: "Users may request access, correction, or deletion of account-linked information where legally available and technically reasonable. Certain records may be retained for platform integrity, legal compliance, fraud prevention, dispute handling, backup continuity, or audit purposes. Questions regarding privacy practices may be directed through the platform contact channel or the support address displayed in the site footer.",
       },
     ]}
   />

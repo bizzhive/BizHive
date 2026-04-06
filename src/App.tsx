@@ -8,6 +8,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { BeeProvider } from "@/contexts/BeeContext";
 import { AdminAccessDialog } from "@/components/admin/AdminAccessDialog";
 import { EmptyState, LoadingState, SiteContainer } from "@/components/site/SitePrimitives";
 import { hasTemporaryAdminAccess } from "@/services/admin/access";
@@ -184,17 +185,19 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <ThemeProvider>
-        <TooltipProvider>
-          <DocumentLanguageSync />
-          <Toaster />
-          <Sonner />
-          <ScrollToTop />
-          <Layout>
-            <AppRoutes />
-          </Layout>
-          <CookieConsent />
-          <Analytics />
-        </TooltipProvider>
+        <BeeProvider>
+          <TooltipProvider>
+            <DocumentLanguageSync />
+            <Toaster />
+            <Sonner />
+            <ScrollToTop />
+            <Layout>
+              <AppRoutes />
+            </Layout>
+            <CookieConsent />
+            <Analytics />
+          </TooltipProvider>
+        </BeeProvider>
       </ThemeProvider>
     </AuthProvider>
   </QueryClientProvider>

@@ -1,20 +1,22 @@
-import { ReactNode, useState } from "react";
-import { MessageSquareMore } from "lucide-react";
+import { ReactNode } from "react";
+import { Bot, MessageSquareMore } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import BeePanel from "@/components/BeePanel";
+import TextSelectionTooltip from "@/components/TextSelectionTooltip";
+import { useBee } from "@/contexts/BeeContext";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
-  const [beeOpen, setBeeOpen] = useState(false);
   const { pathname } = useLocation();
   const { t } = useTranslation();
+  const { context, copilotOpen, openCopilot } = useBee();
   const hideBeeWidget = pathname === "/ai-assistant";
 
   return (
@@ -22,16 +24,27 @@ const Layout = ({ children }: LayoutProps) => {
       <Navigation />
       <main className="flex-1">{children}</main>
       <Footer />
+      <TextSelectionTooltip onAskBee={(prompt) => openCopilot(prompt)} />
 
       {!hideBeeWidget ? (
         <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex max-w-sm flex-col items-end gap-3">
-          <div className="pointer-events-auto">{beeOpen ? <BeePanel open={beeOpen} onOpenChange={setBeeOpen} /> : null}</div>
+          <div className="pointer-events-auto">
+            <BeePanel />
+          </div>
           <Button
-            onClick={() => setBeeOpen((current) => !current)}
-            className="pointer-events-auto h-12 rounded-2xl px-4 shadow-lg"
+            onClick={() => openCopilot()}
+            className="pointer-events-auto h-14 rounded-[22px] border border-primary/30 bg-primary px-5 shadow-[0_18px_50px_rgba(255,138,61,0.28)]"
           >
-            <MessageSquareMore className="mr-2 h-4 w-4" />
-            {t("layout.beeToggle")}
+            <div className="mr-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-primary-foreground/18">
+              <Bot className="h-4 w-4" />
+            </div>
+            <div className="text-left">
+              <div className="text-sm font-semibold">{t("layout.beeToggle")}</div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-primary-foreground/75">
+                {copilotOpen ? t("bee.copilotOpen") : context.chip}
+              </div>
+            </div>
+            <MessageSquareMore className="ml-3 h-4 w-4" />
           </Button>
         </div>
       ) : null}

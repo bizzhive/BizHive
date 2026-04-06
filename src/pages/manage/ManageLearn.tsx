@@ -1,24 +1,12 @@
-import { RouteDetailPage } from "@/components/site/RouteDetailPage";
+import LearnPage from "@/components/LearnPage";
+import { growChapters } from "@/content/learning";
 
 const ManageLearn = () => (
-  <RouteDetailPage
-    eyebrow="Learn"
+  <LearnPage
     title="Growth learn track"
-    description="A clearer learning track for operators who need discipline around metrics, execution, and scale readiness."
-    sections={[
-      {
-        title: "Operating cadence",
-        body: "Learn what to review weekly, which metrics matter early, and how to spot slippage before it becomes expensive.",
-      },
-      {
-        title: "Team clarity",
-        body: "Keep ownership, communication, and workflow expectations stable as the company starts to grow.",
-      },
-      {
-        title: "Scale decisions",
-        body: "Know when to invest deeper in channels, hiring, systems, and funding conversations.",
-      },
-    ]}
+    subtitle="Fifteen chapters for operating rhythm, metrics, team clarity, funding readiness, and durable business growth."
+    chapters={growChapters}
+    pageSlug="manage-learn"
   />
 );
 

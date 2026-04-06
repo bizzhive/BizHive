@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -39,7 +39,7 @@ const Blog = () => {
           <Surface className="space-y-4">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search articles" className="h-12 rounded-2xl pl-11" />
+              <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("blog.searchPlaceholder")} className="h-12 rounded-2xl pl-11" />
             </div>
             <div className="flex flex-wrap gap-2">
               {categories.map((item) => (
@@ -56,7 +56,7 @@ const Blog = () => {
               ))}
             </div>
             <div className="panel-muted p-4 text-sm leading-7 text-muted-foreground">
-              The blog now stays public and useful even when live CMS content is still being rebuilt. If there are no published database posts, curated editorial fallbacks fill the gap.
+              {t("blog.note")}
             </div>
           </Surface>
 
@@ -85,3 +85,4 @@ const Blog = () => {
 };
 
 export default Blog;
+

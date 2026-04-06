@@ -1,24 +1,12 @@
-import { RouteDetailPage } from "@/components/site/RouteDetailPage";
+import LearnPage from "@/components/LearnPage";
+import { resourcesChapters } from "@/content/learning";
 
 const ResourcesLearn = () => (
-  <RouteDetailPage
-    eyebrow="Learn"
+  <LearnPage
     title="Resource navigation guide"
-    description="This route explains how documents, blogs, public legal pages, and community spaces are meant to support the founder journey."
-    sections={[
-      {
-        title: "Documents",
-        body: "Use the library for official links, practical templates, and saved document access instead of scattered downloads.",
-      },
-      {
-        title: "Blogs",
-        body: "Use the published blog as the public editorial layer for playbooks, explainers, and founder thinking.",
-      },
-      {
-        title: "Community",
-        body: "Use community rooms for ongoing discussions, updates, and peer questions without losing track of the active thread.",
-      },
-    ]}
+    subtitle="A guided walkthrough of how the library, blog, documents, and community should support real founder work."
+    chapters={resourcesChapters}
+    pageSlug="resources-learn"
   />
 );
 

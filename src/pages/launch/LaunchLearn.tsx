@@ -1,24 +1,12 @@
-import { RouteDetailPage } from "@/components/site/RouteDetailPage";
+import LearnPage from "@/components/LearnPage";
+import { launchChapters } from "@/content/learning";
 
 const LaunchLearn = () => (
-  <RouteDetailPage
-    eyebrow="Learn"
+  <LearnPage
     title="Launch learn track"
-    description="A compact guide to registrations, operating prep, and what launch readiness actually looks like for a small team."
-    sections={[
-      {
-        title: "Operational basics",
-        body: "Understand the registrations, workflows, and team responsibilities that need to be in place before launch.",
-      },
-      {
-        title: "Risk reduction",
-        body: "Use simple legal and tax preparation to reduce avoidable delays and mistakes right before go-live.",
-      },
-      {
-        title: "Go-live sequencing",
-        body: "Coordinate announcements, onboarding, customer-facing materials, and internal checklists in the right order.",
-      },
-    ]}
+    subtitle="Fifteen practical chapters covering business structure, registrations, launch readiness, legal basics, and a calm go-live workflow."
+    chapters={launchChapters}
+    pageSlug="launch-learn"
   />
 );
 

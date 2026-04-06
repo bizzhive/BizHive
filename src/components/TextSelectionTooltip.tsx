@@ -1,12 +1,13 @@
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import BeeIcon from "./BeeIcon";
+import { useTranslation } from "react-i18next";
 
 interface TextSelectionTooltipProps {
   onAskBee: (text: string) => void;
 }
 
 const TextSelectionTooltip = ({ onAskBee }: TextSelectionTooltipProps) => {
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [selectedText, setSelectedText] = useState("");
@@ -79,7 +80,7 @@ const TextSelectionTooltip = ({ onAskBee }: TextSelectionTooltipProps) => {
       }}
     >
       <BeeIcon className="w-4 h-4" />
-      Ask Bee
+      {t("nav.askBee")}
     </button>
   );
 };

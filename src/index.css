@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,65 +6,65 @@
 
 @layer base {
   :root {
-    --background: 218 33% 97%;
-    --foreground: 222 32% 12%;
+    --background: 28 37% 96%;
+    --foreground: 16 20% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 32% 12%;
+    --card: 30 40% 98%;
+    --card-foreground: 16 20% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 32% 12%;
+    --popover-foreground: 16 20% 12%;
 
-    --primary: 27 98% 54%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 25 95% 57%;
+    --primary-foreground: 32 66% 98%;
 
-    --secondary: 220 26% 93%;
-    --secondary-foreground: 222 32% 16%;
+    --secondary: 28 30% 92%;
+    --secondary-foreground: 16 20% 18%;
 
-    --muted: 220 24% 95%;
-    --muted-foreground: 220 11% 42%;
+    --muted: 26 28% 93%;
+    --muted-foreground: 20 10% 42%;
 
-    --accent: 218 31% 91%;
-    --accent-foreground: 222 32% 16%;
+    --accent: 26 44% 90%;
+    --accent-foreground: 16 20% 16%;
 
-    --destructive: 0 78% 55%;
+    --destructive: 2 74% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 18% 87%;
-    --input: 220 18% 87%;
-    --ring: 27 98% 54%;
+    --border: 25 22% 85%;
+    --input: 25 22% 85%;
+    --ring: 25 95% 57%;
 
-    --radius: 1rem;
+    --radius: 1.125rem;
   }
 
   .dark {
-    --background: 220 23% 8%;
-    --foreground: 220 17% 95%;
+    --background: 14 23% 8%;
+    --foreground: 28 42% 95%;
 
-    --card: 220 20% 11%;
-    --card-foreground: 220 17% 95%;
+    --card: 14 22% 11%;
+    --card-foreground: 28 42% 95%;
 
-    --popover: 220 20% 11%;
-    --popover-foreground: 220 17% 95%;
+    --popover: 14 22% 11%;
+    --popover-foreground: 28 42% 95%;
 
-    --primary: 27 96% 57%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 25 94% 60%;
+    --primary-foreground: 16 33% 12%;
 
-    --secondary: 219 18% 16%;
-    --secondary-foreground: 220 17% 95%;
+    --secondary: 13 18% 16%;
+    --secondary-foreground: 28 42% 95%;
 
-    --muted: 220 18% 14%;
-    --muted-foreground: 218 10% 68%;
+    --muted: 12 16% 15%;
+    --muted-foreground: 26 18% 72%;
 
-    --accent: 220 19% 18%;
-    --accent-foreground: 220 17% 95%;
+    --accent: 14 22% 18%;
+    --accent-foreground: 28 42% 95%;
 
-    --destructive: 0 70% 49%;
+    --destructive: 4 68% 54%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 16% 21%;
-    --input: 220 16% 21%;
-    --ring: 27 96% 57%;
+    --border: 12 16% 24%;
+    --input: 12 16% 24%;
+    --ring: 25 94% 60%;
   }
 
   * {
@@ -80,14 +80,16 @@
     font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
     min-height: 100vh;
     background-image:
-      radial-gradient(circle at top, rgba(255, 142, 51, 0.08), transparent 28%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(245, 247, 251, 0.98));
+      radial-gradient(circle at top left, rgba(255, 184, 127, 0.36), transparent 28%),
+      radial-gradient(circle at 80% 0%, rgba(255, 122, 86, 0.16), transparent 22%),
+      linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(248, 240, 232, 0.98));
   }
 
   .dark body {
     background-image:
-      radial-gradient(circle at top, rgba(255, 142, 51, 0.1), transparent 24%),
-      linear-gradient(180deg, rgba(13, 17, 23, 0.98), rgba(10, 14, 20, 1));
+      radial-gradient(circle at top left, rgba(255, 145, 87, 0.18), transparent 26%),
+      radial-gradient(circle at 82% 2%, rgba(176, 76, 58, 0.16), transparent 24%),
+      linear-gradient(180deg, rgba(24, 17, 16, 0.99), rgba(14, 10, 10, 1));
   }
 
   h1,
@@ -96,30 +98,90 @@
   h4,
   h5,
   h6 {
-    font-family: "Sora", "Manrope", ui-sans-serif, system-ui, sans-serif;
+    font-family: "Outfit", "Manrope", ui-sans-serif, system-ui, sans-serif;
     letter-spacing: -0.04em;
   }
 
   ::selection {
-    background: rgba(255, 142, 51, 0.18);
+    background: rgba(255, 141, 67, 0.26);
   }
 }
 
 @layer components {
   .page-shell {
-    @apply min-h-screen pb-16 pt-5 sm:pt-6;
+    @apply min-h-screen pb-14 pt-4 sm:pt-5;
   }
 
   .page-stack {
-    @apply flex flex-col gap-5 sm:gap-6;
+    @apply flex flex-col gap-4 sm:gap-5;
   }
 
   .panel-surface {
-    @apply rounded-[24px] border border-border/80 bg-card shadow-[0_10px_40px_rgba(15,23,42,0.06)] backdrop-blur;
+    @apply rounded-[28px] border border-border/70 bg-card backdrop-blur-md;
+    box-shadow: 0 12px 44px rgba(100, 61, 34, 0.08);
+    background-color: hsl(var(--card) / 0.92);
+  }
+
+  .dark .panel-surface {
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
   }
 
   .panel-muted {
-    @apply rounded-[20px] border border-border/70 bg-muted/55;
+    @apply rounded-[22px] border border-border/70 bg-muted backdrop-blur-sm;
+    background-color: hsl(var(--muted) / 0.45);
+  }
+
+  .glass-button {
+    @apply rounded-2xl border border-border/70 bg-background px-4 font-medium text-foreground transition-colors hover:bg-accent;
+    background-color: hsl(var(--background) / 0.65);
+  }
+
+  .glass-icon-button {
+    @apply h-11 w-11 rounded-2xl border border-border/70 bg-background text-foreground transition-colors hover:bg-accent;
+    background-color: hsl(var(--background) / 0.65);
+  }
+
+  .nav-shell {
+    @apply flex items-center justify-between gap-3 rounded-[28px] border border-border/70 bg-card px-3 py-3 shadow-[0_18px_40px_rgba(96,64,41,0.08)] backdrop-blur-2xl sm:px-4;
+    background-color: hsl(var(--card) / 0.86);
+  }
+
+  .dark .nav-shell {
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+  }
+
+  .nav-cluster {
+    @apply flex flex-wrap items-center gap-1 rounded-[24px] border border-border/60 bg-background p-1.5;
+    background-color: hsl(var(--background) / 0.55);
+  }
+
+  .nav-link {
+    @apply flex items-center gap-2 rounded-[18px] px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/70 hover:text-foreground;
+  }
+
+  .nav-link-active {
+    @apply bg-foreground text-background shadow-[0_10px_22px_rgba(0,0,0,0.12)];
+  }
+
+  .nav-mobile-link {
+    @apply flex items-center gap-2 rounded-[18px] border border-border/70 bg-background px-3 py-3 text-sm font-medium text-foreground;
+    background-color: hsl(var(--background) / 0.55);
+  }
+
+  .nav-mobile-link-active {
+    @apply border-primary/30 bg-primary/10 text-foreground;
+  }
+
+  .brand-lockup {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .brand-mark {
+    @apply flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary text-primary-foreground shadow-[0_16px_32px_rgba(255,138,61,0.28)];
+  }
+
+  .bee-copilot {
+    @apply panel-surface overflow-hidden;
   }
 
   .compact-scroll {
@@ -128,6 +190,7 @@
 
   .compact-scroll::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
   }
 
   .compact-scroll::-webkit-scrollbar-track {
@@ -137,6 +200,14 @@
   .compact-scroll::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
     border-radius: 999px;
+  }
+
+  .hero-grid {
+    @apply grid gap-4 xl:grid-cols-[1.08fr_0.92fr];
+  }
+
+  .workspace-grid {
+    @apply grid gap-4 xl:grid-cols-[1.15fr_0.85fr];
   }
 }
 

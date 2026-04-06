@@ -24,11 +24,11 @@ type AdminAccessDialogProps = {
 };
 
 export const AdminAccessDialog = ({
-  description = "Enter the temporary admin password to open the control panel.",
+  description = "Enter the shared admin password to open the BizHive control panel.",
   onOpenChange,
   onSuccess,
   open,
-  title = "Temporary Admin Access",
+  title = "Admin access",
   trigger,
 }: AdminAccessDialogProps) => {
   const [internalOpen, setInternalOpen] = useState(false);
@@ -64,7 +64,7 @@ export const AdminAccessDialog = ({
 
     try {
       await verifyTemporaryAdminPassword(password.trim());
-      toast({ title: "Access granted", description: "Admin controls are now unlocked for this session." });
+      toast({ title: "Access granted", description: "The control panel is now unlocked for this session." });
       setDialogOpen(false);
       onSuccess?.();
     } catch (error) {
@@ -111,7 +111,7 @@ export const AdminAccessDialog = ({
 
           <DialogFooter className="gap-3 sm:justify-between sm:space-x-0">
             <p className="text-xs leading-5 text-muted-foreground">
-              This temporary password gate works even when nobody is logged in.
+              Anyone with the correct password can open the admin panel from the footer.
             </p>
             <Button type="submit" disabled={submitting || !password.trim()} className="h-11 rounded-2xl px-5">
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
