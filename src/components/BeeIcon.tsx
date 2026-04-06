@@ -1,22 +1,15 @@
-const BeeIcon = ({ className = "w-8 h-8" }: { className?: string }) => (
-  <svg viewBox="0 0 40 40" className={className} xmlns="http://www.w3.org/2000/svg">
+const BeeIcon = ({ className = "h-8 w-8" }: { className?: string }) => (
+  <svg viewBox="0 0 48 48" className={className} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <defs>
-      <linearGradient id="hiveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#F59E0B" />
-        <stop offset="100%" stopColor="#EA580C" />
+      <linearGradient id="bizhive-mark" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FF9B40" />
+        <stop offset="100%" stopColor="#FF6A1A" />
       </linearGradient>
     </defs>
-    {/* Clean hexagon */}
-    <polygon
-      points="20,2 36,11 36,29 20,38 4,29 4,11"
-      fill="url(#hiveGrad)"
-      rx="2"
-    />
-    {/* Abstract B letterform */}
+    <rect x="4" y="4" width="40" height="40" rx="14" fill="url(#bizhive-mark)" />
     <path
-      d="M15 11h4.5c2.5 0 4.5 1.5 4.5 3.5s-1.2 3-3 3.3c2.2.3 3.5 1.8 3.5 3.7 0 2.2-2 3.5-4.5 3.5H15V11z M18 12.5v5h1.5c1.8 0 2.8-1 2.8-2.5s-1-2.5-2.8-2.5H18z M18 19v5.5h2c2 0 3-1 3-2.8 0-1.7-1-2.7-3-2.7H18z"
-      fill="white"
-      opacity="0.95"
+      d="M18 14h9.5c3.9 0 6.5 2.2 6.5 5.4 0 2.3-1.2 3.9-3.3 4.7 2.7.7 4.3 2.7 4.3 5.5 0 3.7-2.9 6-7.5 6H18V14Zm6 5v4.8h2.6c1.6 0 2.5-.9 2.5-2.3 0-1.6-1-2.5-2.8-2.5H24Zm0 9.1V33h3.1c1.9 0 2.9-.9 2.9-2.4 0-1.7-1.1-2.5-3.3-2.5H24Z"
+      fill="#fff"
     />
   </svg>
 );

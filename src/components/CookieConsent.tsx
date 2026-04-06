@@ -1,44 +1,47 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const CookieConsent = () => {
   const [show, setShow] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
-    if (!consent) setShow(true);
+    if (!localStorage.getItem("cookie-consent")) {
+      setShow(true);
+    }
   }, []);
 
-  const handleConsent = (accepted: boolean) => {
-    localStorage.setItem("cookie-consent", accepted ? "accepted" : "declined");
+  const handleConsent = (value: "accepted" | "declined") => {
+    localStorage.setItem("cookie-consent", value);
     setShow(false);
   };
 
   return (
     <AnimatePresence>
-      {show && (
+      {show ? (
         <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-0 left-0 right-0 z-50 p-4"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 24 }}
+          className="fixed inset-x-0 bottom-4 z-50 px-4"
         >
-          <div className="mx-auto max-w-4xl rounded-xl border bg-background/95 backdrop-blur-sm p-4 shadow-lg flex flex-col sm:flex-row items-center gap-4">
-            <p className="text-sm text-muted-foreground flex-1">{t("cookie.message")}</p>
-            <div className="flex gap-2 shrink-0">
-              <Button variant="outline" size="sm" onClick={() => handleConsent(false)}>
+          <div className="mx-auto flex max-w-4xl flex-col gap-4 rounded-[24px] border border-border/80 bg-card p-4 shadow-[0_18px_60px_rgba(15,23,42,0.16)] sm:flex-row sm:items-center">
+            <p className="flex-1 text-sm leading-6 text-muted-foreground">
+              {t("cookie.body")}
+            </p>
+            <div className="flex gap-2">
+              <Button variant="ghost" className="rounded-2xl border border-border/80" onClick={() => handleConsent("declined")}>
                 {t("cookie.decline")}
               </Button>
-              <Button size="sm" onClick={() => handleConsent(true)}>
+              <Button className="rounded-2xl" onClick={() => handleConsent("accepted")}>
                 {t("cookie.accept")}
               </Button>
             </div>
           </div>
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 };

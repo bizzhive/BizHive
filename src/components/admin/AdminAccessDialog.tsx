@@ -12,7 +12,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import { verifyTemporaryAdminPassword } from "@/services/admin/access";
 
 type AdminAccessDialogProps = {
@@ -82,9 +81,9 @@ export const AdminAccessDialog = ({
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
-      <DialogContent className="overflow-hidden rounded-[28px] border-border/70 bg-background/98 p-0 shadow-[0_30px_80px_rgba(16,12,8,0.28)] sm:max-w-md">
-        <div className="border-b border-border/70 bg-[radial-gradient(circle_at_top,_rgba(255,145,77,0.18),_transparent_52%),linear-gradient(180deg,_rgba(255,255,255,0.04),_transparent)] px-6 py-5">
-          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12 text-primary shadow-[inset_0_0_0_1px_rgba(255,145,77,0.18)]">
+      <DialogContent className="overflow-hidden rounded-[28px] border-border/80 bg-card p-0 shadow-[0_24px_80px_rgba(15,23,42,0.2)] sm:max-w-md">
+        <div className="border-b border-border/80 px-6 py-5">
+          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <LockKeyhole className="h-5 w-5" />
           </div>
           <DialogHeader className="space-y-2 text-left">
@@ -106,16 +105,13 @@ export const AdminAccessDialog = ({
               placeholder="Enter password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className={cn(
-                "h-12 rounded-2xl border-border/70 bg-muted/40 px-4",
-                "focus-visible:ring-2 focus-visible:ring-primary/30"
-              )}
+              className="h-12 rounded-2xl border-border/80 bg-muted/40 px-4"
             />
           </div>
 
           <DialogFooter className="gap-3 sm:justify-between sm:space-x-0">
             <p className="text-xs leading-5 text-muted-foreground">
-              This temporary gate is isolated so it can be replaced later with role-based auth.
+              This temporary password gate works even when nobody is logged in.
             </p>
             <Button type="submit" disabled={submitting || !password.trim()} className="h-11 rounded-2xl px-5">
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}

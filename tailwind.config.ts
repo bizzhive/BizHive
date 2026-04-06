@@ -20,7 +20,7 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: ["Manrope", "ui-sans-serif", "system-ui", "sans-serif"],
-				display: ["Space Grotesk", "Manrope", "ui-sans-serif", "system-ui", "sans-serif"],
+				display: ["Sora", "Manrope", "ui-sans-serif", "system-ui", "sans-serif"],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

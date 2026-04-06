@@ -9,6 +9,7 @@ type AuthContextValue = {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  signIn: (email: string, password: string) => Promise<unknown>;
   signUp: (email: string, password: string, fullName?: string) => Promise<unknown>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -94,6 +95,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return data;
   };
 
+  const signIn = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      throw error;
+    }
+    return data;
+  };
+
   const resendVerificationEmail = async (email: string) => {
     const { error } = await supabase.auth.resend({
       type: "signup",
@@ -125,7 +134,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     sessionStorage.removeItem("pending_verification_email");
   };
 
-  const value = { user, session, isLoading, signUp, signInWithGoogle, signOut, resendVerificationEmail };
+  const value = { user, session, isLoading, signIn, signUp, signInWithGoogle, signOut, resendVerificationEmail };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

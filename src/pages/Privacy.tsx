@@ -1,30 +1,28 @@
+import { LegalPage } from "@/components/site/LegalPage";
+
 const Privacy = () => (
-  <div className="min-h-screen bg-background">
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <h1 className="text-4xl font-bold text-foreground mb-8">Privacy Policy</h1>
-      <div className="prose dark:prose-invert max-w-none space-y-6 text-muted-foreground">
-        <p className="text-lg">Last updated: March 2026</p>
-        
-        <h2 className="text-2xl font-semibold text-foreground">1. Information We Collect</h2>
-        <p>We collect information you provide directly, including your name, email address, business details, and any other information you choose to provide when using BizHive.</p>
-
-        <h2 className="text-2xl font-semibold text-foreground">2. How We Use Your Information</h2>
-        <p>We use the information to provide, maintain, and improve our services, communicate with you, and personalize your experience on the platform.</p>
-
-        <h2 className="text-2xl font-semibold text-foreground">3. Data Security</h2>
-        <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
-
-        <h2 className="text-2xl font-semibold text-foreground">4. Third-Party Services</h2>
-        <p>We may use third-party services for authentication, analytics, and other functionality. These services have their own privacy policies.</p>
-
-        <h2 className="text-2xl font-semibold text-foreground">5. Your Rights</h2>
-        <p>You have the right to access, update, or delete your personal information at any time by contacting us or through your account settings.</p>
-
-        <h2 className="text-2xl font-semibold text-foreground">6. Contact Us</h2>
-        <p>If you have questions about this Privacy Policy, please contact us at support@bizhive.com.</p>
-      </div>
-    </div>
-  </div>
+  <LegalPage
+    title="Privacy Policy"
+    description="This policy explains how BizHive collects, stores, uses, and protects personal information when someone uses the website, creates an account, or submits information through the platform."
+    sections={[
+      {
+        title: "Information we collect",
+        body: "BizHive may collect account data, profile information, saved business context, community submissions, support messages, newsletter sign-ups, and usage information needed to operate the product. We also collect data you choose to submit in documents, tools, and onboarding forms.",
+      },
+      {
+        title: "How we use information",
+        body: "We use information to provide access to the platform, save workspace state, improve product flows, respond to support requests, maintain platform security, and communicate service updates. We may also use aggregated usage patterns to improve product design and planning.",
+      },
+      {
+        title: "Third-party services",
+        body: "BizHive uses third-party infrastructure and service providers including hosting, analytics, authentication, and database services. These providers may process information on our behalf to operate the product, subject to their own legal terms and security controls.",
+      },
+      {
+        title: "Your choices",
+        body: "You may request updates or deletion of account-linked information where legally permitted. Some operational and compliance records may need to be retained for security, fraud prevention, or legal obligations. Community posts and public-facing contributions may remain visible if they form part of shared discussion history.",
+      },
+    ]}
+  />
 );
 
 export default Privacy;

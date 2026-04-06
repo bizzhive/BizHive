@@ -2,7 +2,6 @@ import { Suspense, lazy, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
-import { ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -10,8 +9,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AdminAccessDialog } from "@/components/admin/AdminAccessDialog";
-import { LoadingState, PageHeader, SiteContainer } from "@/components/site/SitePrimitives";
+import { EmptyState, LoadingState, SiteContainer } from "@/components/site/SitePrimitives";
 import { hasTemporaryAdminAccess } from "@/services/admin/access";
+import { supportedLanguages } from "@/i18n";
 import Layout from "./components/Layout";
 import CookieConsent from "./components/CookieConsent";
 
@@ -42,6 +42,9 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
+const Cookies = lazy(() => import("./pages/Cookies"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
+const Disclaimer = lazy(() => import("./pages/Disclaimer"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const AIAssistant = lazy(() => import("./pages/AIAssistant"));
 const PlanLearn = lazy(() => import("./pages/plan/PlanLearn"));
@@ -67,28 +70,33 @@ const DocumentLanguageSync = () => {
 
   useEffect(() => {
     const language = i18n.resolvedLanguage || "en";
-    const isRtlLanguage = ["ar", "fa", "he", "ur"].includes(language);
+    const languageConfig = supportedLanguages.find((item) => item.code === language);
 
     document.documentElement.lang = language;
-    document.documentElement.dir = isRtlLanguage ? "rtl" : "ltr";
+    document.documentElement.dir = languageConfig?.dir || "ltr";
   }, [i18n.resolvedLanguage]);
 
   return null;
 };
 
-const RouteFallback = () => (
-  <div className="page-shell">
-    <SiteContainer>
-      <LoadingState
-        className="min-h-[50vh]"
-        title="Loading workspace"
-        description="We are pulling in the next page so the transition feels consistent across the product."
-      />
-    </SiteContainer>
-  </div>
-);
+const RouteFallback = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="page-shell">
+      <SiteContainer>
+        <LoadingState
+          className="min-h-[50vh]"
+          title={t("routeFallback.title")}
+          description={t("routeFallback.description")}
+        />
+      </SiteContainer>
+    </div>
+  );
+};
 
 const AdminPanelRoute = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [accessGranted, setAccessGranted] = useState(() => hasTemporaryAdminAccess());
   const [gateOpen, setGateOpen] = useState(() => !hasTemporaryAdminAccess());
@@ -101,16 +109,9 @@ const AdminPanelRoute = () => {
     <>
       <div className="page-shell">
         <SiteContainer>
-          <PageHeader
-            eyebrow="Protected area"
-            title="Admin access is gated"
-            description="Use the temporary password to open the control panel. This gate is isolated so it can be replaced with role-based auth later without rebuilding the admin UI."
-            actions={
-              <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-background/70 px-4 py-3 text-sm font-medium text-foreground">
-                <ShieldCheck className="h-4 w-4 text-primary" />
-                Temporary access control enabled
-              </div>
-            }
+          <EmptyState
+            title={t("footer.adminTitle")}
+            description={t("footer.adminBody")}
           />
         </SiteContainer>
       </div>
@@ -164,6 +165,9 @@ const AppRoutes = () => {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/cookies" element={<Cookies />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/subscribe" element={<Contact />} />
         <Route path="/admin" element={<AdminPanelRoute />} />
