@@ -27,13 +27,11 @@ const Layout = ({ children }: LayoutProps) => {
       <TextSelectionTooltip onAskBee={(prompt, selectedText) => openCopilot(prompt, selectedText)} />
 
       {!hideBeeWidget ? (
-        <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex max-w-sm flex-col items-end gap-3">
-          <div className="pointer-events-auto">
-            <BeePanel />
-          </div>
+        <>
+          <BeePanel />
           <Button
             onClick={() => openCopilot()}
-            className="pointer-events-auto h-14 rounded-[22px] border border-primary/30 bg-primary px-5 shadow-[0_18px_50px_rgba(255,138,61,0.28)]"
+            className={`bee-fab ${copilotOpen ? "translate-x-[120%]" : ""}`}
           >
             <div className="mr-3 flex h-9 w-9 items-center justify-center rounded-2xl bg-primary-foreground/18">
               <Bot className="h-4 w-4" />
@@ -46,7 +44,7 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
             <MessageSquareMore className="ml-3 h-4 w-4" />
           </Button>
-        </div>
+        </>
       ) : null}
     </div>
   );

@@ -1,6 +1,6 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle2, Sparkles, Star, Wand2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Star, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClayGraphic } from "@/components/ClayGraphic";
 import { PremiumModal } from "@/components/PremiumModal";
@@ -44,121 +44,108 @@ const Index = () => {
     [activeTestimonial, testimonials]
   );
 
+  const ribbonTestimonials = useMemo(() => [...testimonials.slice(0, 10), ...testimonials.slice(0, 10)], [testimonials]);
+
   return (
     <div className="page-shell">
       <SiteContainer className="page-stack">
         <PageHeader
-          eyebrow="For every founder, shop owner, student builder, and operator"
-          title="From a tech startup to a neighborhood store, no business should feel unscalable."
-          description="BizHive is your one founder operating system for planning, launch, growth, compliance, documents, learning, and AI-guided work. It is designed to feel vivid, spacious, and clear on big desktop screens instead of hiding the product inside cramped cards."
+          eyebrow="India-first founder workspace"
+          title="Plan smarter, launch faster, and grow with more confidence."
+          description="From a tech startup to a neighborhood store, BizHive brings planning, launch readiness, compliance, documents, learning, incubators, and Bee AI into one clean operating system."
           actions={
             <>
-              <Button asChild size="lg" className="h-12 rounded-2xl px-5">
+              <Button asChild size="lg" className="h-11 rounded-2xl px-5">
                 <Link to="/dashboard">
                   Open workspace
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="ghost" size="lg" className="glass-button h-12">
-                <Link to="/ai-assistant">Open Bee AI</Link>
+              <Button asChild variant="ghost" size="lg" className="glass-button h-11">
+                <Link to="/tools">Explore tools</Link>
               </Button>
               <PremiumModal
                 trigger={
-                  <Button variant="ghost" size="lg" className="glass-button h-12">
+                  <Button variant="ghost" size="lg" className="glass-button h-11">
                     Preview Premium
                   </Button>
                 }
               />
             </>
           }
-          visual={<ClayGraphic className="h-full min-h-[320px] xl:min-h-[430px]" variant="default" />}
+          visual={<ClayGraphic className="h-full min-h-[300px] xl:min-h-[400px]" variant="default" />}
         />
 
-        <section className="feature-wall">
-          <Surface className="space-y-5">
+        <section className="soft-grid">
+          <MetricTile label="Available languages" value="7" hint="English, Hindi, Gujarati, Kannada, Telugu, Marathi, and Tamil." />
+          <MetricTile label="Core founder tools" value="7+" hint="Business canvas, market research, financials, pitch prep, planning, and legal workflows." />
+          <MetricTile label="Free learning chapters" value="45+" hint="Fifteen chapters each across Plan, Launch, and Grow." />
+          <MetricTile label="Bee modes" value="2" hint="Use Bee AI from the nav as a full workspace or from the right-side copilot." />
+        </section>
+
+        <section className="split-stage">
+          <Surface className="space-y-4">
             <SectionHeading
-              eyebrow="Everything visible up front"
-              title="Core product surfaces"
-              description="The homepage should explain the product in one pass: where to begin, what gets saved, what Bee does, and how BizHive turns scattered founder tasks into one operating system."
+              eyebrow="What you can do here"
+              title="The main product features, shown clearly"
+              description="Every major capability lives on the home page so new users can understand the value before they start clicking around."
             />
-            <div className="grid gap-4 xl:grid-cols-3">
-              {workspaceHighlights.map((item) => {
+            <div className="feature-rail">
+              {heroFeatureSpotlights.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link key={item.id} to={item.href} className="panel-muted card-lift group p-5">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
+                  <Link key={item.id} to={item.href} className="panel-muted card-lift p-4 transition-colors hover:bg-accent/65">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <div className="mt-5 font-display text-[1.9rem] font-semibold tracking-[-0.05em] text-foreground">{item.title}</div>
+                    <div className="mt-4 font-display text-xl font-semibold tracking-[-0.04em] text-foreground">{item.title}</div>
                     <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
-                    <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-primary">
-                      Explore
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </div>
                   </Link>
                 );
               })}
             </div>
           </Surface>
 
-          <div className="grid gap-5">
-            <Surface className="overflow-hidden">
-              <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px] xl:items-end">
-                <div className="space-y-4">
-                  <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Why the layout feels bigger now
-                  </div>
-                  <div className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
-                    Visual depth, wider composition, and fewer dead zones.
-                  </div>
-                  <p className="text-sm leading-7 text-muted-foreground">
-                    Instead of stacking one small card after another, BizHive now uses broader work stages, larger illustration anchors, and fuller desktop-width sections so the app feels premium instead of compressed.
-                  </p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {[
-                      "Clay-style 3D graphics and soft motion for product personality.",
-                      "Route sections that spread across large screens instead of shrinking into a center column.",
-                      "Feature groupings that read as product stories, not just isolated cards.",
-                      "A clearer desktop rhythm between content, illustrations, stats, and actions.",
-                    ].map((item) => (
-                      <div key={item} className="panel-muted flex items-start gap-3 p-4">
-                        <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                        <p className="text-sm leading-7 text-muted-foreground">{item}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <ClayGraphic className="h-full min-h-[320px]" variant="tools" compact />
-              </div>
-            </Surface>
-
-            <div className="metrics-strip">
-            <MetricTile label="Available languages" value="7" hint="English, Hindi, Gujarati, Kannada, Telugu, Marathi, and Tamil." />
-            <MetricTile label="Core founder tools" value="7+" hint="Canvas, SWOT, startup math, financials, pitch prep, market research, and business planning." />
-            <MetricTile label="Learning chapters" value="45+" hint="Fifteen chapters each across Plan, Launch, and Grow, all free to access." />
-              <MetricTile label="Bee surfaces" value="2" hint="Open Bee from the nav as a full workspace or from the bottom-right copilot." />
-            </div>
-          </div>
-        </section>
-
-        <section className="visual-balance-grid">
-          <Surface className="space-y-5 overflow-hidden">
+          <Surface className="space-y-4">
             <SectionHeading
-              eyebrow="Featured capabilities"
-              title="Bee, pitching, documents, signatures, and regional language access"
-              description="These are the product stories users should understand before anyone asks them to hunt through navigation."
+              eyebrow="Choose your path"
+              title="Start where your business is right now"
+              description="The platform stays easier to navigate when the major paths are obvious from the beginning."
             />
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
-              <div className="grid gap-3 md:grid-cols-2">
-              {heroFeatureSpotlights.map((item) => {
+            <div className="grid gap-3">
+              {workspaceHighlights.map((item) => {
                 const Icon = item.icon;
                 return (
-                    <Link key={item.id} to={item.href} className="panel-muted card-lift p-4 transition-colors hover:bg-accent/65">
+                  <Link key={item.id} to={item.href} className="panel-muted card-lift flex items-start gap-4 p-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">{item.title}</div>
+                      <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </Surface>
+        </section>
+
+        <section className="three-up">
+          <Surface className="space-y-4">
+            <SectionHeading
+              eyebrow="Founder tool stack"
+              title="Use real tools, not placeholder widgets"
+              description="Every tool is meant to save work, reopen later, and support Bee-assisted guidance when needed."
+            />
+            <div className="grid gap-3">
+              {toolSpotlights.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link key={item.id} to={item.href} className="panel-muted card-lift p-4 transition-colors hover:bg-accent/65">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
-                        <Icon className="h-5 w-5" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-primary/12 text-primary">
+                        <Icon className="h-4 w-4" />
                       </div>
                       <div className="font-semibold text-foreground">{item.title}</div>
                     </div>
@@ -166,28 +153,93 @@ const Index = () => {
                   </Link>
                 );
               })}
-              </div>
-
-              <div className="hidden xl:block">
-                <ClayGraphic className="h-full min-h-[420px]" variant="ai" compact />
-              </div>
             </div>
           </Surface>
 
           <Surface className="space-y-4">
             <SectionHeading
-              eyebrow="Knowledge sources"
-              title="Grounded in official and publicly available references"
-              description="BizHive uses public founder knowledge, official portals, and reusable preparation resources so users know where the information is coming from."
+              eyebrow="Founder outcomes"
+              title="Why people stay inside BizHive"
+              description="The product is built to reduce switching, guesswork, and incomplete workflows."
             />
             <div className="grid gap-3">
+              {[
+                "Plan, launch, and grow inside one connected product.",
+                "Reuse saved drafts, legal documents, and tool outputs instead of starting over.",
+                "Switch between seven Indian-language UI modes without changing authored blogs or community posts.",
+                "Use Bee AI for route-aware founder help without losing your conversation history.",
+              ].map((item) => (
+                <div key={item} className="panel-muted flex items-start gap-3 p-4">
+                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                  <p className="text-sm leading-7 text-muted-foreground">{item}</p>
+                </div>
+              ))}
+            </div>
+          </Surface>
+
+          <Surface className="overflow-hidden">
+            <ClayGraphic className="h-full min-h-[360px]" variant="ai" compact />
+          </Surface>
+        </section>
+
+        <section className="space-y-4">
+          <SectionHeading
+            eyebrow="Founder voices"
+            title="A rotating ribbon of real product feedback"
+            description="Testimonials stay visible on the homepage so the product feels active, social, and alive."
+          />
+
+          {featuredTestimonial ? (
+            <Surface className="grid gap-4 xl:grid-cols-[0.75fr_1.25fr] xl:items-center">
+              <div className="space-y-3">
+                <div className="flex items-center gap-1 text-primary">
+                  {Array.from({ length: featuredTestimonial.rating }).map((_, index) => (
+                    <Star key={index} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <div className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+                  "{featuredTestimonial.feedback}"
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {featuredTestimonial.display_name} � {featuredTestimonial.profession}
+                </div>
+              </div>
+
+              <div className="compact-scroll overflow-x-auto pb-2">
+                <div className="ribbon-track ribbon-marquee">
+                  {ribbonTestimonials.map((item, index) => (
+                    <button
+                      key={`${item.id}-${index}`}
+                      type="button"
+                      onClick={() => setActiveTestimonial(index % Math.max(testimonials.length, 1))}
+                      className="panel-muted min-w-[260px] p-4 text-left transition-colors hover:bg-accent/65"
+                    >
+                      <div className="text-sm font-semibold text-foreground">{item.display_name}</div>
+                      <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{item.profession}</div>
+                      <p className="mt-3 line-clamp-3 text-sm leading-7 text-muted-foreground">{item.feedback}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </Surface>
+          ) : null}
+        </section>
+
+        <section className="split-stage">
+          <Surface className="space-y-4">
+            <SectionHeading
+              eyebrow="Official knowledge sources"
+              title="Grounded in trusted public references"
+              description="BizHive points founders toward public, reusable, India-relevant sources for compliance, registration, taxation, and startup support."
+            />
+            <div className="grid gap-3 md:grid-cols-2">
               {officialKnowledgeSources.map((source) => (
                 <a
                   key={source.title}
                   href={source.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="panel-muted p-4 transition-colors hover:bg-accent/65"
+                  className="panel-muted card-lift p-4 transition-colors hover:bg-accent/65"
                 >
                   <div className="font-semibold text-foreground">{source.title}</div>
                   <p className="mt-2 text-sm leading-7 text-muted-foreground">{source.body}</p>
@@ -195,112 +247,40 @@ const Index = () => {
               ))}
             </div>
           </Surface>
-        </section>
 
-        <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-          <Surface className="space-y-4 overflow-hidden">
+          <Surface className="space-y-4">
             <SectionHeading
-              eyebrow="Rotating founder feedback"
-              title="People should instantly feel where they are and what to do next"
-              description="Testimonials rotate from seeded sample feedback and future user submissions from the footer widget."
+              eyebrow="Latest founder reading"
+              title="Public blogs stay visible without signup friction"
+              description="New users should be able to read, learn, and understand the product before they commit."
             />
+            <div className="grid gap-3">
+              {latestPosts.map((post) => (
+                <Link key={post.slug} to={`/blog/${post.slug}`} className="panel-muted card-lift p-4 transition-colors hover:bg-accent/65">
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{post.category}</div>
+                  <div className="mt-2 font-display text-xl font-semibold tracking-[-0.04em] text-foreground">
+                    {post.title}
+                  </div>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">{post.excerpt}</p>
+                </Link>
+              ))}
 
-            {featuredTestimonial ? (
-              <div className="rounded-[26px] border border-primary/20 bg-primary/[0.08] p-5">
-                <div className="mb-3 flex items-center gap-1 text-primary">
-                  {Array.from({ length: featuredTestimonial.rating }).map((_, index) => (
-                    <Star key={index} className="h-4 w-4 fill-current" />
-                  ))}
+              <div className="panel-muted flex items-start gap-3 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-primary/12 text-primary">
+                  <TrendingUp className="h-4 w-4" />
                 </div>
-                <p className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
-                  "{featuredTestimonial.feedback}"
-                </p>
-                <div className="mt-4 text-sm text-muted-foreground">
-                  {featuredTestimonial.display_name} · {featuredTestimonial.profession}
+                <div>
+                  <div className="font-semibold text-foreground">Ready to go deeper?</div>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                    Open the workspace, choose your current path, and keep your tool outputs, learning progress, and documents in one place.
+                  </p>
+                  <Button asChild className="mt-4 h-10 rounded-2xl px-4">
+                    <Link to="/dashboard">Enter BizHive</Link>
+                  </Button>
                 </div>
               </div>
-            ) : null}
-
-            <div className="compact-scroll flex gap-3 overflow-x-auto pb-1">
-              {testimonials.slice(0, 12).map((item, index) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setActiveTestimonial(index)}
-                  className={`min-w-[260px] rounded-[24px] border p-4 text-left transition-colors ${
-                    activeTestimonial === index ? "border-primary/30 bg-primary/[0.08]" : "border-border/70 bg-muted/40"
-                  }`}
-                >
-                  <div className="text-sm font-semibold text-foreground">{item.display_name}</div>
-                  <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{item.profession}</div>
-                  <p className="mt-3 line-clamp-3 text-sm leading-7 text-muted-foreground">{item.feedback}</p>
-                </button>
-              ))}
             </div>
           </Surface>
-
-          <div className="grid gap-4">
-            <Surface className="space-y-4">
-              <SectionHeading
-                eyebrow="Founder toolkit"
-                title="Tools and workflows users will actually return to"
-                description="The rebuild makes tools saveable, Bee-assisted, and easier to reopen from the dashboard."
-              />
-              <div className="grid gap-3">
-                {toolSpotlights.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link key={item.id} to={item.href} className="panel-muted p-4 transition-colors hover:bg-accent/65">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-primary/12 text-primary">
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="font-semibold text-foreground">{item.title}</div>
-                      </div>
-                      <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.body}</p>
-                    </Link>
-                  );
-                })}
-              </div>
-            </Surface>
-
-            <Surface className="overflow-hidden">
-              <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px] xl:items-center">
-                <div className="space-y-3">
-                  <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                    <Wand2 className="h-3.5 w-3.5" />
-                    Product atmosphere
-                  </div>
-                  <div className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
-                    A founder product should feel alive, not like a spreadsheet site.
-                  </div>
-                  <p className="text-sm leading-7 text-muted-foreground">
-                    BizHive mixes practical workflows with motion, gradients, softer corners, and clay-style illustration so the interface feels welcoming to young founders without losing professional structure.
-                  </p>
-                </div>
-                <ClayGraphic className="h-full min-h-[260px]" variant="workspace" compact />
-              </div>
-            </Surface>
-
-            <Surface className="space-y-4">
-              <SectionHeading
-                eyebrow="Latest reading"
-                title="Published founder content stays visible"
-                description="Blogs remain public and readable so new users can understand the product and the founder education layer before signing in."
-              />
-              <div className="grid gap-3">
-                {latestPosts.map((post) => (
-                  <Link key={post.slug} to={`/blog/${post.slug}`} className="panel-muted p-4 transition-colors hover:bg-accent/65">
-                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{post.category}</div>
-                    <div className="mt-2 font-display text-xl font-semibold tracking-[-0.04em] text-foreground">
-                      {post.title}
-                    </div>
-                    <p className="mt-2 text-sm leading-7 text-muted-foreground">{post.excerpt}</p>
-                  </Link>
-                ))}
-              </div>
-            </Surface>
-          </div>
         </section>
       </SiteContainer>
     </div>

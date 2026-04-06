@@ -3,7 +3,7 @@ import { BookOpen, Rocket, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClayGraphic } from "@/components/ClayGraphic";
 import { launchChapters } from "@/content/learning";
-import { PageHeader, SiteContainer, Surface } from "@/components/site/SitePrimitives";
+import { PageHeader, SectionHeading, SiteContainer, Surface } from "@/components/site/SitePrimitives";
 
 const Launch = () => {
   return (
@@ -11,61 +11,53 @@ const Launch = () => {
       <SiteContainer className="page-stack">
         <PageHeader
           eyebrow="Launch"
-          title="Go live with legal, tax, operations, and customer readiness aligned"
-          description="The launch workspace is where registrations, compliance, signature, document prep, and launch learning stop fighting each other."
+          title="Go live with legal, tax, and customer readiness aligned"
+          description="The launch path keeps registration, compliance, documents, and operating checks in one place so your go-live flow stays organized."
           icon={Rocket}
-          visual={<ClayGraphic className="h-full min-h-[240px]" compact />}
+          visual={<ClayGraphic className="h-full min-h-[280px] xl:min-h-[360px]" compact variant="network" />}
           actions={
             <>
-              <Button asChild className="h-12 rounded-2xl px-5">
-                <Link to="/launch/learn">Start the 15-chapter launch track</Link>
+              <Button asChild className="h-11 rounded-2xl px-5">
+                <Link to="/launch/learn">Open learn track</Link>
               </Button>
-              <Button asChild variant="ghost" className="glass-button h-12">
+              <Button asChild variant="ghost" className="glass-button h-11">
                 <Link to="/legal">Open legal studio</Link>
               </Button>
             </>
           }
         />
 
-        <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+        <section className="split-stage">
           <Surface className="space-y-4">
-            <div className="grid gap-3 md:grid-cols-3">
-              {[
-                { title: "15 chapters", body: "Structured launch guidance from business setup through controlled go-live." },
-                { title: "Legal + tax", body: "The key launch surfaces are now placed side by side instead of across disconnected screens." },
-                { title: "Signature ready", body: "Save your signature and use it as part of legal drafting and document preparation." },
-              ].map((item) => (
-                <div key={item.title} className="panel-muted p-4">
-                  <div className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">{item.title}</div>
-                  <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="grid gap-3 md:grid-cols-3">
+            <SectionHeading
+              eyebrow="Launch actions"
+              title="What launch work should feel like"
+              description="A founder launch path should help you move from preparation to execution without losing important paperwork or readiness checks."
+            />
+            <div className="three-up">
               {[
                 {
                   title: "Legal studio",
-                  body: "Open templates, draft them, and prepare documents without leaving the product shell.",
+                  body: "Draft agreements, save them, and prepare reusable legal documents in one place.",
                   href: "/legal",
                   icon: ShieldCheck,
                 },
                 {
                   title: "Taxation",
-                  body: "Use tax guidance and calculator support without falling into a completely different design system.",
+                  body: "Use tax guidance and calculators without being thrown into a completely different UI.",
                   href: "/taxation",
                   icon: Rocket,
                 },
                 {
                   title: "Launch learn track",
-                  body: "Read the full 15-chapter launch curriculum covering readiness, compliance, and operations.",
+                  body: "Read 15 chapters covering readiness, compliance, setup, and go-live confidence.",
                   href: "/launch/learn",
                   icon: BookOpen,
                 },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link key={item.title} to={item.href} className="panel-muted p-4 transition-colors hover:bg-accent/65">
+                  <Link key={item.title} to={item.href} className="panel-muted card-lift p-4 transition-colors hover:bg-accent/65">
                     <div className="flex h-11 w-11 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
                       <Icon className="h-5 w-5" />
                     </div>
@@ -78,13 +70,21 @@ const Launch = () => {
           </Surface>
 
           <Surface className="space-y-4">
-            <div className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">Launch learning preview</div>
+            <SectionHeading
+              eyebrow="15 chapters"
+              title="Launch chapter preview"
+              description="Learn the sequence before you hit real deadlines."
+            />
             <div className="grid gap-3">
-              {launchChapters.slice(0, 5).map((chapter, index) => (
-                <div key={chapter.title} className="panel-muted p-4">
-                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Chapter {index + 1}</div>
-                  <div className="mt-2 font-semibold text-foreground">{chapter.title}</div>
-                  <p className="mt-2 text-sm leading-7 text-muted-foreground">{chapter.content[0]}</p>
+              {launchChapters.slice(0, 6).map((chapter, index) => (
+                <div key={chapter.title} className="panel-muted flex items-start gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-sm font-semibold text-primary">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground">{chapter.title}</div>
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">{chapter.content[0]}</p>
+                  </div>
                 </div>
               ))}
             </div>

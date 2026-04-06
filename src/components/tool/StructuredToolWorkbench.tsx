@@ -92,17 +92,22 @@ export const StructuredToolWorkbench = ({
           title={title}
           description={description}
           icon={Icon}
-          visual={<ClayGraphic className="h-full min-h-[240px]" compact />}
+          visual={<ClayGraphic className="h-full min-h-[280px] xl:min-h-[360px]" compact variant="tools" />}
           actions={
-            <Button className="h-12 rounded-2xl px-5" onClick={() => save(form)} disabled={isSaving}>
-              <Save className="mr-2 h-4 w-4" />
-              {isSaving ? "Saving..." : "Save work"}
-            </Button>
+            <div className="flex flex-wrap gap-3">
+              <Button className="h-11 rounded-2xl px-5" onClick={() => save(form)} disabled={isSaving}>
+                <Save className="mr-2 h-4 w-4" />
+                {isSaving ? "Saving..." : "Save work"}
+              </Button>
+              <div className="inline-flex items-center rounded-full border border-border/70 bg-background/70 px-4 py-2 text-sm text-muted-foreground">
+                {isLoading ? "Loading your saved draft..." : "Your latest saved draft reopens automatically."}
+              </div>
+            </div>
           }
         />
 
         <section className="workspace-grid">
-          <ScrollSurface className="lg:h-[46rem]">
+          <ScrollSurface className="xl:max-h-[calc(100vh-9.75rem)]">
             <div className="compact-scroll space-y-5">
               {sections.map((section) => (
                 <div key={section.title} className="panel-muted p-4 sm:p-5">
@@ -167,7 +172,7 @@ export const StructuredToolWorkbench = ({
               </p>
             </Surface>
 
-            <ScrollSurface className="lg:h-[23rem]">
+            <ScrollSurface className="xl:max-h-[20rem]">
               <div className="compact-scroll space-y-3">
                 <div>
                   <div className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">{summaryTitle}</div>

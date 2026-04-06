@@ -90,7 +90,7 @@ export const PageHeader = ({
           </div>
         ) : null}
         <div className="space-y-3">
-          <h1 className="max-w-5xl font-display text-4xl font-semibold tracking-[-0.07em] text-foreground sm:text-5xl xl:text-6xl 2xl:text-[4.4rem]">
+          <h1 className="max-w-5xl font-display text-[2.6rem] font-semibold tracking-[-0.07em] text-foreground sm:text-[3.2rem] xl:text-[4.1rem] 2xl:text-[4.5rem]">
             {title}
           </h1>
           <div className="max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base xl:text-[1.02rem] xl:leading-8">

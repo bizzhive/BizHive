@@ -240,7 +240,7 @@ const Dashboard = () => {
         <PageHeader
           eyebrow="Founder workspace"
           title="Run the business from one compact dashboard"
-          description="Your profile, signature, saved work, premium preview, and next steps live in dense panels that stay usable on desktop and mobile."
+          description="Your profile, signature, saved work, premium preview, and next steps stay together in one dashboard so you can return and continue quickly."
           icon={UserRound}
           visual={<ClayGraphic className="h-full min-h-[320px] xl:min-h-[400px]" variant="workspace" />}
           actions={
@@ -262,7 +262,7 @@ const Dashboard = () => {
         />
 
         <section className="workspace-grid">
-          <ScrollSurface className="xl:h-[calc(100vh-13.5rem)] xl:min-h-[54rem]" data-tour="profile-summary">
+          <ScrollSurface className="xl:max-h-[calc(100vh-9.5rem)]" data-tour="profile-summary">
             <div className="compact-scroll space-y-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -418,13 +418,13 @@ const Dashboard = () => {
                 <div className="panel-muted p-5">
                   <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                     <Sparkles className="h-3.5 w-3.5" />
-                    Workspace momentum
+                    Keep everything together
                   </div>
                   <div className="mt-4 font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
                     Keep the founder identity, signature, and saved work in one visible loop.
                   </div>
                   <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                    This dashboard is intentionally broader on desktop so profile setup, saved work, and next actions feel like one operating surface instead of several stacked forms.
+                    Update your workspace when needed, reopen your recent work, and keep your signature ready for documents and compliance tasks.
                   </p>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     {[
@@ -472,7 +472,7 @@ const Dashboard = () => {
               </div>
             </Surface>
 
-            <ScrollSurface className="xl:h-[20rem]" data-tour="saved-library">
+            <ScrollSurface className="xl:max-h-[19rem]" data-tour="saved-library">
               <div className="compact-scroll space-y-4">
                 <div>
                   <div className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">Saved library</div>
@@ -537,7 +537,7 @@ const Dashboard = () => {
               />
             </div>
 
-            <ScrollSurface className="xl:h-[18rem]">
+            <ScrollSurface className="xl:max-h-[16rem]">
               <div className="compact-scroll space-y-3">
                 <div className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">Business context</div>
                 <div className="panel-muted p-4">

@@ -140,8 +140,8 @@
       plan: "Strategy",
     },
     proofEyebrow: "Product proof",
-    proofTitle: "The rebuild is fixing structure, not decorating confusion.",
-    proofDescription: "These are the UX corrections guiding the new system.",
+    proofTitle: "A clearer founder product from the first screen.",
+    proofDescription: "These are the parts of BizHive that make the product easier to trust and easier to use.",
     proofCards: [
       {
         title: "Clear navigation",
@@ -175,15 +175,15 @@
     ],
     productMapTitle: "Core product paths",
     productMapBody:
-      "These are the main BizHive surfaces the rebuild is organized around. Each one has a clear job and a cleaner path in and out.",
+      "These are the main BizHive surfaces. Each one has a clear job and a clean next step for the founder.",
     latestTitle: "Published content that is already visible",
     latestDescription:
       "The blog library always carries published founder content so visitors can understand the product before creating an account.",
-    testimonialTitle: "What testers should feel",
+    testimonialTitle: "What founders should feel",
     testimonialBody:
       "A cleaner product should reduce hesitation. People should know what the app does, where they are, and what comes next.",
     testimonialDescription:
-      "These quotes reflect the feeling the rebuild is aiming for across navigation, saved state, and overall product confidence.",
+      "These quotes reflect the kind of clarity, confidence, and momentum BizHive should create for founders.",
     testimonials: [
       {
         name: "Aarav Menon",
@@ -704,12 +704,12 @@
   },
   ai: {
     eyebrow: "Bee",
-    title: "Bee returns after the UI rebuild",
+    title: "Bee AI",
     description:
-      "The assistant route stays visible so the product map remains clear, but the AI working surface is intentionally paused while the rest of BizHive is rebuilt properly.",
-    pausedTitle: "Bee is intentionally paused during the UI rebuild.",
+      "Use Bee for context-aware business help across planning, launch, growth, documents, and founder workflows.",
+    pausedTitle: "Bee is temporarily unavailable.",
     pausedBody:
-      "The assistant route remains visible so the information architecture stays honest. When Bee returns, it will plug into the cleaner shell instead of living as a broken special case.",
+      "Please try again in a moment. Your saved chats and the rest of your product context will remain available.",
     assist: "Ask AI",
     loginRequired: "Please log in to use the AI assistant.",
     suggestionReady: "Suggestion ready",
@@ -750,7 +750,7 @@
   },
   notFound: {
     title: "Page not found",
-    description: "This route does not exist in the current BizHive rebuild.",
+    description: "The page you are looking for does not exist or may have moved.",
     backHome: "Back to home",
   },
   legal: {

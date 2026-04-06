@@ -12,7 +12,7 @@ export function useSavedTool<T>(toolType: ToolType, defaultData: T) {
 
   const queryKey = ['saved_tool', toolType, user?.id];
 
-  const { data, isLoading } = useQuery({
+  const { data: savedRow, isLoading } = useQuery({
     queryKey,
     queryFn: async () => {
       if (!user) return defaultData;
@@ -28,13 +28,10 @@ export function useSavedTool<T>(toolType: ToolType, defaultData: T) {
 
       if (error) {
         console.error('Error fetching tool:', error);
-        return defaultData;
+        return null;
       }
 
-      if (data && data.data) {
-        return data.data as unknown as T;
-      }
-      return defaultData;
+      return data ?? null;
     },
     enabled: !!user,
   });
@@ -43,14 +40,16 @@ export function useSavedTool<T>(toolType: ToolType, defaultData: T) {
     mutationFn: async (newData: T) => {
       if (!user) throw new Error("Must be logged in to save");
 
-      const { error } = await supabase
-        .from('saved_tools')
-        .insert({
-          user_id: user.id,
-          tool_type: toolType,
-          data: newData as never,
-          title: `Saved ${toolType.replace('_', ' ')}`,
-        });
+      const payload = {
+        user_id: user.id,
+        tool_type: toolType,
+        data: newData as never,
+        title: `Saved ${toolType.replace('_', ' ')}`,
+      };
+
+      const { error } = savedRow?.id
+        ? await supabase.from('saved_tools').update(payload).eq('id', savedRow.id)
+        : await supabase.from('saved_tools').insert(payload);
 
       if (error) throw error;
     },
@@ -64,7 +63,7 @@ export function useSavedTool<T>(toolType: ToolType, defaultData: T) {
   });
 
   return {
-    data: data || defaultData,
+    data: savedRow?.data ? (savedRow.data as unknown as T) : defaultData,
     isLoading,
     save: mutation.mutate,
     isSaving: mutation.isPending

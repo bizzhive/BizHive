@@ -1,13 +1,12 @@
-import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { EmptyState, PageHeader, SectionHeading, SiteContainer, Surface } from "@/components/site/SitePrimitives";
+import { EmptyState, PageHeader, ScrollSurface, SectionHeading, SiteContainer, Surface } from "@/components/site/SitePrimitives";
 import { BookOpen, CheckCircle, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, GraduationCap, Save, Search, Sparkles, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -347,6 +346,7 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
   const overallProgress = Math.round((globalCompletedCount / totalLearnChapters) * 100);
   const pageProgress = Math.round((completedChapters.size / chapters.length) * 100);
   const remainingChapters = Math.max(chapters.length - completedChapters.size, 0);
+  const checkpointReady = currentWorkbook.checklist.every(Boolean) && currentWorkbook.notes.trim().length >= 20;
   const filteredChapterIndices = useMemo(() => {
     const normalizedQuery = deferredChapterSearch.trim().toLowerCase();
 
@@ -375,7 +375,7 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
 
   return (
     <div className="page-shell">
-      <SiteContainer className="space-y-8">
+      <SiteContainer className="page-stack">
         <PageHeader
           eyebrow="Learning workspace"
           title={t(title)}
@@ -407,7 +407,7 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
           }
         />
 
-        <section className="grid gap-4 lg:grid-cols-4">
+        <section className="soft-grid">
           {[
             {
               label: t("Section progress"),
@@ -457,27 +457,27 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
         </section>
 
         {user ? (
-          <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
             <Surface className="space-y-4">
               <SectionHeading
-                eyebrow="Momentum"
-                title="Keep your learning streak deliberate"
-                description="Each chapter now rolls into the same checkpoint, notes, and progress rhythm so the learning products feel guided instead of improvised."
+                eyebrow="Study rhythm"
+                title="One lesson rail, one reading stage, one action rail"
+                description="The learning workspace is organized like a real product surface so chapters, notes, checkpoints, and rewards stay visible without long vertical jumps."
               />
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                <div className="panel-muted p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                     {t("Learning XP")}
                   </p>
                   <p className="mt-3 text-2xl font-semibold text-foreground">{pageXp}</p>
                 </div>
-                <div className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                <div className="panel-muted p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                     {t("Completed chapters")}
                   </p>
                   <p className="mt-3 text-2xl font-semibold text-foreground">{completedChapters.size}</p>
                 </div>
-                <div className="rounded-[22px] border border-border/70 bg-background/72 p-4">
+                <div className="panel-muted p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                     {t("Badge track")}
                   </p>
@@ -491,8 +491,8 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
             <Surface className="space-y-4">
               <SectionHeading
                 eyebrow="Milestones"
-                title="Achievement track"
-                description="The badge system stays visible while you study, so progress is legible without digging through separate screens."
+                title="Keep rewards visible"
+                description="You should be able to see your progress and badge track without leaving the learning flow."
               />
               <div className="grid grid-cols-3 gap-3">
                 {milestoneAchievements.map((achievementKey) => (
@@ -525,83 +525,92 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
           </Surface>
         )}
 
-        <div className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
-          <div className={cn("transition-all", sidebarOpen ? "w-full xl:w-[300px]" : "w-full xl:w-14")}>
+        <section className="grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
+          <div className={cn("transition-all", sidebarOpen ? "w-full xl:w-[280px]" : "w-full xl:w-14")}>
             {sidebarOpen ? (
-              <Surface className="sticky top-24 space-y-5 p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      {t("Chapter navigator")}
+              <ScrollSurface className="sticky top-24 xl:max-h-[calc(100vh-8rem)] p-5">
+                <div className="compact-scroll space-y-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                        {t("Chapter navigator")}
+                      </p>
+                      <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                        {t("Chapters")}
+                      </h3>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-2xl"
+                      onClick={() => setSidebarOpen(false)}
+                      aria-label="Collapse chapter navigator"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={chapterSearch}
+                      onChange={(event) => setChapterSearch(event.target.value)}
+                      placeholder="Search chapters..."
+                      className="h-12 rounded-2xl border-border/70 bg-muted/35 pl-11"
+                      aria-label="Search chapters"
+                    />
+                  </div>
+
+                  <div className="panel-muted p-4">
+                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {meta.shortTitle} track
+                    </div>
+                    <div className="mt-2 font-display text-2xl font-semibold text-foreground">{pageProgress}%</div>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      {completedChapters.size} of {chapters.length} chapters completed.
                     </p>
-                    <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
-                      {t("Chapters")}
-                    </h3>
+                    <Progress value={pageProgress} className="mt-3 h-2" />
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 rounded-2xl"
-                    onClick={() => setSidebarOpen(false)}
-                    aria-label="Collapse chapter navigator"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                </div>
 
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={chapterSearch}
-                    onChange={(event) => setChapterSearch(event.target.value)}
-                    placeholder="Search chapters..."
-                    className="h-12 rounded-2xl border-border/70 bg-muted/35 pl-11"
-                    aria-label="Search chapters"
-                  />
-                </div>
+                  {filteredChapterIndices.length === 0 ? (
+                    <EmptyState
+                      className="rounded-[24px] border-dashed py-10"
+                      icon={<Search className="h-6 w-6" />}
+                      title="No chapters match"
+                      description="Try another term or clear the search to see the full lesson map."
+                    />
+                  ) : (
+                    <div className="space-y-2">
+                      {filteredChapterIndices.map((index) => {
+                        const chapter = chapters[index];
 
-                {filteredChapterIndices.length === 0 ? (
-                  <EmptyState
-                    className="rounded-[24px] border-dashed py-10"
-                    icon={<Search className="h-6 w-6" />}
-                    title="No chapters match"
-                    description="Try another term or clear the search to see the full lesson map."
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    {filteredChapterIndices.map((index) => {
-                      const chapter = chapters[index];
-
-                      return (
-                        <button
-                          key={chapter.title}
-                          onClick={() => setActiveChapter(index)}
-                          className={cn(
-                            "flex w-full items-start gap-3 rounded-[22px] border px-4 py-3 text-left transition-all",
-                            activeChapter === index
-                              ? "border-primary/30 bg-primary/10 text-foreground shadow-[0_14px_28px_rgba(255,138,61,0.14)]"
-                              : "border-border/70 bg-background/68 text-muted-foreground hover:border-primary/20 hover:bg-background"
-                          )}
-                        >
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted/80 text-xs font-semibold text-foreground">
-                            {completedChapters.has(index) ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                            ) : (
-                              index + 1
+                        return (
+                          <button
+                            key={chapter.title}
+                            onClick={() => setActiveChapter(index)}
+                            className={cn(
+                              "flex w-full items-start gap-3 rounded-[22px] border px-4 py-3 text-left transition-all",
+                              activeChapter === index
+                                ? "border-primary/30 bg-primary/10 text-foreground shadow-[0_14px_28px_rgba(255,138,61,0.14)]"
+                                : "border-border/70 bg-background/68 text-muted-foreground hover:border-primary/20 hover:bg-background"
                             )}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-medium text-foreground">{t(chapter.title)}</div>
-                            <div className="mt-1 text-xs leading-5 text-muted-foreground">
-                              {completedChapters.has(index) ? t("Checkpoint completed") : t("Open lesson")}
+                          >
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted/80 text-xs font-semibold text-foreground">
+                              {completedChapters.has(index) ? <CheckCircle className="h-4 w-4 text-green-500" /> : index + 1}
                             </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </Surface>
+                            <div className="min-w-0">
+                              <div className="font-medium text-foreground">{t(chapter.title)}</div>
+                              <div className="mt-1 text-xs leading-5 text-muted-foreground">
+                                {completedChapters.has(index) ? t("Checkpoint completed") : t("Open lesson")}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </ScrollSurface>
             ) : (
               <Button
                 variant="ghost"
@@ -615,97 +624,275 @@ const LearnPage = ({ title, subtitle, chapters, pageSlug }: LearnPageProps) => {
             )}
           </div>
 
-          <div className="min-w-0 flex-1 space-y-6">
-            <Card>
-              <CardContent className="p-6 md:p-8">
-                <div className="mb-6 flex flex-wrap items-center gap-3">
-                  <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">{t("common.chapter")} {activeChapter + 1} {t("common.of")} {chapters.length}</span>
-                  {completedChapters.has(activeChapter) && <span className="flex items-center gap-1 rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600"><CheckCircle className="h-3 w-3" /> {t("common.completed")}</span>}
-                  <Badge variant="secondary">+{totalChapterReward} XP</Badge>
+          <ScrollSurface className="xl:max-h-[calc(100vh-8rem)] p-0">
+            <div className="compact-scroll p-5 sm:p-6 lg:p-7">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                  {t("common.chapter")} {activeChapter + 1} {t("common.of")} {chapters.length}
+                </span>
+                {completedChapters.has(activeChapter) ? (
+                  <span className="flex items-center gap-1 rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600">
+                    <CheckCircle className="h-3 w-3" /> {t("common.completed")}
+                  </span>
+                ) : null}
+                <Badge variant="secondary">+{totalChapterReward} XP</Badge>
+              </div>
+
+              <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
+                <div className="max-w-3xl">
+                  <h2 className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-[2.5rem]">
+                    {t(currentChapter.title)}
+                  </h2>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                    Read the lesson in the center, keep your notes and checkpoint on the right, and move chapter by chapter instead of one long vertical document.
+                  </p>
                 </div>
-                <h2 className="mb-6 text-2xl font-bold text-foreground">{t(currentChapter.title)}</h2>
-                <div className="prose max-w-none space-y-4 dark:prose-invert">
-                  {currentChapter.content.map((paragraph, index) => {
-                    if (paragraph.startsWith("## ")) return <h3 key={index} className="mb-3 mt-6 text-lg font-semibold text-foreground">{t(paragraph.slice(3))}</h3>;
-                    if (paragraph.startsWith("- ")) return <ul key={index} className="list-disc space-y-1 pl-6 text-muted-foreground">{paragraph.split("\n").map((item, itemIndex) => <li key={itemIndex}>{t(item.replace(/^- /, ""))}</li>)}</ul>;
-                    if (paragraph.startsWith("> ")) return <blockquote key={index} className="rounded-r-lg border-l-4 border-primary bg-muted/50 py-3 pl-4 pr-4 italic text-muted-foreground">{t(paragraph.slice(2))}</blockquote>;
-                    return <p key={index} className="leading-relaxed text-muted-foreground">{t(paragraph)}</p>;
+
+                <div className="panel-muted min-w-[180px] p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    {t("Macro reward")}
+                  </div>
+                  <div className="mt-2 text-2xl font-semibold text-foreground">+{SECTION_BONUS_XP} XP</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Finish all chapters in this track to unlock the section badge.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-5">
+                {currentChapter.content.map((paragraph, index) => {
+                  if (paragraph.startsWith("## ")) {
+                    return (
+                      <div key={index} className="space-y-2">
+                        <div className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Key lesson</div>
+                        <h3 className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                          {t(paragraph.slice(3))}
+                        </h3>
+                      </div>
+                    );
+                  }
+
+                  if (paragraph.startsWith("- ")) {
+                    return (
+                      <div key={index} className="panel-muted p-4">
+                        <ul className="space-y-2 pl-5 text-sm leading-7 text-muted-foreground">
+                          {paragraph.split("\n").map((item, itemIndex) => (
+                            <li key={itemIndex} className="list-disc">
+                              {t(item.replace(/^- /, ""))}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  }
+
+                  if (paragraph.startsWith("> ")) {
+                    return (
+                      <div key={index} className="rounded-[24px] border border-primary/20 bg-primary/8 px-5 py-4 text-sm italic leading-7 text-muted-foreground">
+                        {t(paragraph.slice(2))}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <p key={index} className="max-w-4xl text-[15px] leading-8 text-muted-foreground sm:text-base">
+                      {t(paragraph)}
+                    </p>
+                  );
+                })}
+              </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                <div className="panel-muted p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    {t("Checkpoint status")}
+                  </div>
+                  <div className="mt-2 font-semibold text-foreground">
+                    {checkpointReady ? t("Ready to complete") : t("Still in progress")}
+                  </div>
+                </div>
+                <div className="panel-muted p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    {t("Chapters remaining")}
+                  </div>
+                  <div className="mt-2 font-semibold text-foreground">
+                    {remainingChapters === 0 ? t("Section mastered") : `${remainingChapters} ${t(remainingChapters === 1 ? "chapter to go" : "chapters to go")}`}
+                  </div>
+                </div>
+                <div className="panel-muted p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    {t("Current level")}
+                  </div>
+                  <div className="mt-2 font-semibold text-foreground">{currentLevel.name}</div>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-6">
+                <Button
+                  variant="ghost"
+                  className="glass-button h-11"
+                  onClick={() => setActiveChapter(Math.max(0, activeChapter - 1))}
+                  disabled={activeChapter === 0}
+                >
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  {t("common.previous")}
+                </Button>
+                <div className="text-center text-xs leading-5 text-muted-foreground">
+                  <p>{activeChapter + 1} / {chapters.length}</p>
+                  <p>{pageProgress}% {t("common.completed")}</p>
+                </div>
+                <Button
+                  className="h-11 rounded-2xl px-5"
+                  onClick={() => setActiveChapter(Math.min(chapters.length - 1, activeChapter + 1))}
+                  disabled={activeChapter === chapters.length - 1}
+                >
+                  {t("common.next")}
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </ScrollSurface>
+
+          <ScrollSurface className="xl:max-h-[calc(100vh-8rem)] p-5">
+            <div className="compact-scroll space-y-5">
+              <div className="space-y-2">
+                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Action rail</div>
+                <h3 className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+                  {workbookConfig?.title ?? t("Chapter notebook")}
+                </h3>
+                <p className="text-sm leading-7 text-muted-foreground">
+                  {workbookConfig?.description ?? "Capture the learning in your own words and convert the chapter into action."}
+                </p>
+              </div>
+
+              {workbookConfig?.fields?.length ? (
+                <div className="space-y-4">
+                  {workbookConfig.fields.map((field) => {
+                    const Component = field.type === "textarea" ? Textarea : Input;
+                    return (
+                      <div key={field.name} className="space-y-2">
+                        <label className="text-sm font-medium text-foreground">{field.label}</label>
+                        <Component
+                          value={currentWorkbook.answers[field.name] ?? ""}
+                          placeholder={field.placeholder}
+                          onChange={(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                            updateWorkbook((current) => ({
+                              ...current,
+                              answers: { ...current.answers, [field.name]: event.target.value },
+                            }))
+                          }
+                          className={field.type === "textarea" ? "min-h-[112px] rounded-[22px]" : "h-12 rounded-[22px]"}
+                        />
+                      </div>
+                    );
                   })}
                 </div>
-              </CardContent>
-            </Card>
+              ) : null}
 
-            {resourceLinks.length > 0 && (
-              <Card>
-                <CardHeader><CardTitle className="flex items-center gap-2"><FolderOpen className="h-5 w-5 text-primary" /> {t("Reusable learning resources")}</CardTitle></CardHeader>
-                <CardContent className="grid gap-4 md:grid-cols-2">
+              <div className="panel-muted p-4">
+                <div className="mb-4 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <p className="font-semibold text-foreground">{t("Chapter checkpoint")}</p>
+                  <Badge variant="secondary">+{CHECKPOINT_XP} XP</Badge>
+                </div>
+                <div className="space-y-3">
+                  {checklistFor(currentChapter.title).map((item, index) => (
+                    <label key={item} className="flex items-start gap-3 rounded-[18px] border border-border/70 bg-background/65 p-3">
+                      <Checkbox
+                        checked={Boolean(currentWorkbook.checklist[index])}
+                        onCheckedChange={(checked) =>
+                          updateWorkbook((current) => ({
+                            ...current,
+                            checklist: current.checklist.map((value, itemIndex) =>
+                              itemIndex === index ? Boolean(checked) : value
+                            ),
+                          }))
+                        }
+                      />
+                      <span className="text-sm text-foreground">{item}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="mt-4 space-y-2">
+                  <label className="text-sm font-medium text-foreground">{t("What is the one action you will take next?")}</label>
+                  <Textarea
+                    value={currentWorkbook.notes}
+                    onChange={(event) => updateWorkbook((current) => ({ ...current, notes: event.target.value }))}
+                    placeholder={t("Write a short reflection or next step.")}
+                    className="min-h-[130px] rounded-[22px]"
+                  />
+                </div>
+              </div>
+
+              {resourceLinks.length > 0 ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <FolderOpen className="h-4 w-4 text-primary" />
+                    {t("Reusable learning resources")}
+                  </div>
                   {resourceLinks.map((resource) => (
-                    <div key={resource.title} className="rounded-2xl border p-4">
-                      <h3 className="font-semibold text-foreground">{resource.title}</h3>
-                      <p className="mt-2 text-sm text-muted-foreground">{resource.description}</p>
-                      <Button asChild variant="outline" className="mt-4 w-full justify-between">
-                        {resource.external ? <a href={resource.href} target="_blank" rel="noreferrer">{resource.cta} <ExternalLink className="h-4 w-4" /></a> : <Link to={resource.href}>{resource.cta} <ChevronRight className="h-4 w-4" /></Link>}
+                    <div key={resource.title} className="panel-muted p-4">
+                      <h4 className="font-semibold text-foreground">{resource.title}</h4>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{resource.description}</p>
+                      <Button asChild variant="ghost" className="glass-button mt-4 h-10 w-full justify-between">
+                        {resource.external ? (
+                          <a href={resource.href} target="_blank" rel="noreferrer">
+                            {resource.cta}
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        ) : (
+                          <Link to={resource.href}>
+                            {resource.cta}
+                            <ChevronRight className="h-4 w-4" />
+                          </Link>
+                        )}
                       </Button>
                     </div>
                   ))}
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              ) : null}
 
-            <Card>
-              <CardHeader><CardTitle>{workbookConfig?.title ?? t("Chapter notebook")}</CardTitle></CardHeader>
-              <CardContent className="space-y-6">
-                {workbookConfig && <p className="text-sm text-muted-foreground">{workbookConfig.description}</p>}
-                {workbookConfig?.fields?.length ? (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {workbookConfig.fields.map((field) => {
-                      const Component = field.type === "textarea" ? Textarea : Input;
-                      return (
-                        <div key={field.name} className={cn("space-y-2", field.type === "textarea" && "md:col-span-2")}>
-                          <label className="text-sm font-medium text-foreground">{field.label}</label>
-                          <Component value={currentWorkbook.answers[field.name] ?? ""} placeholder={field.placeholder} onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => updateWorkbook((current) => ({ ...current, answers: { ...current.answers, [field.name]: event.target.value } }))} className={field.type === "textarea" ? "min-h-[120px]" : undefined} />
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : null}
-                <div className="rounded-2xl border bg-muted/30 p-4">
-                  <div className="mb-4 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /><p className="font-semibold text-foreground">{t("Chapter checkpoint")}</p><Badge variant="secondary">+{CHECKPOINT_XP} XP</Badge></div>
-                  <div className="space-y-3">
-                    {checklistFor(currentChapter.title).map((item, index) => (
-                      <label key={item} className="flex items-start gap-3 rounded-lg border bg-background p-3">
-                        <Checkbox checked={Boolean(currentWorkbook.checklist[index])} onCheckedChange={(checked) => updateWorkbook((current) => ({ ...current, checklist: current.checklist.map((value, itemIndex) => itemIndex === index ? Boolean(checked) : value) }))} />
-                        <span className="text-sm text-foreground">{item}</span>
-                      </label>
+              <div className="grid gap-3">
+                <div className="panel-muted p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t("Badge track")}</div>
+                  <div className="mt-3 grid grid-cols-3 gap-3">
+                    {milestoneAchievements.map((achievementKey) => (
+                      <AchievementBadge
+                        key={achievementKey}
+                        achievementKey={achievementKey}
+                        earned={earnedAchievements.has(achievementKey)}
+                        size="sm"
+                      />
                     ))}
                   </div>
-                  <div className="mt-4 space-y-2">
-                    <label className="text-sm font-medium text-foreground">{t("What is the one action you will take next?")}</label>
-                    <Textarea value={currentWorkbook.notes} onChange={(event) => updateWorkbook((current) => ({ ...current, notes: event.target.value }))} placeholder={t("Write a short reflection or next step.")} className="min-h-[120px]" />
-                  </div>
-                  {user ? <div className="mt-4 flex justify-end"><Button variant="outline" onClick={() => void saveWorkbook(true)} disabled={savingWorkbook}><Save className="mr-2 h-4 w-4" />{savingWorkbook ? t("Saving...") : t("Save chapter notes")}</Button></div> : <p className="mt-4 text-sm text-muted-foreground">{t("Sign in to save notes and workbook progress.")}</p>}
                 </div>
-              </CardContent>
-            </Card>
+                <div className="panel-muted p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t("Macro reward")}</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {isPageComplete ? `${t("Section mastered")} +${SECTION_BONUS_XP} XP.` : `${t("Finish this section to earn")} ${SECTION_BONUS_XP} XP ${t("and unlock the section badge.")}`}
+                  </p>
+                </div>
+              </div>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="rounded-2xl border bg-muted/40 p-4">
-                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <div><p className="text-sm font-semibold text-foreground">{t("Macro reward")}</p><p className="text-sm text-muted-foreground">{isPageComplete ? `${t("Section mastered")} +${SECTION_BONUS_XP} XP.` : `${t("Finish this section to earn")} ${SECTION_BONUS_XP} XP ${t("and unlock the section badge.")}`}</p></div>
-                    <Badge variant="secondary">+{SECTION_BONUS_XP} XP</Badge>
-                  </div>
+              {user ? (
+                <div className="grid gap-3">
+                  <Button variant="ghost" className="glass-button h-11" onClick={() => void saveWorkbook(true)} disabled={savingWorkbook}>
+                    <Save className="mr-2 h-4 w-4" />
+                    {savingWorkbook ? t("Saving...") : t("Save chapter notes")}
+                  </Button>
+                  {!completedChapters.has(activeChapter) ? (
+                    <Button onClick={() => void completeChapter()} className="h-11 rounded-2xl" disabled={!checkpointReady}>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      {checkpointReady ? t("Complete checkpoint & earn XP") : t("Finish the checkpoint first")}
+                    </Button>
+                  ) : null}
                 </div>
-                {!completedChapters.has(activeChapter) && <Button onClick={() => void completeChapter()} variant="outline" className="mt-8 w-full border-green-500/30 text-green-600 hover:bg-green-500/10"><CheckCircle className="mr-2 h-4 w-4" /> {t("Complete checkpoint & earn XP")}</Button>}
-                <div className="mt-4 flex items-center justify-between border-t pt-6">
-                  <Button variant="outline" onClick={() => setActiveChapter(Math.max(0, activeChapter - 1))} disabled={activeChapter === 0}><ChevronLeft className="mr-1 h-4 w-4" /> {t("common.previous")}</Button>
-                  <div className="text-center text-xs text-muted-foreground"><p>{activeChapter + 1} / {chapters.length}</p><p>{remainingChapters === 0 ? t("Section mastered") : `${remainingChapters} ${t(remainingChapters === 1 ? "chapter to go" : "chapters to go")}`}</p><p>{pageProgress}% {t("common.completed")}</p></div>
-                  <Button onClick={() => setActiveChapter(Math.min(chapters.length - 1, activeChapter + 1))} disabled={activeChapter === chapters.length - 1}>{t("common.next")} <ChevronRight className="ml-1 h-4 w-4" /></Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">{t("Sign in to save notes and workbook progress.")}</p>
+              )}
+            </div>
+          </ScrollSurface>
+        </section>
       </SiteContainer>
     </div>
   );
