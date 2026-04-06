@@ -75,7 +75,7 @@ const Navigation = () => {
           </Link>
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center xl:flex">
-            <div className="nav-cluster">
+            <div className="nav-cluster w-full justify-center 2xl:justify-between">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 return (

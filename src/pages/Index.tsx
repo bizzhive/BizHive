@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, CheckCircle2, Sparkles, Star, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClayGraphic } from "@/components/ClayGraphic";
 import { PremiumModal } from "@/components/PremiumModal";
@@ -50,7 +50,7 @@ const Index = () => {
         <PageHeader
           eyebrow="For every founder, shop owner, student builder, and operator"
           title="From a tech startup to a neighborhood store, no business should feel unscalable."
-          description="BizHive is your one founder operating system for planning, launch, growth, compliance, documents, learning, and AI-guided work. The product is built to feel compact, visible, and useful from the first screen."
+          description="BizHive is your one founder operating system for planning, launch, growth, compliance, documents, learning, and AI-guided work. It is designed to feel vivid, spacious, and clear on big desktop screens instead of hiding the product inside cramped cards."
           actions={
             <>
               <Button asChild size="lg" className="h-12 rounded-2xl px-5">
@@ -71,25 +71,25 @@ const Index = () => {
               />
             </>
           }
-          visual={<ClayGraphic className="h-full min-h-[260px]" />}
+          visual={<ClayGraphic className="h-full min-h-[320px] xl:min-h-[430px]" variant="default" />}
         />
 
-        <section className="hero-grid">
-          <Surface className="space-y-4">
+        <section className="feature-wall">
+          <Surface className="space-y-5">
             <SectionHeading
               eyebrow="Everything visible up front"
               title="Core product surfaces"
-              description="The homepage should explain the product in one pass: where to begin, what gets saved, what Bee does, and where each major path leads."
+              description="The homepage should explain the product in one pass: where to begin, what gets saved, what Bee does, and how BizHive turns scattered founder tasks into one operating system."
             />
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-4 xl:grid-cols-3">
               {workspaceHighlights.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link key={item.id} to={item.href} className="panel-muted group p-4 transition-transform hover:-translate-y-0.5">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
+                  <Link key={item.id} to={item.href} className="panel-muted card-lift group p-5">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <div className="mt-4 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">{item.title}</div>
+                    <div className="mt-5 font-display text-[1.9rem] font-semibold tracking-[-0.05em] text-foreground">{item.title}</div>
                     <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
                     <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-primary">
                       Explore
@@ -101,25 +101,61 @@ const Index = () => {
             </div>
           </Surface>
 
-          <div className="grid gap-4">
+          <div className="grid gap-5">
+            <Surface className="overflow-hidden">
+              <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px] xl:items-end">
+                <div className="space-y-4">
+                  <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Why the layout feels bigger now
+                  </div>
+                  <div className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+                    Visual depth, wider composition, and fewer dead zones.
+                  </div>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    Instead of stacking one small card after another, BizHive now uses broader work stages, larger illustration anchors, and fuller desktop-width sections so the app feels premium instead of compressed.
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {[
+                      "Clay-style 3D graphics and soft motion for product personality.",
+                      "Route sections that spread across large screens instead of shrinking into a center column.",
+                      "Feature groupings that read as product stories, not just isolated cards.",
+                      "A clearer desktop rhythm between content, illustrations, stats, and actions.",
+                    ].map((item) => (
+                      <div key={item} className="panel-muted flex items-start gap-3 p-4">
+                        <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                        <p className="text-sm leading-7 text-muted-foreground">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <ClayGraphic className="h-full min-h-[320px]" variant="tools" compact />
+              </div>
+            </Surface>
+
+            <div className="metrics-strip">
             <MetricTile label="Available languages" value="7" hint="English, Hindi, Gujarati, Kannada, Telugu, Marathi, and Tamil." />
             <MetricTile label="Core founder tools" value="7+" hint="Canvas, SWOT, startup math, financials, pitch prep, market research, and business planning." />
             <MetricTile label="Learning chapters" value="45+" hint="Fifteen chapters each across Plan, Launch, and Grow, all free to access." />
+              <MetricTile label="Bee surfaces" value="2" hint="Open Bee from the nav as a full workspace or from the bottom-right copilot." />
+            </div>
           </div>
         </section>
 
-        <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
-          <Surface className="space-y-4">
+        <section className="visual-balance-grid">
+          <Surface className="space-y-5 overflow-hidden">
             <SectionHeading
               eyebrow="Featured capabilities"
               title="Bee, pitching, documents, signatures, and regional language access"
-              description="These are the things users should immediately understand from the home page before anyone asks them to hunt through navigation."
+              description="These are the product stories users should understand before anyone asks them to hunt through navigation."
             />
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="grid gap-3 md:grid-cols-2">
               {heroFeatureSpotlights.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link key={item.id} to={item.href} className="panel-muted p-4 transition-colors hover:bg-accent/65">
+                    <Link key={item.id} to={item.href} className="panel-muted card-lift p-4 transition-colors hover:bg-accent/65">
                     <div className="flex items-center gap-3">
                       <div className="flex h-11 w-11 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
                         <Icon className="h-5 w-5" />
@@ -130,6 +166,11 @@ const Index = () => {
                   </Link>
                 );
               })}
+              </div>
+
+              <div className="hidden xl:block">
+                <ClayGraphic className="h-full min-h-[420px]" variant="ai" compact />
+              </div>
             </div>
           </Surface>
 
@@ -156,7 +197,7 @@ const Index = () => {
           </Surface>
         </section>
 
-        <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+        <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
           <Surface className="space-y-4 overflow-hidden">
             <SectionHeading
               eyebrow="Rotating founder feedback"
@@ -220,6 +261,24 @@ const Index = () => {
                     </Link>
                   );
                 })}
+              </div>
+            </Surface>
+
+            <Surface className="overflow-hidden">
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px] xl:items-center">
+                <div className="space-y-3">
+                  <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <Wand2 className="h-3.5 w-3.5" />
+                    Product atmosphere
+                  </div>
+                  <div className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+                    A founder product should feel alive, not like a spreadsheet site.
+                  </div>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    BizHive mixes practical workflows with motion, gradients, softer corners, and clay-style illustration so the interface feels welcoming to young founders without losing professional structure.
+                  </p>
+                </div>
+                <ClayGraphic className="h-full min-h-[260px]" variant="workspace" compact />
               </div>
             </Surface>
 

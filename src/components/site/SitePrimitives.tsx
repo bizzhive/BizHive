@@ -7,7 +7,7 @@ export const SiteContainer = ({
   className,
   ...props
 }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8", className)} {...props}>
+  <div className={cn("mx-auto w-full max-w-[1760px] px-4 sm:px-6 lg:px-8 2xl:px-10", className)} {...props}>
     {children}
   </div>
 );
@@ -70,31 +70,36 @@ export const PageHeader = ({
 }: PageHeaderProps) => (
   <section
     className={cn(
-      "panel-surface overflow-hidden px-5 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7",
-      "bg-[linear-gradient(140deg,rgba(255,252,248,0.98),rgba(245,235,225,0.94))]",
-      "dark:bg-[linear-gradient(160deg,rgba(34,21,20,0.98),rgba(21,14,13,0.96))]",
+      "panel-hero panel-surface overflow-hidden px-5 py-6 sm:px-6 sm:py-7 lg:px-8 lg:py-8",
       className
     )}
   >
-    <div className={cn("grid gap-6", visual ? "xl:grid-cols-[1.05fr_0.95fr] xl:items-center" : "lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end")}>
+    <div
+      className={cn(
+        "relative z-[1] grid gap-8",
+        visual
+          ? "xl:grid-cols-[minmax(0,1.08fr)_minmax(420px,0.92fr)] xl:items-center"
+          : "lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
+      )}
+    >
       <div className="space-y-4 min-w-0">
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
         {Icon ? (
-          <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary/12 text-primary shadow-[0_14px_32px_rgba(255,138,61,0.18)]">
-            <Icon className="h-5 w-5" />
+          <div className="flex h-14 w-14 items-center justify-center rounded-[22px] bg-primary/12 text-primary shadow-[0_16px_34px_rgba(255,138,61,0.18)]">
+            <Icon className="h-6 w-6" />
           </div>
         ) : null}
         <div className="space-y-3">
-          <h1 className="max-w-4xl font-display text-3xl font-semibold tracking-[-0.06em] text-foreground sm:text-4xl lg:text-5xl">
+          <h1 className="max-w-5xl font-display text-4xl font-semibold tracking-[-0.07em] text-foreground sm:text-5xl xl:text-6xl 2xl:text-[4.4rem]">
             {title}
           </h1>
-          <div className="max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+          <div className="max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base xl:text-[1.02rem] xl:leading-8">
             {description}
           </div>
         </div>
       </div>
       {visual ? (
-        <div className="min-h-[220px]">{visual}</div>
+        <div className="min-h-[280px] xl:min-h-[380px]">{visual}</div>
       ) : actions ? (
         <div className="flex flex-wrap items-center gap-3">{actions}</div>
       ) : null}

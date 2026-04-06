@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Building2, Filter, HandCoins, MapPin, Search, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ClayGraphic } from "@/components/ClayGraphic";
@@ -57,11 +58,34 @@ const Incubators = () => {
           title="Explore support, grants, incubators, and pitch readiness in one founder surface"
           description="Use the finder to shortlist relevant programs, compare focus areas, and keep investor-facing preparation close to the same workflow."
           icon={Building2}
-          visual={<ClayGraphic className="h-full min-h-[240px]" compact />}
+          visual={<ClayGraphic className="h-full min-h-[320px] xl:min-h-[400px]" variant="network" />}
         />
 
+        <section className="metrics-strip">
+          <Surface className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Visible programs</div>
+            <div className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground">{filtered.length}</div>
+            <p className="text-sm leading-7 text-muted-foreground">The finder adapts live as you filter by state, type, and intent.</p>
+          </Surface>
+          <Surface className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">States covered</div>
+            <div className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground">{states.length - 1}</div>
+            <p className="text-sm leading-7 text-muted-foreground">Compare regional support instead of starting every search from scratch.</p>
+          </Surface>
+          <Surface className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Program types</div>
+            <div className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground">{types.length - 1}</div>
+            <p className="text-sm leading-7 text-muted-foreground">Mix government, private, university, and sector-focused options in one view.</p>
+          </Surface>
+          <Surface className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Pitch readiness</div>
+            <div className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground">Built in</div>
+            <p className="text-sm leading-7 text-muted-foreground">Move from shortlist to deck refinement without leaving the product shell.</p>
+          </Surface>
+        </section>
+
         <section className="workspace-grid">
-          <ScrollSurface className="lg:h-[48rem]">
+          <ScrollSurface className="xl:h-[calc(100vh-14rem)] xl:min-h-[56rem]">
             <div className="compact-scroll space-y-4">
               <div className="grid gap-3 lg:grid-cols-[1fr_repeat(2,minmax(0,180px))]">
                 <div className="relative">
@@ -102,7 +126,7 @@ const Incubators = () => {
                     href={item.website}
                     target="_blank"
                     rel="noreferrer"
-                    className="panel-muted p-4 transition-colors hover:bg-accent/65"
+                    className="panel-muted card-lift p-4 transition-colors hover:bg-accent/65"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -160,7 +184,7 @@ const Incubators = () => {
               </p>
             </Surface>
 
-            <ScrollSurface className="lg:h-[21rem]">
+            <ScrollSurface className="xl:h-[22rem]">
               <div className="compact-scroll space-y-3">
                 <div className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">Top shortlisting picks</div>
                 {topPicks.map((item) => (
@@ -172,6 +196,25 @@ const Incubators = () => {
                 ))}
               </div>
             </ScrollSurface>
+
+            <Surface className="overflow-hidden">
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_210px] xl:items-center">
+                <div className="space-y-3">
+                  <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Founder angle
+                  </div>
+                  <div className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+                    The incubator finder should feel like a real decision surface.
+                  </div>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    Search is only useful when it stays close to your pitch, funding, and business stage. That is why this route now behaves more like a founder cockpit than a static directory page.
+                  </p>
+                </div>
+
+                <ClayGraphic className="h-full min-h-[260px]" compact variant="network" />
+              </div>
+            </Surface>
 
             <Surface className="space-y-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -192,10 +235,10 @@ const Incubators = () => {
               </div>
               <div className="flex gap-3">
                 <Button asChild className="rounded-2xl">
-                  <a href="/tools/pitch-deck-builder">Open pitch deck</a>
+                  <Link to="/tools/pitch-deck-builder">Open pitch deck</Link>
                 </Button>
                 <Button asChild variant="ghost" className="glass-button">
-                  <a href="/ai-assistant">Ask Bee</a>
+                  <Link to="/ai-assistant">Ask Bee</Link>
                 </Button>
               </div>
             </Surface>

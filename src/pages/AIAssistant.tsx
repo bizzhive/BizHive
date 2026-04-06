@@ -35,7 +35,7 @@ const AIAssistant = () => {
           title="One fullscreen workspace for history, retries, and route-aware founder help"
           description="Use Bee for context-aware business guidance across BizHive. Sessions stay organized, retry keeps the same thread intact, and the copilot uses the same chat instead of a disconnected widget."
           icon={Bot}
-          visual={<ClayGraphic className="h-full min-h-[250px]" />}
+          visual={<ClayGraphic className="h-full min-h-[320px] xl:min-h-[410px]" variant="ai" />}
           actions={
             <Button variant="ghost" className="glass-button h-12" onClick={() => openCopilot(draft)}>
               <Expand className="mr-2 h-4 w-4 text-primary" />
@@ -44,8 +44,8 @@ const AIAssistant = () => {
           }
         />
 
-        <section className="grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
-          <ScrollSurface className="lg:h-[48rem]">
+        <section className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)_380px] 2xl:grid-cols-[340px_minmax(0,1fr)_420px]">
+          <ScrollSurface className="xl:h-[calc(100vh-14rem)] xl:min-h-[56rem]">
             <div className="compact-scroll space-y-3">
               <Button className="h-11 w-full rounded-2xl" onClick={createNewChat}>
                 <History className="mr-2 h-4 w-4" />
@@ -100,7 +100,7 @@ const AIAssistant = () => {
             </div>
           </ScrollSurface>
 
-          <ScrollSurface className="lg:h-[48rem]">
+          <ScrollSurface className="xl:h-[calc(100vh-14rem)] xl:min-h-[56rem]">
             <div className="compact-scroll space-y-4">
               {messages.length ? (
                 messages.map((message) => (
@@ -147,7 +147,7 @@ const AIAssistant = () => {
               <div className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">{context.title}</div>
               <p className="text-sm leading-7 text-muted-foreground">{context.description}</p>
               <div className="rounded-[22px] border border-border/70 bg-muted/35 p-4 text-sm leading-7 text-muted-foreground">
-                {currentSession?.summary || "Bee keeps this session’s running context so you can retry providers without losing the conversation flow."}
+                {currentSession?.summary || "Bee keeps this session's running context so you can retry providers without losing the conversation flow."}
               </div>
             </Surface>
 
@@ -189,6 +189,8 @@ const AIAssistant = () => {
                 </Button>
               ) : null}
             </Surface>
+
+            <ClayGraphic className="hidden min-h-[260px] xl:block" compact variant="ai" />
           </div>
         </section>
       </SiteContainer>

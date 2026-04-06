@@ -80,16 +80,18 @@
     font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
     min-height: 100vh;
     background-image:
-      radial-gradient(circle at top left, rgba(255, 184, 127, 0.36), transparent 28%),
-      radial-gradient(circle at 80% 0%, rgba(255, 122, 86, 0.16), transparent 22%),
+      radial-gradient(circle at 8% 6%, rgba(255, 184, 127, 0.42), transparent 26%),
+      radial-gradient(circle at 88% 2%, rgba(255, 122, 86, 0.2), transparent 24%),
+      radial-gradient(circle at 50% 24%, rgba(255, 232, 216, 0.82), transparent 34%),
       linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(248, 240, 232, 0.98));
   }
 
   .dark body {
     background-image:
-      radial-gradient(circle at top left, rgba(255, 145, 87, 0.18), transparent 26%),
-      radial-gradient(circle at 82% 2%, rgba(176, 76, 58, 0.16), transparent 24%),
-      linear-gradient(180deg, rgba(24, 17, 16, 0.99), rgba(14, 10, 10, 1));
+      radial-gradient(circle at 8% 6%, rgba(255, 145, 87, 0.16), transparent 24%),
+      radial-gradient(circle at 88% 3%, rgba(192, 79, 69, 0.14), transparent 22%),
+      radial-gradient(circle at 50% 18%, rgba(88, 39, 34, 0.38), transparent 36%),
+      linear-gradient(180deg, rgba(26, 18, 17, 0.99), rgba(14, 10, 10, 1));
   }
 
   h1,
@@ -109,26 +111,53 @@
 
 @layer components {
   .page-shell {
-    @apply min-h-screen pb-14 pt-4 sm:pt-5;
+    @apply min-h-screen pb-20 pt-4 sm:pt-5;
   }
 
   .page-stack {
-    @apply flex flex-col gap-4 sm:gap-5;
+    @apply flex flex-col gap-5 sm:gap-6;
   }
 
   .panel-surface {
-    @apply rounded-[28px] border border-border/70 bg-card backdrop-blur-md;
-    box-shadow: 0 12px 44px rgba(100, 61, 34, 0.08);
+    @apply rounded-[30px] border border-border/70 bg-card backdrop-blur-md;
+    box-shadow: 0 18px 52px rgba(100, 61, 34, 0.08);
     background-color: hsl(var(--card) / 0.92);
   }
 
   .dark .panel-surface {
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 22px 58px rgba(0, 0, 0, 0.28);
   }
 
   .panel-muted {
-    @apply rounded-[22px] border border-border/70 bg-muted backdrop-blur-sm;
+    @apply rounded-[24px] border border-border/70 bg-muted backdrop-blur-sm;
     background-color: hsl(var(--muted) / 0.45);
+  }
+
+  .panel-hero {
+    position: relative;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(255, 196, 152, 0.28), transparent 32%),
+      radial-gradient(circle at 100% 10%, rgba(255, 141, 82, 0.16), transparent 26%),
+      linear-gradient(140deg, rgba(255, 252, 248, 0.98), rgba(245, 235, 225, 0.96));
+  }
+
+  .panel-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 2rem -4rem auto;
+    width: 18rem;
+    height: 18rem;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255, 168, 99, 0.18), transparent 72%);
+    filter: blur(8px);
+    pointer-events: none;
+  }
+
+  .dark .panel-hero {
+    background:
+      radial-gradient(circle at 0% 0%, rgba(255, 157, 96, 0.12), transparent 30%),
+      radial-gradient(circle at 100% 8%, rgba(191, 72, 62, 0.16), transparent 24%),
+      linear-gradient(160deg, rgba(37, 25, 23, 0.98), rgba(20, 14, 13, 0.97));
   }
 
   .glass-button {
@@ -142,7 +171,7 @@
   }
 
   .nav-shell {
-    @apply flex items-center justify-between gap-3 rounded-[28px] border border-border/70 bg-card px-3 py-3 shadow-[0_18px_40px_rgba(96,64,41,0.08)] backdrop-blur-2xl sm:px-4;
+    @apply flex items-center justify-between gap-3 rounded-[30px] border border-border/70 bg-card px-3 py-3 shadow-[0_18px_40px_rgba(96,64,41,0.08)] backdrop-blur-2xl sm:px-4 2xl:px-5;
     background-color: hsl(var(--card) / 0.86);
   }
 
@@ -151,12 +180,12 @@
   }
 
   .nav-cluster {
-    @apply flex flex-wrap items-center gap-1 rounded-[24px] border border-border/60 bg-background p-1.5;
+    @apply flex w-full flex-wrap items-center gap-1 rounded-[24px] border border-border/60 bg-background p-1.5;
     background-color: hsl(var(--background) / 0.55);
   }
 
   .nav-link {
-    @apply flex items-center gap-2 rounded-[18px] px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/70 hover:text-foreground;
+    @apply flex items-center gap-2 rounded-[18px] px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/70 hover:text-foreground;
   }
 
   .nav-link-active {
@@ -178,6 +207,18 @@
 
   .brand-mark {
     @apply flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary text-primary-foreground shadow-[0_16px_32px_rgba(255,138,61,0.28)];
+  }
+
+  .card-lift {
+    @apply transition-transform duration-300 ease-out hover:-translate-y-1;
+  }
+
+  .visual-balance-grid {
+    @apply grid gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(360px,0.82fr)];
+  }
+
+  .feature-wall {
+    @apply grid gap-5 xl:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)];
   }
 
   .bee-copilot {
@@ -203,15 +244,65 @@
   }
 
   .hero-grid {
-    @apply grid gap-4 xl:grid-cols-[1.08fr_0.92fr];
+    @apply grid gap-5 xl:grid-cols-[1.18fr_0.82fr];
   }
 
   .workspace-grid {
-    @apply grid gap-4 xl:grid-cols-[1.15fr_0.85fr];
+    @apply grid gap-5 xl:grid-cols-[1.24fr_0.76fr];
+  }
+
+  .metrics-strip {
+    @apply grid gap-4 md:grid-cols-2 2xl:grid-cols-4;
+  }
+
+  .clay-pill {
+    @apply inline-flex items-center rounded-full border border-white/50 bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/80 shadow-[0_12px_24px_rgba(163,94,52,0.14)] backdrop-blur-md dark:border-white/10 dark:bg-white/10 dark:text-foreground/80 dark:shadow-[0_14px_28px_rgba(0,0,0,0.22)];
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #ff8d3c 0%, #ffb164 45%, #f86441 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .motion-float {
+    animation: ui-float 7.2s ease-in-out infinite;
+  }
+
+  .motion-float-delayed {
+    animation: ui-float 8.8s ease-in-out infinite;
+    animation-delay: -2.8s;
+  }
+
+  .motion-drift {
+    animation: ui-drift 16s linear infinite alternate;
   }
 }
 
 * {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--border)) transparent;
+}
+
+@keyframes ui-float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ui-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(10px, -6px, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(-6px, 10px, 0) scale(0.99);
+  }
 }
