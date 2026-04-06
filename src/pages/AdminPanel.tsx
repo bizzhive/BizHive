@@ -5,6 +5,7 @@ import { PageHeader, SiteContainer, Surface } from "@/components/site/SitePrimit
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/services/supabase/client";
 import AdminBlogsTab from "@/components/admin/AdminBlogsTab";
+import AdminBeeTab from "@/components/admin/AdminBeeTab";
 import AdminCommunityTab from "@/components/admin/AdminCommunityTab";
 import AdminDocumentsTab from "@/components/admin/AdminDocumentsTab";
 import { ClayGraphic } from "@/components/ClayGraphic";
@@ -97,13 +98,17 @@ const AdminPanel = () => {
           </Surface>
         </section>
 
-        <Tabs defaultValue="blogs" className="space-y-4">
+        <Tabs defaultValue="bee" className="space-y-4">
           <TabsList className="h-auto rounded-2xl border border-border/80 bg-muted/40 p-1">
+            <TabsTrigger value="bee" className="rounded-2xl">Bee AI</TabsTrigger>
             <TabsTrigger value="blogs" className="rounded-2xl">Blogs</TabsTrigger>
             <TabsTrigger value="documents" className="rounded-2xl">Documents</TabsTrigger>
             <TabsTrigger value="community" className="rounded-2xl">Community</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="bee">
+            <AdminBeeTab />
+          </TabsContent>
           <TabsContent value="blogs">
             {loading ? (
               <Surface>Loading admin content...</Surface>

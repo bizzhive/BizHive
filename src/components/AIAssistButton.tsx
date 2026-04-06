@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useBee } from "@/contexts/BeeContext";
+import { requestToolSuggestion } from "@/services/ai/tool-assist";
 
 interface AIAssistButtonProps {
   field: string;
@@ -14,7 +15,7 @@ interface AIAssistButtonProps {
 
 export function AIAssistButton({ field, onSuggestion, context }: AIAssistButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const { user } = useAuth();
+  const { session, user } = useAuth();
   const { t } = useTranslation();
   const { openCopilot } = useBee();
 
@@ -26,7 +27,12 @@ export function AIAssistButton({ field, onSuggestion, context }: AIAssistButtonP
 
     setIsGenerating(true);
     try {
-      const suggestion = `Suggested direction for ${field}: keep this concise, specific, and tied to the user's real business context. Mention the problem, audience, evidence, and the next action instead of writing vague filler.`;
+      const { suggestion } = await requestToolSuggestion({
+        accessToken: session?.access_token,
+        context,
+        field,
+        prompt: `Help me improve this ${field} section with context-aware business guidance.`,
+      });
       onSuggestion(suggestion);
       openCopilot(
         `Help me improve the "${field}" field. Current context: ${JSON.stringify(context ?? {}).slice(0, 280)}`

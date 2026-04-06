@@ -212,6 +212,84 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_sessions: {
+        Row: {
+          active_provider_slot: string
+          archived_at: string | null
+          created_at: string
+          id: string
+          last_context_route: string | null
+          last_context_title: string | null
+          summary: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_provider_slot?: string
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          last_context_route?: string | null
+          last_context_title?: string | null
+          summary?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_provider_slot?: string
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          last_context_route?: string | null
+          last_context_title?: string | null
+          summary?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bee_provider_health_checks: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          latency_ms: number | null
+          model: string
+          provider: string
+          slot: string
+          source: string
+          status: string
+          status_code: number | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          latency_ms?: number | null
+          model: string
+          provider: string
+          slot: string
+          source?: string
+          status: string
+          status_code?: number | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          latency_ms?: number | null
+          model?: string
+          provider?: string
+          slot?: string
+          source?: string
+          status?: string
+          status_code?: number | null
+        }
+        Relationships: []
+      }
       community_groups: {
         Row: {
           created_at: string

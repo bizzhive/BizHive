@@ -1,6 +1,7 @@
 import { createSupabaseFunctionHeaders, getSupabaseFunctionUrl } from "@/services/supabase/client";
 
 const TEMP_ADMIN_ACCESS_KEY = "bizhive.admin.access";
+const TEMP_ADMIN_PASSWORD_KEY = "bizhive.admin.password";
 const TEMP_ADMIN_PASSWORD = "admin#Tushar07";
 
 export const hasTemporaryAdminAccess = () => {
@@ -17,6 +18,15 @@ export const clearTemporaryAdminAccess = () => {
   }
 
   window.sessionStorage.removeItem(TEMP_ADMIN_ACCESS_KEY);
+  window.sessionStorage.removeItem(TEMP_ADMIN_PASSWORD_KEY);
+};
+
+export const getTemporaryAdminPassword = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.sessionStorage.getItem(TEMP_ADMIN_PASSWORD_KEY);
 };
 
 export const verifyTemporaryAdminPassword = async (password: string) => {
@@ -36,6 +46,7 @@ export const verifyTemporaryAdminPassword = async (password: string) => {
     if (response.ok) {
       if (typeof window !== "undefined") {
         window.sessionStorage.setItem(TEMP_ADMIN_ACCESS_KEY, "granted");
+        window.sessionStorage.setItem(TEMP_ADMIN_PASSWORD_KEY, trimmedPassword);
       }
       return true;
     }
@@ -58,6 +69,7 @@ export const verifyTemporaryAdminPassword = async (password: string) => {
 
   if (typeof window !== "undefined") {
     window.sessionStorage.setItem(TEMP_ADMIN_ACCESS_KEY, "granted");
+    window.sessionStorage.setItem(TEMP_ADMIN_PASSWORD_KEY, trimmedPassword);
   }
 
   return true;

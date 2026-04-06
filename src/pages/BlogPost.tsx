@@ -50,9 +50,11 @@ const BlogPost = () => {
             </Button>
           }
         />
-        <Surface className="max-w-4xl whitespace-pre-wrap text-sm leading-8 text-foreground">
-          {post.content}
-        </Surface>
+        <div data-bee-selection="disabled">
+          <Surface className="max-w-4xl whitespace-pre-wrap text-sm leading-8 text-foreground">
+            {post.content}
+          </Surface>
+        </div>
       </SiteContainer>
     </div>
   );

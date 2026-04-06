@@ -1,4 +1,4 @@
-import { Bot, CornerDownLeft, Expand, Sparkles, X } from "lucide-react";
+import { Bot, CornerDownLeft, Expand, History, RotateCcw, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import BeeIcon from "@/components/BeeIcon";
@@ -7,14 +7,29 @@ import { useBee } from "@/contexts/BeeContext";
 
 const BeePanel = () => {
   const { t } = useTranslation();
-  const { closeCopilot, context, copilotOpen, draft, messages, openFullscreen, sendMessage, setDraft } = useBee();
+  const {
+    closeCopilot,
+    context,
+    copilotOpen,
+    currentSession,
+    draft,
+    messages,
+    openFullscreen,
+    retryLastMessage,
+    sendMessage,
+    sessions,
+    setDraft,
+    streaming,
+  } = useBee();
 
   if (!copilotOpen) {
     return null;
   }
 
+  const lastAssistant = [...messages].reverse().find((message) => message.role === "assistant");
+
   return (
-    <div className="bee-copilot bee-panel w-[min(26rem,calc(100vw-2rem))]">
+    <div className="bee-copilot bee-panel w-[min(28rem,calc(100vw-2rem))]">
       <div className="flex items-start justify-between gap-4 border-b border-border/60 px-4 py-4">
         <div className="flex items-start gap-3">
           <div className="brand-mark h-11 w-11 rounded-[18px]">
@@ -24,7 +39,7 @@ const BeePanel = () => {
             <div className="flex items-center gap-2">
               <h3 className="font-display text-lg font-semibold text-foreground">{t("bee.copilotTitle")}</h3>
               <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
-                {t("bee.previewStatus")}
+                {streaming ? "Live" : t("bee.previewStatus")}
               </span>
             </div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{context.chip}</p>
@@ -42,26 +57,47 @@ const BeePanel = () => {
         </div>
       </div>
 
-      <div className="flex max-h-[28rem] flex-col">
+      <div className="flex max-h-[32rem] flex-col">
+        <div className="border-b border-border/60 px-4 py-3">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            <History className="h-3.5 w-3.5 text-primary" />
+            {currentSession?.title || "New chat"} · {sessions.length} saved
+          </div>
+        </div>
+
         <div className="compact-scroll flex-1 space-y-3 px-4 py-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={
-                message.role === "assistant"
-                  ? "rounded-[22px] border border-border/70 bg-muted/40 p-4"
-                  : "ml-auto max-w-[88%] rounded-[22px] bg-primary px-4 py-3 text-primary-foreground"
-              }
-            >
-              {message.role === "assistant" ? (
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-                  <Bot className="h-3.5 w-3.5" />
-                  {t("nav.bee")}
-                </div>
-              ) : null}
-              <p className="text-sm leading-7">{message.content}</p>
+          {messages.length ? (
+            messages.map((message) => (
+              <div
+                key={message.id}
+                className={
+                  message.role === "assistant"
+                    ? message.status === "error"
+                      ? "rounded-[22px] border border-destructive/40 bg-destructive/10 p-4"
+                      : "rounded-[22px] border border-border/70 bg-muted/40 p-4"
+                    : "ml-auto max-w-[88%] rounded-[22px] bg-primary px-4 py-3 text-primary-foreground"
+                }
+              >
+                {message.role === "assistant" ? (
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+                    <Bot className="h-3.5 w-3.5" />
+                    {message.status === "error" ? "Retry available" : t("nav.bee")}
+                  </div>
+                ) : null}
+                <p className="whitespace-pre-wrap text-sm leading-7">{message.content || "Preparing answer..."}</p>
+                {message.role === "assistant" && message.status === "error" && message.retryable ? (
+                  <Button className="mt-3 h-9 rounded-2xl" onClick={() => void retryLastMessage()}>
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Retry
+                  </Button>
+                ) : null}
+              </div>
+            ))
+          ) : (
+            <div className="panel-muted p-4 text-sm leading-7 text-muted-foreground">
+              Ask Bee about the current screen, a business term, launch readiness, funding, or compliance.
             </div>
-          ))}
+          )}
         </div>
 
         <div className="border-t border-border/60 px-4 py-4">
@@ -88,10 +124,18 @@ const BeePanel = () => {
             />
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs leading-5 text-muted-foreground">{t("bee.previewNote")}</p>
-              <Button className="h-11 rounded-2xl px-4" onClick={() => sendMessage()}>
-                <CornerDownLeft className="mr-2 h-4 w-4" />
-                {t("bee.send")}
-              </Button>
+              <div className="flex gap-2">
+                {lastAssistant?.status === "error" && lastAssistant.retryable ? (
+                  <Button variant="ghost" className="h-11 rounded-2xl px-4" onClick={() => void retryLastMessage()}>
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Retry
+                  </Button>
+                ) : null}
+                <Button className="h-11 rounded-2xl px-4" disabled={streaming} onClick={() => void sendMessage()}>
+                  <CornerDownLeft className="mr-2 h-4 w-4" />
+                  {streaming ? "Thinking..." : t("bee.send")}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

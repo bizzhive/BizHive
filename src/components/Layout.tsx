@@ -24,7 +24,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Navigation />
       <main className="flex-1">{children}</main>
       <Footer />
-      <TextSelectionTooltip onAskBee={(prompt) => openCopilot(prompt)} />
+      <TextSelectionTooltip onAskBee={(prompt, selectedText) => openCopilot(prompt, selectedText)} />
 
       {!hideBeeWidget ? (
         <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex max-w-sm flex-col items-end gap-3">

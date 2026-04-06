@@ -317,11 +317,11 @@ const Community = () => {
               <div className="compact-scroll flex-1 space-y-3">
                 {selectedPost ? (
                   <>
-                    <div className="rounded-[24px] border border-border/70 bg-muted/35 p-4">
+                    <div data-bee-selection="disabled" className="rounded-[24px] border border-border/70 bg-muted/35 p-4">
                       <p className="text-sm leading-8 text-foreground">{selectedPost.content}</p>
                     </div>
                     {threadMessages.map((message) => (
-                      <div key={message.id} className={message.user_id === user?.id ? "ml-auto max-w-[86%] rounded-[24px] bg-primary px-5 py-4 text-primary-foreground" : "rounded-[24px] border border-border/70 bg-muted/35 p-4"}>
+                      <div key={message.id} data-bee-selection="disabled" className={message.user_id === user?.id ? "ml-auto max-w-[86%] rounded-[24px] bg-primary px-5 py-4 text-primary-foreground" : "rounded-[24px] border border-border/70 bg-muted/35 p-4"}>
                         <div className={message.user_id === user?.id ? "text-xs font-semibold uppercase tracking-[0.14em] text-primary-foreground/74" : "text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"}>
                           {message.user_name || "Member"}
                         </div>

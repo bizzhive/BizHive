@@ -3,7 +3,7 @@ import BeeIcon from "./BeeIcon";
 import { useTranslation } from "react-i18next";
 
 interface TextSelectionTooltipProps {
-  onAskBee: (text: string) => void;
+  onAskBee: (text: string, selectedText?: string) => void;
 }
 
 const TextSelectionTooltip = ({ onAskBee }: TextSelectionTooltipProps) => {
@@ -30,7 +30,9 @@ const TextSelectionTooltip = ({ onAskBee }: TextSelectionTooltipProps) => {
         // Must be inside main content
         const isInMain = element.closest("main");
         // Must NOT be inside form, input, nav, footer, button
-        const isExcluded = element.closest("nav, footer, form, input, textarea, button, [role='dialog'], .bee-panel");
+        const isExcluded = element.closest(
+          "nav, footer, form, input, textarea, button, [role='dialog'], .bee-panel, article, [data-bee-selection='disabled']"
+        );
         
         if (isInMain && !isExcluded) {
           const rect = range.getBoundingClientRect();
@@ -68,7 +70,7 @@ const TextSelectionTooltip = ({ onAskBee }: TextSelectionTooltipProps) => {
     <button
       ref={tooltipRef}
       onClick={() => {
-        onAskBee(`What does "${selectedText}" mean?`);
+        onAskBee(`What is the meaning of "${selectedText}"?`, selectedText);
         setShow(false);
         window.getSelection()?.removeAllRanges();
       }}
